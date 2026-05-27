@@ -7,8 +7,16 @@ import { generateAdvice } from '@/lib/air_advice_data';
 import { PROFILE_CAREERS } from '@/lib/air_career_data';
 import ResultPage from './ResultPage';
 
-type Props = { params: Promise<{ payload: string }> };
+type Props = {
+  params: Promise<{ payload: string }>;
+  searchParams: Promise<{ lang?: string }>;
+};
 type L10n = { en: string; zh: string; ja?: string; ko?: string; de?: string };
+
+const LANGS = ['en', 'zh', 'ja', 'ko', 'de'] as const;
+function overrideLang(raw: string | undefined, fallback: ShareLang): ShareLang {
+  return raw && (LANGS as readonly string[]).includes(raw) ? (raw as ShareLang) : fallback;
+}
 
 function pickL(obj: L10n | undefined, lang: ShareLang): string {
   if (!obj) return '';
@@ -22,13 +30,15 @@ async function resolveBase() {
   return `${proto}://${host}`;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { payload } = await params;
+  const { lang: langRaw } = await searchParams;
   const data = decodeSharePayload(payload);
   if (!data) return { title: 'Result' };
   const code = data.v === 2 ? data.profileCode : undefined;
   const profile = code ? PROFILE_TYPES[code] : null;
-  const isZh = data.lang === 'zh';
+  const lang = overrideLang(langRaw, data.lang as ShareLang);
+  const isZh = lang === 'zh';
   const arch = profile ? (isZh ? profile.archetype.zh : profile.archetype.en) : 'AIR';
   const tag = profile ? (isZh ? profile.tagline.zh : profile.tagline.en) : '';
   const title = `${arch} (${code ?? ''}) — AIR`;
@@ -46,12 +56,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SharePage({ params }: Props) {
+export default async function SharePage({ params, searchParams }: Props) {
   const { payload } = await params;
+  const { lang: langRaw } = await searchParams;
   const data = decodeSharePayload(payload);
   if (!data) notFound();
   const safeData = data as SharePayload;
-  const lang = safeData.lang as ShareLang;
+  // URL ?lang= override wins; falls back to the lang baked into the payload at quiz-submit time.
+  const lang = overrideLang(langRaw, safeData.lang as ShareLang);
   const code = safeData.v === 2 && safeData.profileCode ? safeData.profileCode : null;
   if (!code) notFound();
   const profile = PROFILE_TYPES[code];

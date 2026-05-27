@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTheme } from './useTheme';
 import { useLang } from './useLang';
 import { SUPPORTED_LANGUAGES, type Language } from '@/lib/translations';
@@ -18,6 +19,26 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  /**
+   * Switch language across the whole tree:
+   *   1. Local state + localStorage + CustomEvent → updates every client component instantly
+   *   2. Push ?lang=NEW into the URL → forces SSR pages (/share/[payload], /profile/[code])
+   *      to re-render with the new language, since their copy is resolved server-side.
+   */
+  const switchLang = (l: Language) => {
+    setLang(l);
+    setLangOpen(false);
+    try {
+      const usp = new URLSearchParams(searchParams?.toString() ?? '');
+      usp.set('lang', l);
+      router.replace(`${pathname}?${usp.toString()}`, { scroll: false });
+    } catch {}
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -110,7 +131,7 @@ export default function Nav() {
                 {SUPPORTED_LANGUAGES.map((l) => (
                   <button
                     key={l.code}
-                    onClick={() => { setLang(l.code as Language); setLangOpen(false); }}
+                    onClick={() => switchLang(l.code as Language)}
                     style={{
                       display: 'flex',
                       width: '100%',
