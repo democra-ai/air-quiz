@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { useLang } from './useLang';
-import { L, translations } from '@/lib/translations';
+import { ui } from '@/lib/ui_text';
 
 export default function Footer() {
   const [lang] = useLang();
-  const t = translations[lang];
-  const zh = lang === 'zh';
+  const t = ui(lang).footer;
 
   return (
     <footer
@@ -26,13 +25,12 @@ export default function Footer() {
             alignItems: 'start',
           }}
         >
-          {/* Masthead */}
           <div>
             <div className="italic-display" style={{ fontSize: '2rem', color: 'var(--ink-strong)' }}>
               air
             </div>
             <p className="smallcaps" style={{ marginTop: 6 }}>
-              {zh ? 'AI 抗性人格测试' : 'AI-Resistance Personality Test'}
+              {t.tagline}
             </p>
             <p
               style={{
@@ -43,30 +41,22 @@ export default function Footer() {
                 maxWidth: 320,
               }}
             >
-              {zh
-                ? '一份 16 题的问卷，把你的职业映射到 16 个原型之一。基于 BLS、O*NET、Anthropic Economic Index。'
-                : 'A 16-question survey mapping your profession to one of 16 archetypes. Built on BLS, O*NET, and the Anthropic Economic Index.'}
+              {t.blurb}
             </p>
           </div>
 
-          {/* Navigation */}
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <span className="smallcaps">{zh ? '导航' : 'Navigate'}</span>
-            <FooterLink href="/">{zh ? '首页' : 'Home'}</FooterLink>
-            <FooterLink href="/?quiz=1">{zh ? '开始测试' : 'Take the test'}</FooterLink>
-            <FooterLink href="/#types">{zh ? '16 种类型' : '16 archetypes'}</FooterLink>
-            <FooterLink href="https://risk.democra.ai" external>
-              {zh ? '宏观报告 →' : 'Macro report →'}
-            </FooterLink>
+            <span className="smallcaps">{t.nav_heading}</span>
+            <FooterLink href="/">{t.nav_home}</FooterLink>
+            <FooterLink href="/?quiz=1">{t.nav_take}</FooterLink>
+            <FooterLink href="/#archetypes">{t.nav_archetypes}</FooterLink>
+            <FooterLink href="https://risk.democra.ai" external>{t.nav_macro}</FooterLink>
           </nav>
 
-          {/* Colophon */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <span className="smallcaps">{zh ? '关于' : 'Colophon'}</span>
+            <span className="smallcaps">{t.colophon_heading}</span>
             <p style={{ fontSize: '0.88rem', color: 'var(--ink-mute)', lineHeight: 1.55, maxWidth: 260 }}>
-              {zh
-                ? '排版采用 Fraunces 与 Instrument Sans。由 Democra AI 设计与制作。'
-                : 'Set in Fraunces and Instrument Sans. Designed and engineered by Democra AI.'}
+              {t.colophon_body}
             </p>
           </div>
         </div>
@@ -84,11 +74,9 @@ export default function Footer() {
           }}
         >
           <span className="marginalia">
-            © {new Date().getFullYear()} Democra · MIT License
+            {t.copy_notice.replace('{year}', String(new Date().getFullYear()))}
           </span>
-          <span className="marginalia">
-            v0.1 · {zh ? '编辑实验性版本' : 'Editorial preview'}
-          </span>
+          <span className="marginalia">{t.version_note}</span>
         </div>
       </div>
     </footer>
@@ -104,18 +92,16 @@ function FooterLink({ href, children, external = false }: { href: string; childr
     borderBottom: '1px solid transparent',
     transition: 'border-color .15s ease, color .15s ease',
   };
+  const enter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.color = 'var(--accent)';
+    e.currentTarget.style.borderBottomColor = 'var(--accent)';
+  };
+  const leave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.color = 'var(--ink)';
+    e.currentTarget.style.borderBottomColor = 'transparent';
+  };
   if (external) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" style={base}
-        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.borderBottomColor = 'var(--accent)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink)'; e.currentTarget.style.borderBottomColor = 'transparent'; }}
-      >{children}</a>
-    );
+    return <a href={href} target="_blank" rel="noopener noreferrer" style={base} onMouseEnter={enter} onMouseLeave={leave}>{children}</a>;
   }
-  return (
-    <Link href={href} style={base}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--accent)'; (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = 'var(--accent)'; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--ink)'; (e.currentTarget as HTMLAnchorElement).style.borderBottomColor = 'transparent'; }}
-    >{children}</Link>
-  );
+  return <Link href={href} style={base} onMouseEnter={enter} onMouseLeave={leave}>{children}</Link>;
 }

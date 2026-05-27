@@ -6,6 +6,7 @@ import Footer from '@/components/shell/Footer';
 import ArchetypeSvg from '@/components/result/ArchetypeSvg';
 import { PROFILE_TYPES, RISK_TIER_INFO, QUIZ_DIMENSIONS } from '@/lib/air_quiz_data';
 import { PROFILE_CAREERS } from '@/lib/air_career_data';
+import { ui } from '@/lib/ui_text';
 
 type Lang = 'en' | 'zh' | 'ja' | 'ko' | 'de';
 const LANGS: Lang[] = ['en', 'zh', 'ja', 'ko', 'de'];
@@ -52,7 +53,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const profile = PROFILE_TYPES[code];
   if (!profile) notFound();
   const lang = resolveLang(langRaw);
-  const zh = lang === 'zh';
+  const t = ui(lang).profile;
 
   const dims = QUIZ_DIMENSIONS.map((d, i) => ({
     name: pickL(d.name, lang),
@@ -77,14 +78,12 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     <main style={{ minHeight: '100dvh' }}>
       <Nav />
 
-      {/* Crumb */}
       <div className="page" style={{ paddingTop: '1.5rem' }}>
         <Link href="/" style={{ color: 'var(--ink-mute)', textDecoration: 'none', fontSize: '0.85rem', fontFamily: 'var(--font-sans)' }}>
-          ← {zh ? '所有原型' : 'All archetypes'}
+          ← {t.crumb}
         </Link>
       </div>
 
-      {/* Hero */}
       <section className="page" style={{ paddingTop: 'clamp(1.5rem, 4vw, 3rem)', paddingBottom: 'clamp(3rem, 6vw, 5rem)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <span className="section-number">§ {code}</span>
@@ -108,8 +107,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             </p>
             <div style={{ marginTop: 'clamp(1.5rem, 3vw, 2rem)', display: 'flex', gap: 14, flexWrap: 'wrap' }}>
               <Link href={`/?quiz=1&lang=${lang}`} className="btn btn-primary btn-lg">
-                {zh ? '测一下我是不是这个原型' : 'See if you are this archetype'}
-                <span aria-hidden>→</span>
+                {t.cta_take_test}<span aria-hidden>→</span>
               </Link>
             </div>
           </div>
@@ -136,7 +134,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      {/* Dimensions strip */}
       <section
         style={{
           background: 'var(--paper-deep)',
@@ -148,7 +145,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       >
         <div className="page">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-            <span className="section-number">§ II · {zh ? '四维特征' : 'Across four axes'}</span>
+            <span className="section-number">{t.eyebrow_axes}</span>
             <span className="rule-h" style={{ flex: 1 }} />
           </div>
           <div style={{ display: 'grid', gap: 'clamp(1rem, 2vw, 1.5rem)', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -169,10 +166,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      {/* Narrative */}
       <section className="page" style={{ paddingTop: 'clamp(3rem, 6vw, 5rem)', paddingBottom: 'clamp(2rem, 5vw, 4rem)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-          <span className="section-number">§ III · {zh ? '为什么是这个原型' : 'Why this archetype'}</span>
+          <span className="section-number">{t.eyebrow_why}</span>
           <span className="rule-h" style={{ flex: 1 }} />
         </div>
         <div style={{ display: 'grid', gap: 'clamp(2rem, 4vw, 3rem)', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)', alignItems: 'start' }}>
@@ -181,13 +177,13 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </article>
           <aside style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <div className="card">
-              <p className="smallcaps" style={{ color: 'var(--safe)' }}>{zh ? '护城河' : 'Superpower'}</p>
+              <p className="smallcaps" style={{ color: 'var(--safe)' }}>{t.moat_label}</p>
               <p style={{ marginTop: 10, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 'var(--step-1)', lineHeight: 1.45, color: 'var(--ink-strong)' }}>
                 {pickL(profile.superpower, lang)}
               </p>
             </div>
             <div className="card">
-              <p className="smallcaps" style={{ color: 'var(--accent)' }}>{zh ? '弱点' : 'Kryptonite'}</p>
+              <p className="smallcaps" style={{ color: 'var(--accent)' }}>{t.kryptonite_label}</p>
               <p style={{ marginTop: 10, fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 'var(--step-1)', lineHeight: 1.45, color: 'var(--ink-strong)' }}>
                 {pickL(profile.kryptonite, lang)}
               </p>
@@ -196,7 +192,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      {/* Careers */}
       {careers.length > 0 && (
         <section
           style={{
@@ -209,7 +204,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         >
           <div className="page">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-              <span className="section-number">§ IV · {zh ? '典型职业' : 'Representative careers'}</span>
+              <span className="section-number">{t.eyebrow_careers}</span>
               <span className="rule-h" style={{ flex: 1 }} />
             </div>
             <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -243,10 +238,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </section>
       )}
 
-      {/* Other archetypes */}
       <section className="page" style={{ paddingTop: 'clamp(3rem, 6vw, 4rem)', paddingBottom: 'clamp(3rem, 6vw, 4rem)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-          <span className="section-number">§ V · {zh ? '其他原型' : 'The other 15'}</span>
+          <span className="section-number">{t.eyebrow_other}</span>
           <span className="rule-h" style={{ flex: 1 }} />
         </div>
         <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>

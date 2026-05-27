@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { QuizQuestion, QuizAnswer, L10n } from '@/lib/air_quiz_data';
 import type { Language } from '@/lib/translations';
 import { L } from '@/lib/translations';
+import { ui } from '@/lib/ui_text';
 
 interface Props {
   question: QuizQuestion;
@@ -34,6 +35,7 @@ export default function QuestionCard({
   const [animKey, setAnimKey] = useState(question.id);
   useEffect(() => { setAnimKey(question.id); }, [question.id]);
 
+  const t = ui(lang).question;
   const opts = question.options as L10n[];
   const questionText = L(question.question, lang);
 
@@ -94,7 +96,7 @@ export default function QuestionCard({
       >
         {onBack ? (
           <button onClick={onBack} className="btn btn-text" style={{ padding: '0.5em 0' }}>
-            <span aria-hidden>←</span>&nbsp;{lang === 'zh' ? '上一题' : 'Back'}
+            <span aria-hidden>←</span>&nbsp;{t.back}
           </button>
         ) : <span />}
 
@@ -104,9 +106,7 @@ export default function QuestionCard({
           className={value === undefined ? 'btn btn-ghost' : 'btn btn-primary'}
           style={value === undefined ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
         >
-          {isLast
-            ? (lang === 'zh' ? '查看结果' : 'See result')
-            : (lang === 'zh' ? '继续' : 'Continue')}
+          {isLast ? t.see_result : t.continue}
           <span aria-hidden>→</span>
         </button>
       </div>

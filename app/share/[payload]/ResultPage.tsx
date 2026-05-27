@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Nav from '@/components/shell/Nav';
 import Footer from '@/components/shell/Footer';
 import ArchetypeSvg from '@/components/result/ArchetypeSvg';
 import { PROFILE_TYPES } from '@/lib/air_quiz_data';
 import type { SharePayload, ShareLang } from '@/lib/share_payload';
+import { ui } from '@/lib/ui_text';
 import { trackShareClick, trackQuizRetake } from '@/lib/analytics';
 
 interface DimensionView {
@@ -47,11 +48,8 @@ interface Props {
   careers: CareerView[];
 }
 
-const FAVORABLE_LETTERS = ['E', 'O', 'F', 'P'];
-
 export default function ResultPage(props: Props) {
   const { lang, profile, dimensions, advice, careers, data, shareUrl } = props;
-  const zh = lang === 'zh';
 
   return (
     <main style={{ minHeight: '100dvh' }}>
@@ -70,7 +68,6 @@ export default function ResultPage(props: Props) {
 }
 
 /* ─── Hero block ─────────────────────────────────────────────────────── */
-
 function HeroResult({
   lang, profile, prob, year, confidence,
 }: {
@@ -80,29 +77,16 @@ function HeroResult({
   year: number;
   confidence: { earliest: number; latest: number };
 }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   const yrText = year >= 2100 ? '∞' : `${year}`;
   return (
-    <section
-      className="page"
-      style={{
-        paddingTop: 'clamp(2rem, 5vw, 4rem)',
-        paddingBottom: 'clamp(3rem, 7vw, 5rem)',
-      }}
-    >
+    <section className="page" style={{ paddingTop: 'clamp(2rem, 5vw, 4rem)', paddingBottom: 'clamp(3rem, 7vw, 5rem)' }}>
       <div className="animate-fade-up" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
-        <span className="section-number">§ I · {zh ? '结果' : 'Your archetype'}</span>
+        <span className="section-number">{t.eyebrow_result}</span>
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.3fr) minmax(0, 1fr)',
-          gap: 'clamp(2rem, 5vw, 4rem)',
-          alignItems: 'center',
-        }}
-      >
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) minmax(0, 1fr)', gap: 'clamp(2rem, 5vw, 4rem)', alignItems: 'center' }}>
         <div>
           <p className="smallcaps-md animate-fade-up" style={{ animationDelay: '60ms', marginBottom: 18, color: profile.color }}>
             {profile.riskLabel}
@@ -111,31 +95,12 @@ function HeroResult({
             <span className="italic-display" style={{ fontStyle: 'italic' }}>{profile.archetype}</span>
           </h1>
           <p className="code-display animate-fade-up" style={{ animationDelay: '170ms' }}>{profile.code}</p>
-          <p
-            className="pull-quote animate-fade-up"
-            style={{
-              animationDelay: '230ms',
-              marginTop: 28,
-              maxWidth: '32ch',
-              color: 'var(--ink)',
-            }}
-          >
+          <p className="pull-quote animate-fade-up" style={{ animationDelay: '230ms', marginTop: 28, maxWidth: '32ch', color: 'var(--ink)' }}>
             “{profile.tagline}”
           </p>
         </div>
 
-        {/* Archetype glyph + soft halo in archetype color */}
-        <div
-          className="animate-fade-in"
-          style={{
-            animationDelay: '200ms',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative',
-            minHeight: 'clamp(240px, 36vw, 440px)',
-          }}
-        >
+        <div className="animate-fade-in" style={{ animationDelay: '200ms', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', minHeight: 'clamp(240px, 36vw, 440px)' }}>
           <div
             aria-hidden
             style={{
@@ -152,25 +117,16 @@ function HeroResult({
         </div>
       </div>
 
-      {/* Stats row */}
       <hr className="rule-h" style={{ marginTop: 'clamp(2rem, 4vw, 3rem)', marginBottom: 'clamp(2rem, 4vw, 3rem)' }} />
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 'clamp(1.5rem, 3vw, 2.5rem)',
-        }}
-      >
-        <Stat label={zh ? '替代概率' : 'Replacement probability'}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+        <Stat label={t.stat_prob}>
           <span className="percent-display" style={{ color: profile.color }}>{Math.round(prob)}</span>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '2rem', color: profile.color, opacity: 0.6, marginLeft: 4 }}>%</span>
         </Stat>
-        <Stat label={zh ? '预测替代年份' : 'Predicted year'}>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--step-6)', lineHeight: 1, color: 'var(--ink-strong)' }}>
-            {yrText}
-          </span>
+        <Stat label={t.stat_year}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--step-6)', lineHeight: 1, color: 'var(--ink-strong)' }}>{yrText}</span>
         </Stat>
-        <Stat label={zh ? '置信区间' : 'Confidence interval'}>
+        <Stat label={t.stat_confidence}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--step-2)', color: 'var(--ink)' }}>
             {confidence.earliest}
             <span style={{ color: 'var(--ink-soft)', margin: '0 8px' }}>—</span>
@@ -192,9 +148,8 @@ function Stat({ label, children }: { label: string; children: React.ReactNode })
 }
 
 /* ─── Dimension strip ────────────────────────────────────────────────── */
-
 function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: DimensionView[] }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   return (
     <section
       style={{
@@ -207,7 +162,7 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
     >
       <div className="page">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-          <span className="section-number">§ II · {zh ? '四维分布' : 'Across four axes'}</span>
+          <span className="section-number">{t.eyebrow_axes}</span>
           <span className="rule-h" style={{ flex: 1 }} />
         </div>
 
@@ -232,13 +187,10 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
                     <h3 className="display-sm" style={{ fontSize: 'var(--step-2)', display: 'inline' }}>{d.name}</h3>
                   </div>
                   <p style={{ marginTop: 6, color: 'var(--ink-mute)', fontSize: '0.92rem' }}>
-                    {d.isFavorable
-                      ? (zh ? `AI 在这一维度上很容易追上你。` : `AI catches up easily on this axis.`)
-                      : (zh ? `这一维度是你的护城河。` : `This axis is your moat.`)}
+                    {d.isFavorable ? t.axis_favorable : t.axis_resistant}
                   </p>
                 </div>
 
-                {/* Bar with marker */}
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--ink-soft)', marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>
                     <span>{d.favorableLabel.split(' ')[0]}</span>
@@ -256,7 +208,6 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
                   </div>
                 </div>
 
-                {/* Big letter */}
                 <div
                   style={{
                     fontFamily: 'var(--font-display)',
@@ -280,14 +231,13 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
   );
 }
 
-/* ─── Narrative drop-cap block ────────────────────────────────────────── */
-
+/* ─── Narrative ─────────────────────────────────────────────────────── */
 function Narrative({ lang, profile }: { lang: ShareLang; profile: ProfileView }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   return (
     <section className="page" style={{ paddingTop: 'clamp(3rem, 7vw, 5rem)', paddingBottom: 'clamp(3rem, 6vw, 4rem)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="section-number">§ III · {zh ? '解读' : 'What this means'}</span>
+        <span className="section-number">{t.eyebrow_meaning}</span>
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
 
@@ -297,13 +247,13 @@ function Narrative({ lang, profile }: { lang: ShareLang; profile: ProfileView })
         </article>
         <aside style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div className="card" style={{ background: 'var(--paper-card)' }}>
-            <p className="smallcaps" style={{ color: 'var(--safe)' }}>{zh ? '你的护城河' : 'Your superpower'}</p>
+            <p className="smallcaps" style={{ color: 'var(--safe)' }}>{t.moat_label}</p>
             <p style={{ marginTop: 10, fontSize: 'var(--step-1)', lineHeight: 1.45, fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--ink-strong)' }}>
               {profile.superpower}
             </p>
           </div>
           <div className="card" style={{ background: 'var(--paper-card)' }}>
-            <p className="smallcaps" style={{ color: 'var(--accent)' }}>{zh ? '你的弱点' : 'Your kryptonite'}</p>
+            <p className="smallcaps" style={{ color: 'var(--accent)' }}>{t.kryptonite_label}</p>
             <p style={{ marginTop: 10, fontSize: 'var(--step-1)', lineHeight: 1.45, fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--ink-strong)' }}>
               {profile.kryptonite}
             </p>
@@ -315,13 +265,12 @@ function Narrative({ lang, profile }: { lang: ShareLang; profile: ProfileView })
 }
 
 /* ─── Advice ─────────────────────────────────────────────────────────── */
-
 function AdviceSection({ lang, advice }: { lang: ShareLang; advice: AdviceView[] }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   return (
     <section className="page" style={{ paddingTop: 'clamp(2rem, 5vw, 3.5rem)', paddingBottom: 'clamp(2rem, 5vw, 3.5rem)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="section-number">§ IV · {zh ? '建议' : 'What to do'}</span>
+        <span className="section-number">{t.eyebrow_advice}</span>
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
       <div style={{ display: 'grid', gap: 'clamp(1rem, 2.5vw, 1.5rem)', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
@@ -338,10 +287,9 @@ function AdviceSection({ lang, advice }: { lang: ShareLang; advice: AdviceView[]
 }
 
 /* ─── Careers ────────────────────────────────────────────────────────── */
-
 function CareersSection({ lang, profile, careers }: { lang: ShareLang; profile: ProfileView; careers: CareerView[] }) {
   if (!careers.length) return null;
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   return (
     <section
       style={{
@@ -354,11 +302,11 @@ function CareersSection({ lang, profile, careers }: { lang: ShareLang; profile: 
     >
       <div className="page">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-          <span className="section-number">§ V · {zh ? '典型职业' : 'Representative careers'}</span>
+          <span className="section-number">{t.eyebrow_careers}</span>
           <span className="rule-h" style={{ flex: 1 }} />
         </div>
         <h2 className="display-md" style={{ marginBottom: 24, maxWidth: '24ch' }}>
-          {zh ? `落在这个原型上的，常是这些职业。` : `Jobs that typically land in this archetype.`}
+          {t.careers_headline}
         </h2>
         <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column' }}>
           {careers.slice(0, 6).map((c, i) => (
@@ -393,12 +341,11 @@ function CareersSection({ lang, profile, careers }: { lang: ShareLang; profile: 
 }
 
 /* ─── Share ──────────────────────────────────────────────────────────── */
-
 function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: string; profile: ProfileView }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   const [copied, setCopied] = useState(false);
 
-  const tweet = `${profile.archetypeEn} (${profile.code}) — ${zh ? '我的 AIR 类型' : 'my AIR archetype'}`;
+  const tweet = `${profile.archetypeEn} (${profile.code}) — AIR`;
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}&url=${encodeURIComponent(shareUrl)}`;
   const weiboUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(tweet)}`;
 
@@ -414,20 +361,18 @@ function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: 
   return (
     <section className="page" style={{ paddingTop: 'clamp(3rem, 6vw, 4rem)', paddingBottom: 'clamp(2rem, 5vw, 3rem)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="section-number">§ VI · {zh ? '分享' : 'Share'}</span>
+        <span className="section-number">{t.eyebrow_share}</span>
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <a className="btn btn-ghost btn-sm" href={tweetUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackShareClick('twitter', lang)}>
-          Twitter
-          <span aria-hidden>↗</span>
+          {t.share_twitter}<span aria-hidden>↗</span>
         </a>
         <a className="btn btn-ghost btn-sm" href={weiboUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackShareClick('weibo', lang)}>
-          {zh ? '微博' : 'Weibo'}
-          <span aria-hidden>↗</span>
+          {t.share_weibo}<span aria-hidden>↗</span>
         </a>
         <button className="btn btn-ghost btn-sm" onClick={copy}>
-          {copied ? (zh ? '已复制 ✓' : 'Copied ✓') : (zh ? '复制链接' : 'Copy link')}
+          {copied ? t.share_copied : t.share_copy}
         </button>
         <code
           style={{
@@ -450,26 +395,20 @@ function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: 
   );
 }
 
-/* ─── Other archetypes (small grid) ──────────────────────────────────── */
-
+/* ─── Other archetypes ───────────────────────────────────────────────── */
 function OtherArchetypes({ lang, currentCode }: { lang: ShareLang; currentCode: string }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   const others = Object.keys(PROFILE_TYPES).filter((c) => c !== currentCode);
   return (
     <section className="page" style={{ paddingTop: 'clamp(2rem, 5vw, 3rem)', paddingBottom: 'clamp(3rem, 6vw, 4rem)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="section-number">§ VII · {zh ? '其他原型' : 'The other 15'}</span>
+        <span className="section-number">{t.eyebrow_other}</span>
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gap: 12,
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-        }}
-      >
+      <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
         {others.map((code) => {
           const p = PROFILE_TYPES[code];
+          const archetype = (p.archetype as Record<string, string>)[lang] ?? p.archetype.en;
           return (
             <Link
               key={code}
@@ -494,7 +433,7 @@ function OtherArchetypes({ lang, currentCode }: { lang: ShareLang; currentCode: 
                 {code}
               </span>
               <span className="italic-display" style={{ fontStyle: 'italic', fontSize: '0.95rem', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {zh ? p.archetype.zh : p.archetype.en}
+                {archetype}
               </span>
             </Link>
           );
@@ -505,25 +444,26 @@ function OtherArchetypes({ lang, currentCode }: { lang: ShareLang; currentCode: 
 }
 
 /* ─── Retake tail ─────────────────────────────────────────────────────── */
-
 function RetakeTail({ lang }: { lang: ShareLang }) {
-  const zh = lang === 'zh';
+  const t = ui(lang).result;
   return (
     <section className="page" style={{ paddingTop: 'clamp(2rem, 4vw, 3rem)', paddingBottom: 'clamp(4rem, 8vw, 6rem)' }}>
       <div className="card-strong" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
         <div>
           <p className="smallcaps" style={{ color: 'color-mix(in srgb, var(--paper) 60%, transparent)' }}>
-            {zh ? '想再答一次？' : 'Answer differently?'}
+            {t.retake_eyebrow}
           </p>
           <p className="display-md" style={{ color: 'var(--paper)', marginTop: 8 }}>
-            {zh ? '重测一遍。' : 'Take the test again.'}
+            {t.retake_headline}
           </p>
         </div>
-        <Link href="/?quiz=1" className="btn btn-lg" style={{ background: 'var(--paper)', color: 'var(--ink-strong)' }}
+        <Link
+          href="/?quiz=1"
+          className="btn btn-lg"
+          style={{ background: 'var(--paper)', color: 'var(--ink-strong)' }}
           onClick={() => trackQuizRetake('share-page', lang)}
         >
-          {zh ? '重新开始' : 'Start over'}
-          <span aria-hidden>→</span>
+          {t.retake_cta}<span aria-hidden>→</span>
         </Link>
       </div>
     </section>

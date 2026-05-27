@@ -11,6 +11,7 @@ import {
 import { calculateQuizResult, type QuizAnswers } from '@/lib/air_quiz_calculator';
 import { encodeSharePayload } from '@/lib/share_payload';
 import { L, type Language } from '@/lib/translations';
+import { ui } from '@/lib/ui_text';
 import {
   trackQuizStart,
   trackQuizAnswerDetailed,
@@ -171,7 +172,7 @@ export default function QuizFlow({ lang, onExit }: Props) {
       <ProgressRibbon
         current={idx + 1}
         total={total}
-        label={lang === 'zh' ? '进度' : 'Question'}
+        label={ui(lang).question.progress_label}
       />
       <QuestionCard
         question={q}

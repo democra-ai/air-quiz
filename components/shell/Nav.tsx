@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTheme } from './useTheme';
 import { useLang } from './useLang';
 import { SUPPORTED_LANGUAGES, type Language } from '@/lib/translations';
+import { ui } from '@/lib/ui_text';
 
 /**
  * Editorial masthead. Logo (wordmark), thin rule, controls.
@@ -13,6 +14,7 @@ import { SUPPORTED_LANGUAGES, type Language } from '@/lib/translations';
 export default function Nav() {
   const [theme, setTheme] = useTheme();
   const [lang, setLang] = useLang();
+  const t = ui(lang).nav;
   const [scrolled, setScrolled] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
@@ -66,7 +68,7 @@ export default function Nav() {
             style={{ color: 'var(--ink-mute)', fontSize: '0.65rem', display: 'none' }}
             data-show-on-sm
           >
-            an essay in 16 parts
+            {t.masthead_caption}
           </span>
         </Link>
 
@@ -76,7 +78,7 @@ export default function Nav() {
           <div ref={langRef} style={{ position: 'relative' }}>
             <button
               onClick={() => setLangOpen((v) => !v)}
-              aria-label="Language"
+              aria-label={t.lang_switch_aria}
               aria-expanded={langOpen}
               style={{
                 fontFamily: 'var(--font-mono)',
@@ -159,7 +161,7 @@ export default function Nav() {
 
           {/* Primary action — take the test */}
           <Link href="/?quiz=1" className="btn btn-primary btn-sm" style={{ display: 'none' }} data-show-on-md>
-            <span>Take the test</span>
+            <span>{t.take_test}</span>
           </Link>
         </div>
       </div>

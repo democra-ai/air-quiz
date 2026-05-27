@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import type { Language } from '@/lib/translations';
+import { ui } from '@/lib/ui_text';
 
 interface Props {
   lang: Language;
 }
 
 export default function CompletingScreen({ lang }: Props) {
-  const zh = lang === 'zh';
-  const phases = zh
-    ? ['对照参考数据集……', '在 16 个原型中定位……', '估算替代概率……']
-    : ['Cross-referencing the dataset…', 'Locating among 16 archetypes…', 'Estimating replacement probability…'];
-
+  const t = ui(lang).completing;
+  const phases = [t.phase_1, t.phase_2, t.phase_3];
   const [i, setI] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setI((x) => (x + 1) % phases.length), 900);
@@ -32,7 +30,6 @@ export default function CompletingScreen({ lang }: Props) {
         gap: 24,
       }}
     >
-      {/* Animated ornament */}
       <div
         aria-hidden
         style={{
@@ -43,7 +40,7 @@ export default function CompletingScreen({ lang }: Props) {
           animation: 'spin 1.1s linear infinite',
         }}
       />
-      <p className="display-sm">{zh ? '正在计算' : 'Computing your archetype'}</p>
+      <p className="display-sm">{t.headline}</p>
       <p className="marginalia" style={{ minHeight: '1.2em' }}>{phases[i]}</p>
       <style>{`@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }`}</style>
     </div>
