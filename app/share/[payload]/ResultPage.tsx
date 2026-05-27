@@ -86,7 +86,7 @@ function HeroResult({
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) minmax(0, 1fr)', gap: 'clamp(2rem, 5vw, 4rem)', alignItems: 'center' }}>
+      <div className="split-hero">
         <div>
           <p className="smallcaps-md animate-fade-up" style={{ animationDelay: '60ms', marginBottom: 18, color: profile.color }}>
             {profile.riskLabel}
@@ -172,11 +172,8 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
             return (
               <div
                 key={d.dimensionId}
+                className="dim-row"
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1fr) minmax(160px, 280px) auto',
-                  alignItems: 'center',
-                  gap: 'clamp(1rem, 2vw, 2rem)',
                   paddingBottom: 'clamp(1rem, 2vw, 1.5rem)',
                   borderBottom: i < dimensions.length - 1 ? '1px dotted var(--paper-rule)' : 'none',
                 }}
@@ -241,7 +238,7 @@ function Narrative({ lang, profile }: { lang: ShareLang; profile: ProfileView })
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
 
-      <div style={{ display: 'grid', gap: 'clamp(2rem, 4vw, 3rem)', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)', alignItems: 'start' }}>
+      <div className="split-2-1">
         <article className="reading drop-cap" style={{ fontSize: 'var(--step-1)', lineHeight: 1.7, color: 'var(--ink)' }}>
           <p>{profile.description}</p>
         </article>
@@ -312,11 +309,8 @@ function CareersSection({ lang, profile, careers }: { lang: ShareLang; profile: 
           {careers.slice(0, 6).map((c, i) => (
             <li
               key={i}
+              className="career-row"
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'auto minmax(0, 1.2fr) minmax(0, 1.5fr) 64px',
-                alignItems: 'baseline',
-                gap: 'clamp(0.75rem, 2vw, 1.5rem)',
                 padding: '14px 0',
                 borderTop: '1px dotted var(--paper-rule)',
                 fontSize: '0.95rem',
@@ -448,7 +442,7 @@ function RetakeTail({ lang }: { lang: ShareLang }) {
   const t = ui(lang).result;
   return (
     <section className="page" style={{ paddingTop: 'clamp(2rem, 4vw, 3rem)', paddingBottom: 'clamp(4rem, 8vw, 6rem)' }}>
-      <div className="card-strong" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
+      <div className="card-strong cta-tail" style={{ alignItems: 'center' }}>
         <div>
           <p className="smallcaps" style={{ color: 'color-mix(in srgb, var(--paper) 60%, transparent)' }}>
             {t.retake_eyebrow}

@@ -17,14 +17,7 @@ export default function Footer() {
       }}
     >
       <div className="page" style={{ padding: 'clamp(3rem, 6vw, 5rem) var(--gutter)' }}>
-        <div
-          style={{
-            display: 'grid',
-            gap: 'clamp(2rem, 4vw, 4rem)',
-            gridTemplateColumns: 'minmax(220px, 1fr) auto auto',
-            alignItems: 'start',
-          }}
-        >
+        <div className="footer-grid">
           <div>
             <div className="italic-display" style={{ fontSize: '2rem', color: 'var(--ink-strong)' }}>
               air

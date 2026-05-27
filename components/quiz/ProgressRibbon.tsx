@@ -15,6 +15,7 @@ export default function ProgressRibbon({ current, total, label }: Props) {
       </div>
       {label ? (
         <div
+          data-progress-counter
           style={{
             position: 'fixed',
             top: 12,

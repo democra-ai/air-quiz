@@ -65,7 +65,8 @@ export default function QuestionCard({
         {questionText}
       </h2>
 
-      {/* Options as editorial cards (stacked) */}
+      {/* Options as editorial cards (stacked). First click selects;
+          second click on the same option advances to the next question. */}
       <div key={`opts-${animKey}`} className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {opts.map((opt, idx) => {
           const score = (idx + 1) as QuizAnswer;
@@ -75,10 +76,29 @@ export default function QuestionCard({
               key={`${question.id}-${idx}`}
               className="option-card"
               aria-pressed={isSelected}
-              onClick={() => { onChange(score); }}
+              onClick={() => {
+                if (isSelected) onNext();
+                else onChange(score);
+              }}
             >
               <span className="option-marker">{score}</span>
               <span style={{ flex: 1 }}>{L(opt, lang)}</span>
+              {isSelected ? (
+                <span
+                  aria-hidden
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--step--1)',
+                    color: 'var(--accent)',
+                    letterSpacing: '0.1em',
+                    opacity: 0.7,
+                  }}
+                >
+                  {isLast
+                    ? (lang === 'zh' ? '再点查看结果 →' : lang === 'ja' ? 'もう一度で結果へ →' : lang === 'ko' ? '한 번 더 → 결과' : lang === 'de' ? 'erneut → Ergebnis' : 'tap again →')
+                    : (lang === 'zh' ? '再点继续 →' : lang === 'ja' ? 'もう一度で次へ →' : lang === 'ko' ? '한 번 더 → 다음' : lang === 'de' ? 'erneut → weiter' : 'tap again →')}
+                </span>
+              ) : null}
             </button>
           );
         })}

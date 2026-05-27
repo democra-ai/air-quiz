@@ -335,6 +335,122 @@ body {
   padding: clamp(1.5rem, 4vw, 2.5rem);
 }
 
+/* ═══ Responsive grids ═══════════════════════════════════════════════════
+   Mobile-first stacking + grid-area reflow for the layouts that don't
+   collapse cleanly with auto-fit. Breakpoint at 760px (typical iPad mini
+   short edge / large phone landscape).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.split-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .split-hero {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    text-align: left;
+  }
+  .split-hero > :nth-child(2) {
+    order: -1;
+    max-width: 260px;
+    margin-inline: auto;
+  }
+}
+
+.split-2-1 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .split-2-1 { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
+.split-1-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .split-1-2 { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+.cta-tail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .cta-tail { grid-template-columns: 1fr; gap: 1.25rem; }
+  .cta-tail > :nth-child(2) > .btn { width: 100%; justify-content: center; }
+}
+
+.footer-grid {
+  display: grid;
+  gap: clamp(2rem, 4vw, 4rem);
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+/* Dimension row on result page — text + bar + letter. On mobile, the
+   big letter shifts beside the name, and the bar takes the full row. */
+.dim-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 280px) auto;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
+}
+@media (max-width: 640px) {
+  .dim-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "name letter" "bar bar";
+    gap: 14px 16px;
+  }
+  .dim-row > :nth-child(1) { grid-area: name; }
+  .dim-row > :nth-child(2) { grid-area: bar; }
+  .dim-row > :nth-child(3) { grid-area: letter; align-self: start; }
+}
+
+/* Career row — code # / title / reason / score. Reason wraps under
+   title on mobile, score stays right. */
+.career-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 1.5fr) 64px;
+  align-items: baseline;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+@media (max-width: 640px) {
+  .career-row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "num title score"
+      "num reason reason";
+    column-gap: 12px;
+    row-gap: 4px;
+  }
+  .career-row > :nth-child(1) { grid-area: num; }
+  .career-row > :nth-child(2) { grid-area: title; }
+  .career-row > :nth-child(3) { grid-area: reason; font-size: 0.84rem; opacity: 0.85; }
+  .career-row > :nth-child(4) { grid-area: score; }
+}
+
+/* Tap targets ≥ 44px on touch devices (iOS guideline) */
+@media (pointer: coarse) {
+  .option-card { padding: 1.15rem 1.1rem; }
+  .btn { padding: 0.95em 1.55em; }
+  .btn-sm { padding: 0.75em 1.1em; }
+  .btn-lg { padding: 1.1em 1.85em; }
+}
+
 /* ═══ Quiz-specific ══════════════════════════════════════════════════════ */
 
 .option-card {
@@ -396,6 +512,12 @@ body {
   height: 100%;
   background: var(--accent);
   transition: width .5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Top-right progress counter — hide on very small screens so it doesn't
+   overlap the nav controls. The ribbon line itself stays. */
+@media (max-width: 480px) {
+  [data-progress-counter] { display: none !important; }
 }
 
 .percent-display {

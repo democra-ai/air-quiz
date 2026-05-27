@@ -91,12 +91,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           <span className="smallcaps" style={{ color: profile.color }}>{riskLabel}</span>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.3fr) minmax(0, 1fr)',
-          gap: 'clamp(2rem, 5vw, 4rem)',
-          alignItems: 'center',
-        }}>
+        <div className="split-hero">
           <div>
             <h1 className="display-xl italic-display" style={{ fontStyle: 'italic', marginBottom: 16 }}>
               {pickL(profile.archetype, lang)}
@@ -171,7 +166,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           <span className="section-number">{t.eyebrow_why}</span>
           <span className="rule-h" style={{ flex: 1 }} />
         </div>
-        <div style={{ display: 'grid', gap: 'clamp(2rem, 4vw, 3rem)', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)', alignItems: 'start' }}>
+        <div className="split-2-1">
           <article className="reading drop-cap" style={{ fontSize: 'var(--step-1)', lineHeight: 1.7, color: 'var(--ink)' }}>
             <p>{pickL(profile.description, lang)}</p>
           </article>
@@ -211,11 +206,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               {careers.slice(0, 6).map((c, i) => (
                 <li
                   key={i}
+                  className="career-row"
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'auto minmax(0, 1.2fr) minmax(0, 1.5fr) 64px',
-                    alignItems: 'baseline',
-                    gap: 'clamp(0.75rem, 2vw, 1.5rem)',
                     padding: '14px 0',
                     borderTop: '1px dotted var(--paper-rule)',
                     fontSize: '0.95rem',

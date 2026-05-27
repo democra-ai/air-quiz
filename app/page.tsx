@@ -69,14 +69,10 @@ function Hero({ lang, onStart }: { lang: Language; onStart: () => void }) {
 
   return (
     <section
-      className="page"
+      className="page split-hero"
       style={{
         paddingTop: 'clamp(2rem, 6vw, 4.5rem)',
         paddingBottom: 'clamp(4rem, 10vw, 7rem)',
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)',
-        gap: 'clamp(2rem, 5vw, 4rem)',
-        alignItems: 'center',
       }}
     >
       <div style={{ minWidth: 0 }}>
@@ -334,12 +330,7 @@ function Methodology({ lang }: { lang: Language }) {
         <span className="section-number">{t.eyebrow}</span>
         <span className="rule-h" style={{ flex: 1 }} />
       </div>
-      <div style={{
-        display: 'grid',
-        gap: 'clamp(2rem, 5vw, 4rem)',
-        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.5fr)',
-        alignItems: 'start',
-      }}>
+      <div className="split-1-2">
         <div>
           <h2 className="display-md" style={{ marginBottom: 18 }}>{t.headline}</h2>
           <p style={{ color: 'var(--ink-mute)', fontSize: '0.95rem' }}>{t.kicker}</p>
@@ -360,14 +351,8 @@ function CtaTail({ lang, onStart }: { lang: Language; onStart: () => void }) {
   return (
     <section className="page" style={{ paddingTop: 'clamp(2rem, 5vw, 4rem)', paddingBottom: 'clamp(5rem, 10vw, 7rem)' }}>
       <div
-        className="card-strong"
-        style={{
-          padding: 'clamp(2.5rem, 6vw, 4.5rem)',
-          display: 'grid',
-          gap: 'clamp(2rem, 4vw, 3rem)',
-          gridTemplateColumns: 'minmax(0, 1.6fr) minmax(0, 1fr)',
-          alignItems: 'center',
-        }}
+        className="card-strong cta-tail"
+        style={{ padding: 'clamp(2.5rem, 6vw, 4.5rem)' }}
       >
         <div>
           <p className="smallcaps" style={{ color: 'color-mix(in srgb, var(--paper) 60%, transparent)' }}>
