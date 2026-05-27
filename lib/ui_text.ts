@@ -153,7 +153,7 @@ export interface UIStrings {
 // ─── EN ─────────────────────────────────────────────────────────────────────
 const EN: UIStrings = {
   meta: {
-    siteTagline: 'The AI-Resistance Personality Test',
+    siteTagline: 'The AI-Resistance Career Personality Test',
     methodology_lead: "The four axes — Learnability, Evaluation, Risk Tolerance, Human Presence — are drawn from automation-economics literature. Scoring uses a Weighted Power Mean (r=-2): the Swiss Cheese Barrier Model, where one strong axis is enough to break AI's replacement chain. Underlying data: BLS OES 2023 (798 occupations), O*NET task structure, Eloundou et al. 2023 task exposure, OpenAI GDPval blind-judged win rates.",
   },
   nav: {
@@ -162,8 +162,8 @@ const EN: UIStrings = {
     lang_switch_aria: 'Language',
   },
   footer: {
-    tagline: 'AI-Resistance Personality Test',
-    blurb: 'A 16-question survey mapping your profession to one of sixteen archetypes. Built on BLS, O*NET, and the Anthropic Economic Index.',
+    tagline: 'AI-Resistance Career Personality Test',
+    blurb: 'A 16-question career personality test mapping your profession to one of sixteen archetypes. Built on BLS, O*NET, and the Anthropic Economic Index.',
     nav_heading: 'Navigate',
     nav_home: 'Home',
     nav_take: 'Take the test',
@@ -272,7 +272,7 @@ const EN: UIStrings = {
 // ─── ZH ─────────────────────────────────────────────────────────────────────
 const ZH: UIStrings = {
   meta: {
-    siteTagline: 'AI 抗性人格测试',
+    siteTagline: 'AI 抗性职业人格测试',
     methodology_lead: 'AIR 的四个维度——可学习性、评判标准、风险容忍、人的存在——来自自动化经济学文献。打分用加权幂均值 (r=-2)，对应"瑞士奶酪屏障模型"——任一维度足够坚固即可阻断 AI 替代链路。底层数据集对齐 BLS OES 2023（798 个职业）、O*NET 任务结构、Eloundou et al. 2023 任务暴露度，以及 OpenAI GDPval 的盲评胜率。',
   },
   nav: {
@@ -281,8 +281,8 @@ const ZH: UIStrings = {
     lang_switch_aria: '语言',
   },
   footer: {
-    tagline: 'AI 抗性人格测试',
-    blurb: '一份 16 题的问卷，把你的职业映射到 16 个原型之一。基于 BLS、O*NET、Anthropic Economic Index。',
+    tagline: 'AI 抗性职业人格测试',
+    blurb: '一份 16 题的职业人格测试，把你的职业映射到 16 个原型之一。基于 BLS、O*NET、Anthropic Economic Index。',
     nav_heading: '导航',
     nav_home: '首页',
     nav_take: '开始测试',
@@ -391,7 +391,7 @@ const ZH: UIStrings = {
 // ─── JA ─────────────────────────────────────────────────────────────────────
 const JA: UIStrings = {
   meta: {
-    siteTagline: 'AI耐性パーソナリティ・テスト',
+    siteTagline: 'AI耐性キャリア・パーソナリティ・テスト',
     methodology_lead: 'AIRの4つの軸——学習可能性、評価基準、リスク許容、人の関与——は自動化経済学の文献に基づく。スコアリングは加重べき乗平均 (r=-2)、「スイスチーズ・バリアモデル」に対応する——いずれか1つの軸が十分に強ければAI代替の連鎖を断ち切れる。基礎データ：BLS OES 2023（798職種）、O*NETタスク構造、Eloundou et al. 2023のタスク露出度、OpenAI GDPvalの盲審勝率。',
   },
   nav: {
@@ -400,8 +400,8 @@ const JA: UIStrings = {
     lang_switch_aria: '言語',
   },
   footer: {
-    tagline: 'AI耐性パーソナリティ・テスト',
-    blurb: '16問の調査であなたの職業を16の原型のひとつにマッピング。BLS、O*NET、Anthropic Economic Indexに基づく。',
+    tagline: 'AI耐性キャリア・パーソナリティ・テスト',
+    blurb: '16問のキャリア・パーソナリティ・テストであなたの職業を16の原型のひとつにマッピング。BLS、O*NET、Anthropic Economic Indexに基づく。',
     nav_heading: 'ナビゲート',
     nav_home: 'ホーム',
     nav_take: 'テストを受ける',
@@ -510,7 +510,7 @@ const JA: UIStrings = {
 // ─── KO ─────────────────────────────────────────────────────────────────────
 const KO: UIStrings = {
   meta: {
-    siteTagline: 'AI 저항성 성격 테스트',
+    siteTagline: 'AI 저항성 직업 성격 테스트',
     methodology_lead: 'AIR의 네 가지 축——학습 가능성, 평가 기준, 위험 허용, 인간 관여——은 자동화 경제학 문헌에서 도출되었다. 점수 계산은 가중 멱평균(r=-2), 즉 "스위스 치즈 장벽 모델"——하나의 축이 충분히 강하면 AI 대체 사슬을 끊을 수 있다. 기반 데이터: BLS OES 2023(798개 직종), O*NET 작업 구조, Eloundou et al. 2023 작업 노출도, OpenAI GDPval 블라인드 평가 승률.',
   },
   nav: {
@@ -519,8 +519,8 @@ const KO: UIStrings = {
     lang_switch_aria: '언어',
   },
   footer: {
-    tagline: 'AI 저항성 성격 테스트',
-    blurb: '16개 질문으로 직업을 16개 원형 중 하나에 매핑하는 설문. BLS, O*NET, Anthropic Economic Index에 기반.',
+    tagline: 'AI 저항성 직업 성격 테스트',
+    blurb: '16개 질문의 직업 성격 테스트로 당신의 직업을 16개 원형 중 하나에 매핑한다. BLS, O*NET, Anthropic Economic Index에 기반.',
     nav_heading: '내비게이션',
     nav_home: '홈',
     nav_take: '테스트 시작',
@@ -629,7 +629,7 @@ const KO: UIStrings = {
 // ─── DE ─────────────────────────────────────────────────────────────────────
 const DE: UIStrings = {
   meta: {
-    siteTagline: 'Der KI-Resistenz-Persönlichkeitstest',
+    siteTagline: 'Der KI-Resistenz-Berufs­persönlichkeitstest',
     methodology_lead: 'Die vier Achsen von AIR — Erlernbarkeit, Beurteilbarkeit, Risikotoleranz, menschliche Präsenz — stammen aus der Automatisierungs­ökonomie. Die Bewertung nutzt ein gewichtetes Potenzmittel (r=-2), das Swiss-Cheese-Barrieremodell: eine einzige robuste Achse genügt, um die Ersatzkette der KI zu unterbrechen. Datengrundlage: BLS OES 2023 (798 Berufe), O*NET-Aufgabenstruktur, Eloundou et al. 2023 Aufgaben­exposition, blind bewertete Gewinnraten aus OpenAI GDPval.',
   },
   nav: {
@@ -638,8 +638,8 @@ const DE: UIStrings = {
     lang_switch_aria: 'Sprache',
   },
   footer: {
-    tagline: 'KI-Resistenz-Persönlichkeitstest',
-    blurb: 'Eine 16-Fragen-Umfrage, die Ihren Beruf auf einen von sechzehn Archetypen abbildet. Basiert auf BLS, O*NET und dem Anthropic Economic Index.',
+    tagline: 'KI-Resistenz-Berufs­persönlichkeitstest',
+    blurb: 'Ein 16-Fragen-Berufs­persönlichkeitstest, der Ihren Beruf auf einen von sechzehn Archetypen abbildet. Basiert auf BLS, O*NET und dem Anthropic Economic Index.',
     nav_heading: 'Navigation',
     nav_home: 'Start',
     nav_take: 'Test starten',

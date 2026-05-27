@@ -70,26 +70,26 @@ export default function Nav() {
     >
       <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
         {/* Wordmark */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'baseline', gap: 10, textDecoration: 'none' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'baseline', gap: 12, textDecoration: 'none' }}>
           <span
             style={{
               fontFamily: 'var(--font-display)',
               fontStyle: 'italic',
-              fontWeight: 500,
-              fontSize: '1.35rem',
-              letterSpacing: '-0.02em',
+              fontWeight: 600,
+              fontSize: '1.45rem',
+              letterSpacing: '0.04em',
               color: 'var(--ink-strong)',
-              fontVariationSettings: '"opsz" 72, "SOFT" 100, "WONK" 1',
+              fontVariationSettings: '"opsz" 72, "SOFT" 60, "WONK" 1',
             }}
           >
-            air
+            AIR
           </span>
           <span
             className="smallcaps"
-            style={{ color: 'var(--ink-mute)', fontSize: '0.65rem', display: 'none' }}
+            style={{ color: 'var(--ink-mute)', fontSize: '0.65rem', display: 'none', lineHeight: 1 }}
             data-show-on-sm
           >
-            {t.masthead_caption}
+            {ui(lang).meta.siteTagline}
           </span>
         </Link>
 

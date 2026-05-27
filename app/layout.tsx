@@ -38,8 +38,8 @@ export const viewport = {
   ],
 };
 
-const META_TITLE  = 'AIR — The AI-Resistance Personality Test';
-const META_DESC   = 'A 16-question personality test that maps your profession to one of 16 archetypes across four axes of AI resistance. Find out which kind of human AI cannot replace.';
+const META_TITLE  = 'AIR — The AI-Resistance Career Personality Test';
+const META_DESC   = 'A 16-question career personality test that maps your profession to one of 16 archetypes across four axes of AI resistance. Find out which kind of working human AI cannot replace.';
 const META_LANGS  = ['en', 'zh', 'ja', 'ko', 'de'];
 
 async function resolveMetadataBaseFromHeaders() {

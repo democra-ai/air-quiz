@@ -19,10 +19,21 @@ export default function Footer() {
       <div className="page" style={{ padding: 'clamp(3rem, 6vw, 5rem) var(--gutter)' }}>
         <div className="footer-grid">
           <div>
-            <div className="italic-display" style={{ fontSize: '2rem', color: 'var(--ink-strong)' }}>
-              air
+            <div
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontStyle: 'italic',
+                fontWeight: 600,
+                fontSize: '2.2rem',
+                letterSpacing: '0.04em',
+                color: 'var(--ink-strong)',
+                fontVariationSettings: '"opsz" 108, "SOFT" 60, "WONK" 1',
+                lineHeight: 1,
+              }}
+            >
+              AIR
             </div>
-            <p className="smallcaps" style={{ marginTop: 6 }}>
+            <p className="smallcaps" style={{ marginTop: 10 }}>
               {t.tagline}
             </p>
             <p
