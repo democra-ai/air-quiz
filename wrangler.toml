@@ -1,0 +1,52 @@
+#:schema node_modules/wrangler/config-schema.json
+# AIR — quiz-only redesign (16personalities-style)
+# Sibling Worker to `air` (which now serves risk.democra.ai with the full content).
+# Shares the same D1 + KV so quiz data lands in the same store.
+name = "air-quiz"
+compatibility_date = "2025-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+# Workers Free plan: 10ms CPU limit, hard. If you upgrade to Workers Paid
+# ($5/mo), uncomment the block below — the poster (ImageResponse) route needs
+# ~50-200ms CPU per render and will 503 otherwise.
+# [limits]
+# cpu_ms = 30000
+
+# ───── D1 (structured: quiz_sessions, answer_distributions) ─────────────────
+[[d1_databases]]
+binding = "AIR_DB"
+database_name = "air"
+database_id = "9d0b8f35-f565-40da-bde4-0401010e5f9b"
+migrations_dir = "migrations"
+
+# ───── KV (rate-limit + incremental counters) ───────────────────────────────
+[[kv_namespaces]]
+binding = "AIR_KV"
+id = "23c16afedd104429a2570aa9b14c84e4"
+
+# ───── R2 removed per user request.
+# Posters regenerate on each request (3-5× higher CPU but within cpu_ms=30s).
+# To re-enable later:
+#   1. `wrangler r2 bucket create air-posters`
+#   2. Uncomment the block below and redeploy.
+# [[r2_buckets]]
+# binding = "AIR_POSTERS"
+# bucket_name = "air-posters"
+
+# ───── Analytics Engine (event telemetry, replaces Firebase Analytics) ──────
+# Enable once in the dashboard, then uncomment. `lib/cloudflare.ts` soft-fails
+# when the binding is absent so deploys stay unblocked.
+# [[analytics_engine_datasets]]
+# binding = "AIR_ANALYTICS"
+# dataset = "air_events"
+
+# ───── Vars (non-secret) ────────────────────────────────────────────────────
+[vars]
+AIR_PUBLIC_ORIGIN = "https://air.democra.ai"
+
+# ───── Secrets (set via `wrangler secret put`) ──────────────────────────────
+# TURNSTILE_SECRET_KEY
+# NEXT_PUBLIC_TURNSTILE_SITE_KEY   (public — set as plain var in dashboard)

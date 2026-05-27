@@ -1,0 +1,96 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+/playwright-report/
+/test-results/
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# 临时/测试文件（不纳入版本库）
+.tmp*
+
+# gstack skills (framework files, not project code)
+gstack-skills/
+.temp*
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# ---------------------------------------------------------------------------
+# Python / analysis (iceberg_exposure)
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+*.so
+.venv/
+venv/
+*.egg-info/
+*.egg
+
+# Consolidated data directory — raw datasets, too large for git
+/data/
+
+# Analysis data (raw + interim) — 可从脚本或 DVC 恢复，不纳入版本库
+/analysis/iceberg_exposure/data/
+
+# Script-generated outputs — 由脚本生成，可不提交
+/analysis/iceberg_exposure/output/
+
+# Zapier 抓取/生成的大块数据
+/analysis/iceberg_exposure/zapier_chunks/
+
+# 压缩包与大型二进制（BLS/O*NET 等原始数据包）
+*.zip
+*.tar.gz
+
+# 根目录大 JSON 数据（若由脚本生成可取消注释）
+# gdpval_complete_data.json
+
+# Hugging Face Spaces 不接受二进制，论文图片/PDF 不推送
+/analysis/iceberg_exposure/paper_source/**/*.png
+/analysis/iceberg_exposure/paper_source/**/*.pdf
+.env*.local
+tmp/
+.gstack/
+
+# Cloudflare / OpenNext build artefacts
+.open-next/
+.wrangler/
+.dev.vars
+wrangler.local.toml
