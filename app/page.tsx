@@ -7,6 +7,7 @@ import Nav from '@/components/shell/Nav';
 import Footer from '@/components/shell/Footer';
 import QuizFlow from '@/components/quiz/QuizFlow';
 import ArchetypeSvg from '@/components/result/ArchetypeSvg';
+import HeroCarousel from '@/components/result/HeroCarousel';
 import { useLang } from '@/components/shell/useLang';
 import { PROFILE_TYPES, QUIZ_DIMENSIONS } from '@/lib/air_quiz_data';
 import { L, type Language } from '@/lib/translations';
@@ -63,9 +64,6 @@ function HomeInner() {
    ────────────────────────────────────────────────────────────────────────── */
 function Hero({ lang, onStart }: { lang: Language; onStart: () => void }) {
   const t = ui(lang).hero;
-  const FEATURED = ['TSRH', 'EOFP', 'TSFH', 'ESRP', 'TORH'];
-  const [code, setCode] = useState<string>('TSRH');
-  useEffect(() => { setCode(FEATURED[Math.floor(Math.random() * FEATURED.length)]); }, []);
 
   return (
     <section
@@ -76,7 +74,7 @@ function Hero({ lang, onStart }: { lang: Language; onStart: () => void }) {
       }}
     >
       <div style={{ minWidth: 0 }}>
-        <div className="animate-fade-up" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+        <div className="animate-fade-up" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <span className="section-number">{t.eyebrow}</span>
           <span className="smallcaps">{t.eyebrow_label}</span>
         </div>
@@ -88,14 +86,14 @@ function Hero({ lang, onStart }: { lang: Language; onStart: () => void }) {
         </h1>
 
         <p
-          className="reading animate-fade-up"
+          className="animate-fade-up"
           style={{
             animationDelay: '140ms',
             marginTop: 'clamp(1.25rem, 3vw, 2rem)',
             fontSize: 'var(--step-1)',
             lineHeight: 1.55,
             color: 'var(--ink)',
-            maxWidth: '38ch',
+            maxWidth: '52ch',
           }}
         >
           {t.lead}
@@ -125,52 +123,9 @@ function Hero({ lang, onStart }: { lang: Language; onStart: () => void }) {
           minHeight: 'clamp(220px, 36vw, 440px)',
         }}
       >
-        <FeaturedGlyph code={code} lang={lang} />
+        <HeroCarousel lang={lang} />
       </div>
     </section>
-  );
-}
-
-function FeaturedGlyph({ code, lang }: { code: string; lang: Language }) {
-  const profile = PROFILE_TYPES[code];
-  if (!profile) return null;
-  return (
-    <div style={{ position: 'relative', maxWidth: 380, width: '100%' }}>
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-15%',
-          background: `radial-gradient(circle at 50% 45%, color-mix(in srgb, ${profile.color} 22%, transparent), transparent 65%)`,
-          filter: 'blur(8px)',
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: 0, right: 4, zIndex: 2,
-          display: 'flex', alignItems: 'center', gap: 6,
-          background: 'var(--paper)',
-          border: '1px solid var(--paper-rule)',
-          padding: '6px 12px', borderRadius: 999,
-          fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
-          letterSpacing: '0.18em', color: 'var(--ink-mute)',
-        }}
-      >
-        <span style={{ width: 6, height: 6, borderRadius: 999, background: profile.color }} />
-        <span>1 / 16</span>
-      </div>
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <ArchetypeSvg code={code} size={360} />
-      </div>
-      <div style={{ textAlign: 'center', marginTop: 8 }}>
-        <p className="italic-display" style={{ fontSize: '1.45rem', color: 'var(--ink-strong)' }}>
-          {L(profile.archetype, lang)}
-        </p>
-        <p className="smallcaps" style={{ marginTop: 4 }}>{code}</p>
-      </div>
-    </div>
   );
 }
 
