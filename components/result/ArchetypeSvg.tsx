@@ -1,43 +1,56 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import type { ComponentType } from 'react';
-import type { CharacterProps } from '@/components/characters/CharacterBase';
-
-const REGISTRY: Record<string, ComponentType<CharacterProps>> = {
-  EOFP: dynamic(() => import('@/components/characters/CharEOFP')),
-  EOFH: dynamic(() => import('@/components/characters/CharEOFH')),
-  EORP: dynamic(() => import('@/components/characters/CharEORP')),
-  EORH: dynamic(() => import('@/components/characters/CharEORH')),
-  ESFP: dynamic(() => import('@/components/characters/CharESFP')),
-  ESFH: dynamic(() => import('@/components/characters/CharESFH')),
-  ESRP: dynamic(() => import('@/components/characters/CharESRP')),
-  ESRH: dynamic(() => import('@/components/characters/CharESRH')),
-  TOFP: dynamic(() => import('@/components/characters/CharTOFP')),
-  TOFH: dynamic(() => import('@/components/characters/CharTOFH')),
-  TORP: dynamic(() => import('@/components/characters/CharTORP')),
-  TORH: dynamic(() => import('@/components/characters/CharTORH')),
-  TSFP: dynamic(() => import('@/components/characters/CharTSFP')),
-  TSFH: dynamic(() => import('@/components/characters/CharTSFH')),
-  TSRP: dynamic(() => import('@/components/characters/CharTSRP')),
-  TSRH: dynamic(() => import('@/components/characters/CharTSRH')),
-};
-
 /**
- * Render the SVG character illustration for a profile code.
- * Each character component is dynamically imported to keep the bundle lean —
- * only the matching glyph ships to a result/profile page.
+ * Renders the editorial illustration for a given profile code.
+ *
+ * Images live at /public/characters-art/{CODE}.webp — generated via Flux
+ * with a locked editorial style anchor (warm cream paper + watercolor +
+ * ink line, muted earthy palette). 512×512 source, ≈50 KB each.
+ *
+ * Uses a plain <img> (not next/image) because:
+ *   1. Next image optimization is disabled on Cloudflare Workers runtime.
+ *   2. The illustrations are already optimized WebPs sized for typical
+ *      display widths (~360px on hero, ~120px in grid).
  */
+
+const KNOWN = new Set([
+  'EOFP', 'EOFH', 'EORP', 'EORH',
+  'ESFP', 'ESFH', 'ESRP', 'ESRH',
+  'TOFP', 'TOFH', 'TORP', 'TORH',
+  'TSFP', 'TSFH', 'TSRP', 'TSRH',
+]);
+
 export default function ArchetypeSvg({
   code,
   size = 240,
   className,
+  alt,
 }: {
   code: string;
   size?: number;
   className?: string;
+  alt?: string;
 }) {
-  const C = REGISTRY[code?.toUpperCase?.()];
-  if (!C) return null;
-  return <C size={size} className={className} />;
+  const upper = (code ?? '').toUpperCase();
+  if (!KNOWN.has(upper)) return null;
+  return (
+    <img
+      src={`/characters-art/${upper}.webp`}
+      alt={alt ?? `${upper} archetype illustration`}
+      width={size}
+      height={size}
+      loading="lazy"
+      decoding="async"
+      style={{
+        width: '100%',
+        maxWidth: size,
+        height: 'auto',
+        aspectRatio: '1 / 1',
+        display: 'block',
+        objectFit: 'cover',
+        borderRadius: 12,
+      }}
+      className={className}
+    />
+  );
 }
