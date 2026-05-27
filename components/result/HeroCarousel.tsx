@@ -3,33 +3,33 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ArchetypeSvg from './ArchetypeSvg';
 import { PROFILE_TYPES } from '@/lib/air_quiz_data';
+import { PROFILE_CAREERS } from '@/lib/air_career_data';
 import { L, type Language } from '@/lib/translations';
 
 interface Props {
   lang: Language;
   /** Optional list of profile codes to cycle through. Defaults to all 16. */
   codes?: string[];
-  /** Initial code; falls back to the first in `codes`. */
+  /** Initial code; falls back to a random pick. */
   initialCode?: string;
 }
+
+const HIGHLIGHT_MS = 1600;
 
 /**
  * Hero archetype carousel.
  *
- * Lets the visitor flip through all 16 archetypes on the homepage hero,
- * via:
+ * Cycle through all 16 archetypes via:
  *   • prev/next chevron buttons (always visible)
  *   • ←/→ keyboard arrows (when not typing)
  *   • horizontal touch swipe (>40 px threshold)
- *   • clicking the image area also advances (mobile-friendly)
  *
- * The illustration crossfades; the caption (archetype name / code / "n / N")
- * updates in sync.
+ * Tapping the image is NOT "advance" — it scrolls down to the matching
+ * card in the 16-grid below and momentarily highlights it.
  */
 export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Props) {
   const codes = useMemo(() => codesProp ?? Object.keys(PROFILE_TYPES), [codesProp]);
 
-  // Start on a random archetype so reloads aren't always the same face.
   const [idx, setIdx] = useState<number>(() => {
     if (initialCode) {
       const found = codes.indexOf(initialCode.toUpperCase());
@@ -40,9 +40,7 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
 
   useEffect(() => {
     // Randomize on mount (after hydration to avoid SSR/CSR mismatch)
-    if (!initialCode) {
-      setIdx(Math.floor(Math.random() * codes.length));
-    }
+    if (!initialCode) setIdx(Math.floor(Math.random() * codes.length));
   }, [initialCode, codes.length]);
 
   const goPrev = useCallback(() => setIdx((i) => (i - 1 + codes.length) % codes.length), [codes.length]);
@@ -51,7 +49,6 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
   // Keyboard ←/→
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input/textarea/contenteditable
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
       if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
@@ -63,25 +60,45 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
 
   // Touch swipe
   const touchStartX = useRef<number | null>(null);
+  const touchMoved = useRef<boolean>(false);
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0]?.clientX ?? null;
+    touchMoved.current = false;
   };
+  const onTouchMove = () => { touchMoved.current = true; };
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null) return;
+    if (touchStartX.current == null) { touchMoved.current = false; return; }
     const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartX.current;
     touchStartX.current = null;
-    if (Math.abs(dx) < 40) return; // tap, not swipe — let click handler run
+    if (Math.abs(dx) < 40) return;          // not a swipe — let the click run
+    e.preventDefault();                     // it was a swipe — eat the click
     if (dx > 0) goPrev();
     else goNext();
   };
+
+  /** Scroll the page down to the matching card in the 4×4 grid and pulse it briefly. */
+  const scrollToCard = useCallback((code: string) => {
+    if (touchMoved.current) { touchMoved.current = false; return; }
+    const el = document.getElementById(`type-${code}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.setAttribute('data-pulse', '1');
+    setTimeout(() => el.removeAttribute('data-pulse'), HIGHLIGHT_MS);
+  }, []);
 
   const code = codes[idx];
   const profile = PROFILE_TYPES[code];
   if (!profile) return null;
 
+  // First 2 careers — keep the line short
+  const careerList = (PROFILE_CAREERS[code] ?? [])
+    .slice(0, 2)
+    .map((c) => L(c.title, lang))
+    .filter(Boolean);
+
   return (
     <div style={{ position: 'relative', maxWidth: 380, width: '100%', marginInline: 'auto' }}>
-      {/* Soft warm radial backdrop */}
+      {/* Soft warm radial backdrop, recolours per archetype */}
       <div
         aria-hidden
         style={{
@@ -112,13 +129,14 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
         <span>{String(idx + 1).padStart(2, '0')} / {String(codes.length).padStart(2, '0')}</span>
       </div>
 
-      {/* Image with click-to-advance + swipe */}
+      {/* Image — click jumps DOWN to the grid card (not next), swipe cycles */}
       <button
         type="button"
-        onClick={goNext}
+        onClick={() => scrollToCard(code)}
         onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        aria-label={`Next archetype (currently ${code})`}
+        aria-label={`Jump to ${L(profile.archetype, lang)} in the grid`}
         style={{
           position: 'relative',
           zIndex: 1,
@@ -131,35 +149,38 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
           touchAction: 'pan-y',
         }}
       >
-        {/* Keyed by code so React swaps the <img> instead of mutating — gives a clean crossfade */}
         <div key={code} className="animate-fade-in" style={{ animationDuration: '350ms' }}>
           <ArchetypeSvg code={code} size={360} />
         </div>
       </button>
 
-      {/* Caption */}
+      {/* Caption: name / code / typical careers */}
       <div key={`cap-${code}`} className="animate-fade-in" style={{ textAlign: 'center', marginTop: 8, animationDuration: '350ms' }}>
         <p className="italic-display" style={{ fontSize: '1.45rem', color: 'var(--ink-strong)' }}>
           {L(profile.archetype, lang)}
         </p>
         <p className="smallcaps" style={{ marginTop: 4 }}>{code}</p>
+        {careerList.length > 0 ? (
+          <p
+            style={{
+              marginTop: 8,
+              fontSize: '0.82rem',
+              lineHeight: 1.45,
+              color: 'var(--ink-mute)',
+              maxWidth: '26ch',
+              marginInline: 'auto',
+            }}
+          >
+            {careerList.join(' · ')}
+          </p>
+        ) : null}
       </div>
 
       {/* Prev / Next chevrons */}
-      <button
-        type="button"
-        onClick={goPrev}
-        aria-label="Previous archetype"
-        className="hero-chevron hero-chevron--prev"
-      >
+      <button type="button" onClick={goPrev} aria-label="Previous archetype" className="hero-chevron hero-chevron--prev">
         <Chevron dir="left" />
       </button>
-      <button
-        type="button"
-        onClick={goNext}
-        aria-label="Next archetype"
-        className="hero-chevron hero-chevron--next"
-      >
+      <button type="button" onClick={goNext} aria-label="Next archetype" className="hero-chevron hero-chevron--next">
         <Chevron dir="right" />
       </button>
 
@@ -184,14 +205,10 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
           backdrop-filter: blur(6px);
           -webkit-backdrop-filter: blur(6px);
         }
-        .hero-chevron:hover {
-          background: var(--paper);
-          border-color: var(--ink);
-        }
+        .hero-chevron:hover { background: var(--paper); border-color: var(--ink); }
         .hero-chevron:active { transform: translateY(-50%) scale(0.94); }
         .hero-chevron--prev { left: -8px; }
         .hero-chevron--next { right: -8px; }
-
         @media (max-width: 760px) {
           .hero-chevron { width: 36px; height: 36px; top: 38%; }
           .hero-chevron--prev { left: -4px; }

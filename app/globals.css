@@ -444,6 +444,18 @@ body {
   .career-row > :nth-child(4) { grid-area: score; }
 }
 
+/* Pulse-highlight a grid card after the hero carousel was clicked.
+   The data-pulse attribute is set/cleared from HeroCarousel.tsx. */
+@keyframes type-card-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--type-color, var(--accent)) 0%, transparent); }
+  25%  { box-shadow: 0 0 0 6px color-mix(in srgb, var(--type-color, var(--accent)) 40%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--type-color, var(--accent)) 0%, transparent); }
+}
+.type-card[data-pulse="1"] {
+  border-color: var(--type-color, var(--accent)) !important;
+  animation: type-card-pulse 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Tap targets ≥ 44px on touch devices (iOS guideline) */
 @media (pointer: coarse) {
   .option-card { padding: 1.15rem 1.1rem; }

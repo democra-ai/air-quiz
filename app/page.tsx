@@ -79,7 +79,17 @@ function Hero({ lang, onStart }: { lang: Language; onStart: () => void }) {
           <span className="smallcaps">{t.eyebrow_label}</span>
         </div>
 
-        <h1 className="display-xl animate-fade-up" style={{ animationDelay: '60ms', whiteSpace: 'pre-line' }}>
+        <h1
+          className="display-lg animate-fade-up"
+          style={{
+            animationDelay: '60ms',
+            /* Let the headline flow naturally — typically 2–3 lines on desktop,
+               3 lines on mobile. The explicit \n from the headline segment is
+               kept but only enforces one mandatory break. */
+            whiteSpace: 'pre-line',
+            maxWidth: '18ch',
+          }}
+        >
           {t.headline.pre}
           <span className="italic-display" style={{ color: 'var(--accent)' }}>{t.headline.em}</span>
           {t.headline.post}
@@ -232,14 +242,21 @@ function ArchetypeGrid({ lang }: { lang: Language }) {
           return (
             <Link
               key={code}
+              id={`type-${code}`}
               href={`/profile/${code}?lang=${lang}`}
+              className="type-card"
               style={{
+                /* Custom prop the .type-card[data-pulse="1"] CSS reads — lets
+                   the brief highlight ring after a hero-click use the right
+                   archetype color. */
+                ['--type-color' as string]: p.color,
                 display: 'flex', flexDirection: 'column',
                 padding: '1.25rem 1.1rem 1rem', borderRadius: 14,
                 background: 'var(--paper-card)', border: '1px solid var(--paper-rule)',
                 textDecoration: 'none', color: 'var(--ink)',
-                transition: 'transform .25s ease, border-color .25s ease, background .25s ease',
+                transition: 'transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .35s ease',
                 position: 'relative', overflow: 'hidden',
+                scrollMarginTop: '90px',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = p.color;
