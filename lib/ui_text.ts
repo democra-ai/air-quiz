@@ -85,6 +85,11 @@ export interface UIStrings {
     cta_start: string;
     cta_back: string;
     privacy_note: string;
+    mode_label: string;
+    mode_quick: string;
+    mode_quick_meta: string;
+    mode_full: string;
+    mode_full_meta: string;
   };
 
   question: {
@@ -209,6 +214,11 @@ const EN: UIStrings = {
     cta_start: 'Begin the test',
     cta_back: 'Back to home',
     privacy_note: 'Data collected anonymously. For research only.',
+    mode_label: 'Length',
+    mode_quick: 'Quick',
+    mode_quick_meta: '16 Q · ~4 min',
+    mode_full: 'Full',
+    mode_full_meta: '60 Q · ~15 min · finer dimension scoring',
   },
   question: {
     section_prefix: '',
@@ -323,6 +333,11 @@ const ZH: UIStrings = {
     cta_start: '开始测试',
     cta_back: '返回首页',
     privacy_note: '数据匿名收集，仅用于研究。',
+    mode_label: '版本',
+    mode_quick: '简版',
+    mode_quick_meta: '16 题 · 约 4 分钟',
+    mode_full: '完整版',
+    mode_full_meta: '60 题 · 约 15 分钟 · 维度评分更精细',
   },
   question: {
     section_prefix: '',
@@ -437,6 +452,11 @@ const JA: UIStrings = {
     cta_start: 'テストを始める',
     cta_back: 'ホームに戻る',
     privacy_note: 'データは匿名で収集。研究目的のみ。',
+    mode_label: 'バージョン',
+    mode_quick: '簡易版',
+    mode_quick_meta: '16問 · 約4分',
+    mode_full: '完全版',
+    mode_full_meta: '60問 · 約15分 · より精緻な次元スコア',
   },
   question: {
     section_prefix: '',
@@ -551,6 +571,11 @@ const KO: UIStrings = {
     cta_start: '테스트 시작',
     cta_back: '홈으로',
     privacy_note: '데이터는 익명으로 수집됩니다. 연구 목적 한정.',
+    mode_label: '버전',
+    mode_quick: '간단 버전',
+    mode_quick_meta: '16문항 · 약 4분',
+    mode_full: '전체 버전',
+    mode_full_meta: '60문항 · 약 15분 · 더 정밀한 차원 점수',
   },
   question: {
     section_prefix: '',
@@ -665,6 +690,11 @@ const DE: UIStrings = {
     cta_start: 'Test starten',
     cta_back: 'Zurück zum Start',
     privacy_note: 'Daten werden anonym erfasst. Nur zu Forschungszwecken.',
+    mode_label: 'Länge',
+    mode_quick: 'Kurz',
+    mode_quick_meta: '16 Fragen · ca. 4 Min',
+    mode_full: 'Vollständig',
+    mode_full_meta: '60 Fragen · ca. 15 Min · feinere Bewertung',
   },
   question: {
     section_prefix: '',

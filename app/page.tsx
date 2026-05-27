@@ -26,6 +26,7 @@ function HomeInner() {
   const router = useRouter();
   const [lang] = useLang();
   const [inQuiz, setInQuiz] = useState(false);
+  const mode: 'quick' | 'full' = params.get('mode') === 'full' ? 'full' : 'quick';
 
   useEffect(() => { setInQuiz(params.get('quiz') === '1'); }, [params]);
 
@@ -39,7 +40,7 @@ function HomeInner() {
     return (
       <main style={{ minHeight: '100dvh', background: 'var(--paper)' }}>
         <Nav />
-        <QuizFlow lang={lang} onExit={exitQuiz} />
+        <QuizFlow lang={lang} initialMode={mode} onExit={exitQuiz} />
       </main>
     );
   }
