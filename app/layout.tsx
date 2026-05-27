@@ -90,7 +90,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* Theme bootstrap — runs before paint to prevent FOUC */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('air-theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);if(t==='dark')document.documentElement.classList.add('dark');var l=localStorage.getItem('air-lang');if(l)document.documentElement.setAttribute('lang',l);}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('air-theme')||'light';document.documentElement.setAttribute('data-theme',t);if(t==='dark')document.documentElement.classList.add('dark');var l=localStorage.getItem('air-lang');if(l)document.documentElement.setAttribute('lang',l);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
           }}
         />
         <script

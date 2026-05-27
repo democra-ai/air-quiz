@@ -1,26 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-
 /**
- * Tiny client-only effect that keeps html[data-theme] in sync with localStorage
- * after the initial inline bootstrap. Pairs with the inline <script> in app/layout.tsx
- * which runs before paint to prevent FOUC.
+ * Theme bootstrap runs entirely as the inline <script> in app/layout.tsx
+ * before paint (defaults to light, restores user choice if saved).
+ *
+ * No system-preference fallback by design — the editorial palette is built
+ * around the warm ivory paper and that's the default first experience.
+ * Dark mode is opt-in via the nav toggle.
  */
 export default function ThemeBootstrap() {
-  useEffect(() => {
-    const html = document.documentElement;
-    // Listen for system theme changes when no explicit preference is saved
-    const m = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = () => {
-      const saved = localStorage.getItem('air-theme');
-      if (saved) return;
-      const next = m.matches ? 'dark' : 'light';
-      html.setAttribute('data-theme', next);
-      html.classList.toggle('dark', next === 'dark');
-    };
-    m.addEventListener('change', onChange);
-    return () => m.removeEventListener('change', onChange);
-  }, []);
   return null;
 }

@@ -5,7 +5,13 @@ import type { Language } from '@/lib/translations';
 import { detectBrowserLanguage, getHtmlLang } from '@/lib/translations';
 
 const SUPPORTED: Language[] = ['en', 'zh', 'ja', 'ko', 'de'];
+const LANG_EVENT = 'air-lang-change';
 
+/**
+ * Cross-component language hook. Every instance subscribes to a window-level
+ * CustomEvent so a lang change in Nav immediately re-renders QuizFlow,
+ * QuestionCard, Footer, etc. without needing a React Context.
+ */
 export function useLang(initial: Language = 'en'): [Language, (l: Language) => void] {
   const [lang, setLangState] = useState<Language>(initial);
 
@@ -14,12 +20,20 @@ export function useLang(initial: Language = 'en'): [Language, (l: Language) => v
     const next: Language = saved && SUPPORTED.includes(saved) ? saved : detectBrowserLanguage();
     setLangState(next);
     document.documentElement.setAttribute('lang', getHtmlLang(next));
+
+    const onChange = (e: Event) => {
+      const detail = (e as CustomEvent<Language>).detail;
+      if (detail && SUPPORTED.includes(detail)) setLangState(detail);
+    };
+    window.addEventListener(LANG_EVENT, onChange);
+    return () => window.removeEventListener(LANG_EVENT, onChange);
   }, []);
 
   const setLang = useCallback((l: Language) => {
     setLangState(l);
     try { localStorage.setItem('air-lang', l); } catch {}
     document.documentElement.setAttribute('lang', getHtmlLang(l));
+    window.dispatchEvent(new CustomEvent<Language>(LANG_EVENT, { detail: l }));
   }, []);
 
   return [lang, setLang];
