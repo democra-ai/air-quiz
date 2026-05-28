@@ -24,6 +24,7 @@ import {
   type QuizAnswers,
 } from '@/lib/air_quiz_calculator';
 import { encodeSharePayload } from '@/lib/share_payload';
+import { packCoreAnswers } from '@/lib/occupation_inference';
 import { L, type Language } from '@/lib/translations';
 import { ui } from '@/lib/ui_text';
 import {
@@ -219,6 +220,10 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
         // Only Full mode collects the snapshot — flag it so the result page
         // knows whether to surface the "AI can do X% of your work today" stat.
         snapshotMeasured,
+        // Raw core answers → result page occupation guess. For Full mode we
+        // pack the first 16 by mapping the 60→16 isn't 1:1, so only Quick mode
+        // (which has Q1..Q16) carries them; Full mode omits and the guess hides.
+        coreAnswers: mode === 'quick' ? packCoreAnswers(coreAnswers as Record<string, number>) : undefined,
       });
 
       try { sessionStorage.removeItem(storageKey); } catch {}

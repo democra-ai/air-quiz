@@ -21,7 +21,11 @@ export type SharePayloadV2 = SharePayloadBase & {
    * Drives the per-axis percentage + marker position in §II of the result page.
    */
   dimAvg?: [number, number, number, number];
-  /** @deprecated removed with the occupation-inference feature. Older URLs may still carry it. */
+  /**
+   * Raw user answers to Q1..Q16 (each 1–5). Drives the "we think your work
+   * resembles…" occupation guess on the result page (weighted 16-answer
+   * nearest-neighbour). Older URLs without it just hide that section.
+   */
   coreAnswers?: number[];
   /** True when the Full-mode AI-snapshot section was answered — gates the
    *  "AI can already do X% of your work today" stat on the result page. */
@@ -131,6 +135,13 @@ export function encodeSharePayload(payload: Omit<SharePayloadV2, 'v'>): string {
         }) as [number, number, number, number])
       : undefined,
     snapshotMeasured: payload.snapshotMeasured === true ? true : undefined,
+    coreAnswers: Array.isArray(payload.coreAnswers) && payload.coreAnswers.length === 16
+      ? payload.coreAnswers.map((x) => {
+          const n = Number(x);
+          if (!Number.isFinite(n)) return 3;
+          return Math.round(Math.max(1, Math.min(5, n)));
+        })
+      : undefined,
     insights: payload.insights
       ? {
           primaryDriver: sanitizeText(payload.insights.primaryDriver),

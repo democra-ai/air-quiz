@@ -5,6 +5,7 @@ import { decodeSharePayload, type SharePayload, type ShareLang } from '@/lib/sha
 import { PROFILE_TYPES, QUIZ_DIMENSIONS, RISK_TIER_INFO } from '@/lib/air_quiz_data';
 import { generateAdvice } from '@/lib/air_advice_data';
 import { PROFILE_CAREERS } from '@/lib/air_career_data';
+import { inferOccupationFromAnswers, unpackCoreAnswers } from '@/lib/occupation_inference';
 import ResultPage from './ResultPage';
 
 type Props = {
@@ -125,6 +126,16 @@ export default async function SharePage({ params, searchParams }: Props) {
   const tierKey = RISK_LEVEL_TO_TIER[safeData.riskLevel] ?? 'medium';
   const riskLabel = pickL(RISK_TIER_INFO[tierKey].label as L10n, lang);
 
+  // Occupation guess (Quick mode only — needs the raw Q1..Q16 answers).
+  const coreAnswers = safeData.v === 2 ? unpackCoreAnswers(safeData.coreAnswers) : null;
+  const inferredJobs = coreAnswers
+    ? inferOccupationFromAnswers(coreAnswers, 3).map((g) => ({
+        id: g.id,
+        title: pickL(g.title as L10n, lang),
+        confidence: g.confidence,
+      }))
+    : [];
+
   const base = await resolveBase();
   const shareUrl = `${base}/share/${payload}`;
 
@@ -151,6 +162,7 @@ export default async function SharePage({ params, searchParams }: Props) {
       dimensions={dimensions}
       advice={advice}
       careers={careers}
+      inferredJobs={inferredJobs}
     />
   );
 }

@@ -1,0 +1,244 @@
+/**
+ * Occupation inference (v3 — weighted 16-answer nearest-neighbour).
+ *
+ * Given the user's raw answers to Q1..Q16 (each 1–5), guess the 3 most likely
+ * occupations by weighted Euclidean distance to a library of ~48 occupation
+ * anchors. Each anchor is the "textbook" answer vector for that job.
+ *
+ * Why weighted: some questions are far more occupation-discriminative than
+ * others. Q1 (Digitalization) and Q15 (PhysicalPresence) cleanly separate
+ * desk jobs from hands-on jobs; Q8 (Taste) separates creative from rote work;
+ * Q9 (ErrorSeverity) separates high-stakes (medicine, law) from low-stakes.
+ * Knowledge-access (Q2) and personal-brand (Q14) barely move between jobs, so
+ * they get low weight. The weights are tuned by scripts/tune-occupation.mjs.
+ *
+ * Answer key (raw 1–5):
+ *   Q1  Digitalization   1 hands-on        5 all digital
+ *   Q2  KnowledgeAccess  1 books<20%       5 books>90%
+ *   Q3  TacitKnowledge   1 newbie+manual   5 years of "feel"
+ *   Q4  Novelty          1 same daily      5 every task new
+ *   Q5  Measurability    1 subjective      5 clear KPIs
+ *   Q6  Convergence      1 everyone differs 5 identical output
+ *   Q7  GoalClarity      1 clear specs     5 "help me think"
+ *   Q8  TasteDependence  1 none            5 taste IS the work
+ *   Q9  ErrorSeverity    1 just redo       5 lives at stake
+ *   Q10 Reversibility    1 right first time 5 constant iteration
+ *   Q11 Regulation       1 illegal for AI  5 no restrictions
+ *   Q12 PublicTrust      1 nobody cares    5 unacceptable for AI
+ *   Q13 Relationship     1 price-driven    5 only-want-YOU
+ *   Q14 PersonalBrand    1 hard to replace 5 instantly replaceable
+ *   Q15 PhysicalPresence 1 fully remote    5 must be on-site
+ *   Q16 HumanPremium     1 don't care if AI 5 would feel deceived
+ */
+
+export interface OccupationPattern {
+  id: string;
+  title: { en: string; zh: string; ja?: string; ko?: string; de?: string };
+  socGroup: number;
+  /** Expected raw answer (1–5) for Q1..Q16, length 16. */
+  answers: number[];
+}
+
+/** Per-question weights (index 0 = Q1). Tuned for discrimination. */
+export const QUESTION_WEIGHTS: number[] = [
+  1.8, // Q1  Digitalization      — strong desk/hands-on separator
+  0.8, // Q2  KnowledgeAccess
+  1.2, // Q3  TacitKnowledge
+  1.0, // Q4  Novelty
+  1.3, // Q5  Measurability
+  1.0, // Q6  Convergence
+  1.1, // Q7  GoalClarity
+  1.6, // Q8  TasteDependence     — strong creative/rote separator
+  1.6, // Q9  ErrorSeverity       — strong stakes separator
+  1.0, // Q10 Reversibility
+  0.8, // Q11 Regulation
+  1.2, // Q12 PublicTrust
+  1.4, // Q13 Relationship        — relational vs transactional
+  0.8, // Q14 PersonalBrand
+  1.9, // Q15 PhysicalPresence    — strongest on-site/remote separator
+  1.0, // Q16 HumanPremium
+];
+
+export const OCCUPATION_PATTERNS: OccupationPattern[] = [
+  // ── C-suite ──────────────────────────────────────────────────────────────
+  { id: 'ceo', title: { en: 'CEO / Founder', zh: '首席执行官 / 创始人', ja: 'CEO / 創業者', ko: 'CEO / 창업자', de: 'CEO / Gründer:in' }, socGroup: 11,
+    answers: [4,2,5,4, 2,2,5,4, 4,3,2,5, 5,2,3,5] },
+  { id: 'cto', title: { en: 'CTO', zh: '首席技术官', ja: 'CTO', ko: 'CTO', de: 'CTO' }, socGroup: 11,
+    answers: [5,3,5,4, 3,2,5,3, 4,3,3,4, 4,2,2,4] },
+  { id: 'cfo', title: { en: 'CFO', zh: '首席财务官', ja: 'CFO', ko: 'CFO', de: 'CFO' }, socGroup: 11,
+    answers: [5,4,4,3, 5,3,4,2, 4,2,2,4, 4,3,2,4] },
+  { id: 'cmo', title: { en: 'CMO', zh: '首席营销官', ja: 'CMO', ko: 'CMO', de: 'CMO' }, socGroup: 11,
+    answers: [5,3,4,4, 3,2,5,5, 3,5,3,3, 4,3,2,3] },
+  { id: 'coo', title: { en: 'COO', zh: '首席运营官', ja: 'COO', ko: 'COO', de: 'COO' }, socGroup: 11,
+    answers: [5,3,4,3, 4,3,4,3, 4,3,3,4, 4,3,3,4] },
+
+  // ── Tech ─────────────────────────────────────────────────────────────────
+  { id: 'software-engineer', title: { en: 'Software engineer', zh: '软件工程师', ja: 'ソフトウェアエンジニア', ko: '소프트웨어 엔지니어', de: 'Softwareentwickler:in' }, socGroup: 15,
+    answers: [5,4,4,4, 3,2,4,3, 3,4,5,2, 2,3,1,2] },
+  { id: 'data-scientist', title: { en: 'Data scientist', zh: '数据科学家', ja: 'データサイエンティスト', ko: '데이터 과학자', de: 'Data Scientist' }, socGroup: 15,
+    answers: [5,4,3,3, 5,3,4,2, 3,4,4,2, 2,3,1,2] },
+  { id: 'product-manager', title: { en: 'Product manager', zh: '产品经理', ja: 'プロダクトマネージャー', ko: '제품 관리자', de: 'Produktmanager:in' }, socGroup: 11,
+    answers: [5,3,4,4, 4,3,5,3, 3,4,4,3, 4,3,2,3] },
+  { id: 'ux-designer', title: { en: 'UX / UI designer', zh: 'UX / UI 设计师', ja: 'UX / UIデザイナー', ko: 'UX / UI 디자이너', de: 'UX/UI-Designer:in' }, socGroup: 27,
+    // UX skews more systematic/collaborative than pure graphic design:
+    // more measurable (usability), more "help me think", less personal-brand.
+    answers: [5,3,4,4, 3,2,5,4, 2,5,4,2, 2,3,2,2] },
+  { id: 'qa-tester', title: { en: 'QA / test engineer', zh: '测试工程师', ja: 'QA / テストエンジニア', ko: 'QA / 테스트 엔지니어', de: 'QA-/Testingenieur:in' }, socGroup: 15,
+    answers: [5,4,2,2, 5,4,2,1, 3,4,4,2, 2,4,1,2] },
+
+  // ── Research / science ────────────────────────────────────────────────────
+  { id: 'research-scientist', title: { en: 'Research scientist', zh: '科研人员', ja: '研究者', ko: '연구원', de: 'Wissenschaftler:in' }, socGroup: 19,
+    answers: [5,3,5,5, 3,2,5,3, 3,4,4,3, 3,2,2,3] },
+  { id: 'professor', title: { en: 'University professor', zh: '大学教授', ja: '大学教授', ko: '대학 교수', de: 'Professor:in' }, socGroup: 25,
+    answers: [4,3,5,4, 2,2,4,4, 3,3,3,4, 4,2,3,4] },
+  { id: 'lab-technician', title: { en: 'Lab technician', zh: '实验室技术员', ja: '研究技術員', ko: '실험실 기술자', de: 'Laborant:in' }, socGroup: 19,
+    answers: [3,4,3,2, 5,4,2,1, 4,3,3,3, 2,4,4,2] },
+
+  // ── Creative / arts ─────────────────────────────────────────────────────────
+  { id: 'artist', title: { en: 'Artist (fine art)', zh: '艺术家', ja: 'アーティスト', ko: '예술가', de: 'Künstler:in' }, socGroup: 27,
+    answers: [2,1,5,5, 1,1,5,5, 1,5,5,4, 5,1,3,5] },
+  { id: 'musician', title: { en: 'Musician / performer', zh: '音乐家 / 表演者', ja: '音楽家 / 演者', ko: '음악가 / 연주자', de: 'Musiker:in' }, socGroup: 27,
+    answers: [2,2,5,4, 1,1,5,5, 2,4,4,4, 5,2,4,5] },
+  { id: 'writer', title: { en: 'Writer / novelist', zh: '作家', ja: '作家', ko: '작가', de: 'Autor:in' }, socGroup: 27,
+    answers: [5,2,5,4, 2,1,5,5, 2,5,4,4, 4,2,1,5] },
+  { id: 'filmmaker', title: { en: 'Filmmaker / director', zh: '导演 / 制片', ja: '映画監督', ko: '영화 감독', de: 'Filmemacher:in' }, socGroup: 27,
+    answers: [4,2,5,5, 2,1,5,5, 3,4,4,4, 5,2,3,4] },
+  { id: 'photographer', title: { en: 'Photographer', zh: '摄影师', ja: '写真家', ko: '사진작가', de: 'Fotograf:in' }, socGroup: 27,
+    answers: [4,2,4,3, 2,2,4,5, 2,4,4,3, 4,3,3,4] },
+  { id: 'graphic-designer', title: { en: 'Graphic designer', zh: '平面设计师', ja: 'グラフィックデザイナー', ko: '그래픽 디자이너', de: 'Grafikdesigner:in' }, socGroup: 27,
+    // Pure visual craft: taste-led, clients pick the designer, higher human premium.
+    answers: [5,2,4,3, 2,2,3,5, 2,5,4,3, 4,3,2,4] },
+  { id: 'copywriter', title: { en: 'Copywriter', zh: '文案', ja: 'コピーライター', ko: '카피라이터', de: 'Texter:in' }, socGroup: 27,
+    answers: [5,3,3,3, 3,2,4,4, 1,5,5,2, 3,3,1,3] },
+  { id: 'journalist', title: { en: 'Journalist', zh: '记者', ja: 'ジャーナリスト', ko: '기자', de: 'Journalist:in' }, socGroup: 27,
+    answers: [5,3,4,4, 3,2,4,4, 3,3,3,4, 3,3,2,4] },
+
+  // ── Healthcare ────────────────────────────────────────────────────────────
+  { id: 'physician', title: { en: 'Physician / surgeon', zh: '医生 / 外科医生', ja: '医師 / 外科医', ko: '의사 / 외과의', de: 'Ärzt:in / Chirurg:in' }, socGroup: 29,
+    answers: [4,4,4,4, 3,3,3,3, 5,1,1,5, 4,2,5,5] },
+  { id: 'nurse', title: { en: 'Nurse', zh: '护士', ja: '看護師', ko: '간호사', de: 'Pflegekraft' }, socGroup: 29,
+    answers: [3,4,4,3, 3,3,2,2, 5,2,2,5, 3,3,5,4] },
+  { id: 'therapist', title: { en: 'Therapist / psychologist', zh: '心理咨询师', ja: 'カウンセラー / 心理士', ko: '상담사 / 심리학자', de: 'Therapeut:in' }, socGroup: 21,
+    answers: [2,2,5,4, 1,1,5,5, 4,3,2,5, 5,2,4,5] },
+  { id: 'pharmacist', title: { en: 'Pharmacist', zh: '药剂师', ja: '薬剤師', ko: '약사', de: 'Apotheker:in' }, socGroup: 29,
+    answers: [4,5,3,2, 5,5,2,1, 5,2,1,5, 2,4,4,3] },
+  { id: 'dentist', title: { en: 'Dentist', zh: '牙医', ja: '歯科医', ko: '치과의사', de: 'Zahnärzt:in' }, socGroup: 29,
+    answers: [3,4,4,3, 4,3,3,3, 4,2,2,4, 4,3,5,4] },
+
+  // ── Legal / finance ────────────────────────────────────────────────────────
+  { id: 'lawyer', title: { en: 'Lawyer', zh: '律师', ja: '弁護士', ko: '변호사', de: 'Anwält:in' }, socGroup: 23,
+    answers: [5,4,4,4, 3,3,3,3, 4,2,2,4, 4,2,3,4] },
+  { id: 'paralegal', title: { en: 'Paralegal', zh: '律师助理', ja: 'パラリーガル', ko: '법률 보조원', de: 'Rechtsassistent:in' }, socGroup: 23,
+    answers: [5,4,3,2, 4,4,2,2, 3,3,3,3, 2,4,2,3] },
+  { id: 'accountant', title: { en: 'Accountant (CPA)', zh: '会计师', ja: '会計士', ko: '회계사', de: 'Buchhalter:in' }, socGroup: 13,
+    answers: [5,4,3,2, 5,4,2,2, 4,3,2,4, 3,3,2,3] },
+  { id: 'financial-analyst', title: { en: 'Financial analyst', zh: '财务分析师', ja: '財務アナリスト', ko: '재무 분석가', de: 'Finanzanalyst:in' }, socGroup: 13,
+    answers: [5,4,3,3, 5,3,3,2, 3,4,4,2, 3,3,1,2] },
+  { id: 'investment-banker', title: { en: 'Investment banker / trader', zh: '投行 / 交易员', ja: '投資銀行 / トレーダー', ko: '투자은행 / 트레이더', de: 'Investmentbanker:in' }, socGroup: 13,
+    answers: [5,4,4,3, 5,3,3,2, 4,5,3,3, 4,3,2,3] },
+
+  // ── Education / social ───────────────────────────────────────────────────
+  { id: 'teacher', title: { en: 'Teacher (K-12)', zh: '中小学教师', ja: '教師', ko: '교사', de: 'Lehrer:in' }, socGroup: 25,
+    answers: [3,4,4,3, 3,3,3,3, 4,3,3,4, 4,3,4,4] },
+  { id: 'social-worker', title: { en: 'Social worker', zh: '社工', ja: 'ソーシャルワーカー', ko: '사회복지사', de: 'Sozialarbeiter:in' }, socGroup: 21,
+    answers: [3,3,5,4, 2,2,4,4, 4,3,2,5, 4,2,4,5] },
+
+  // ── Trades / physical ──────────────────────────────────────────────────────
+  { id: 'tradesperson', title: { en: 'Electrician / plumber', zh: '电工 / 管道工', ja: '電気・配管工', ko: '전기·배관공', de: 'Elektriker:in / Klempner:in' }, socGroup: 47,
+    answers: [1,3,4,3, 3,3,2,2, 4,3,3,4, 3,3,5,2] },
+  { id: 'carpenter', title: { en: 'Carpenter / builder', zh: '木匠 / 建筑工', ja: '大工 / 建築', ko: '목수 / 건축', de: 'Tischler:in / Bauarbeiter:in' }, socGroup: 47,
+    answers: [1,3,4,3, 3,3,2,3, 3,4,3,3, 3,3,5,3] },
+  { id: 'mechanic', title: { en: 'Mechanic', zh: '机械维修工', ja: '整備士', ko: '정비공', de: 'Mechaniker:in' }, socGroup: 49,
+    answers: [2,4,4,2, 4,3,2,2, 4,3,3,3, 3,3,5,2] },
+  { id: 'driver', title: { en: 'Driver / operator', zh: '司机 / 操作员', ja: '運転手 / オペレーター', ko: '운전사 / 운영자', de: 'Fahrer:in' }, socGroup: 53,
+    answers: [2,4,2,2, 4,4,2,1, 4,3,3,4, 2,4,5,3] },
+  { id: 'farmer', title: { en: 'Farmer', zh: '农民 / 农场主', ja: '農家', ko: '농부', de: 'Landwirt:in' }, socGroup: 45,
+    answers: [2,3,4,3, 3,3,3,2, 4,4,3,3, 2,3,5,2] },
+
+  // ── Service ────────────────────────────────────────────────────────────────
+  { id: 'chef', title: { en: 'Chef / cook', zh: '厨师', ja: 'シェフ / 調理師', ko: '셰프 / 요리사', de: 'Koch / Köchin' }, socGroup: 35,
+    answers: [1,3,5,3, 2,2,3,5, 2,4,4,3, 3,3,5,4] },
+  { id: 'stylist', title: { en: 'Hairstylist / beautician', zh: '发型师 / 美容师', ja: 'ヘアスタイリスト', ko: '헤어스타일리스트', de: 'Friseur:in' }, socGroup: 39,
+    answers: [2,2,4,2, 2,2,3,4, 2,3,4,2, 5,3,5,4] },
+  { id: 'server', title: { en: 'Server / waiter', zh: '服务员', ja: 'ウェイター', ko: '서버 / 웨이터', de: 'Kellner:in' }, socGroup: 35,
+    answers: [2,4,2,2, 3,3,2,2, 2,4,4,2, 3,4,5,3] },
+  { id: 'retail', title: { en: 'Retail associate', zh: '零售店员', ja: '販売員', ko: '소매 직원', de: 'Einzelhandel' }, socGroup: 41,
+    answers: [3,4,2,2, 4,4,2,1, 2,4,4,2, 2,5,4,2] },
+  { id: 'police', title: { en: 'Police officer', zh: '警察', ja: '警察官', ko: '경찰관', de: 'Polizist:in' }, socGroup: 33,
+    answers: [2,3,4,4, 2,2,3,3, 5,2,2,5, 3,3,5,4] },
+
+  // ── Admin / office / business ──────────────────────────────────────────────
+  { id: 'data-entry', title: { en: 'Data-entry clerk', zh: '数据录入员', ja: 'データ入力', ko: '데이터 입력원', de: 'Datenerfasser:in' }, socGroup: 43,
+    answers: [5,5,1,1, 5,5,1,1, 1,5,5,1, 1,5,1,1] },
+  { id: 'office-admin', title: { en: 'Office administrator', zh: '行政文员', ja: '事務員', ko: '사무직 관리자', de: 'Bürokraft' }, socGroup: 43,
+    answers: [5,4,2,2, 4,4,2,1, 1,5,4,1, 1,5,1,1] },
+  { id: 'customer-service', title: { en: 'Customer service rep', zh: '客服专员', ja: 'カスタマーサポート', ko: '고객 서비스 담당', de: 'Kundenservice' }, socGroup: 43,
+    answers: [4,4,2,2, 4,3,2,2, 2,4,4,2, 2,4,2,2] },
+  { id: 'hr-manager', title: { en: 'HR manager', zh: '人力资源经理', ja: '人事マネージャー', ko: '인사 관리자', de: 'HR-Manager:in' }, socGroup: 11,
+    answers: [5,3,4,3, 3,2,4,3, 3,3,3,4, 4,3,3,4] },
+  { id: 'project-manager', title: { en: 'Project manager', zh: '项目经理', ja: 'プロジェクトマネージャー', ko: '프로젝트 관리자', de: 'Projektmanager:in' }, socGroup: 11,
+    answers: [5,3,4,4, 4,3,4,3, 3,4,4,3, 4,3,2,3] },
+  { id: 'sales-rep', title: { en: 'Sales representative', zh: '销售代表', ja: '営業', ko: '영업 사원', de: 'Vertriebsmitarbeiter:in' }, socGroup: 41,
+    answers: [4,3,4,4, 3,2,4,3, 2,4,3,3, 4,3,3,4] },
+  { id: 'marketing-specialist', title: { en: 'Marketing specialist', zh: '市场营销专员', ja: 'マーケティング担当', ko: '마케팅 전문가', de: 'Marketing-Spezialist:in' }, socGroup: 13,
+    answers: [5,3,3,3, 3,2,4,4, 2,5,4,3, 3,3,2,3] },
+  { id: 'consultant', title: { en: 'Management consultant', zh: '管理咨询顾问', ja: '経営コンサルタント', ko: '경영 컨설턴트', de: 'Unternehmensberater:in' }, socGroup: 13,
+    answers: [5,3,5,4, 3,2,5,3, 3,4,4,3, 4,2,3,4] },
+];
+
+export interface OccupationGuess extends OccupationPattern {
+  distance: number;
+  confidence: number;
+}
+
+/** Max weighted distance, for normalising to a 0–100 confidence. */
+const MAX_WEIGHTED_DIST = (() => {
+  // worst case: every answer off by 4, summed with weights, square-rooted
+  const sumW = QUESTION_WEIGHTS.reduce((a, w) => a + w * 16, 0);
+  return Math.sqrt(sumW);
+})();
+
+function distanceToConfidence(d: number): number {
+  const norm = Math.max(0, Math.min(1, d / MAX_WEIGHTED_DIST));
+  return Math.round((1 - Math.pow(norm, 0.7)) * 100);
+}
+
+/**
+ * Top-K occupations by weighted Euclidean distance to the user's 16 answers.
+ * `answers` length 16, each 1–5, canonical Q1..Q16 order.
+ */
+export function inferOccupationFromAnswers(answers: number[], topK = 3): OccupationGuess[] {
+  if (!Array.isArray(answers) || answers.length !== 16) return [];
+  const scored = OCCUPATION_PATTERNS.map((p): OccupationGuess => {
+    let sq = 0;
+    for (let i = 0; i < 16; i++) {
+      const u = Number(answers[i]);
+      if (!Number.isFinite(u)) continue;
+      const diff = u - p.answers[i];
+      sq += QUESTION_WEIGHTS[i] * diff * diff;
+    }
+    const d = Math.sqrt(sq);
+    return { ...p, distance: d, confidence: distanceToConfidence(d) };
+  });
+  scored.sort((a, b) => a.distance - b.distance);
+  return scored.slice(0, topK);
+}
+
+// ─── Pack / unpack for the share payload ───────────────────────────────────
+
+export function packCoreAnswers(core: Record<string, number>): number[] {
+  const out: number[] = [];
+  for (let i = 1; i <= 16; i++) {
+    const v = Number(core['Q' + i]);
+    out.push(Number.isFinite(v) && v >= 1 && v <= 5 ? Math.round(v) : 3);
+  }
+  return out;
+}
+
+export function unpackCoreAnswers(arr: number[] | undefined): number[] | null {
+  if (!Array.isArray(arr) || arr.length !== 16) return null;
+  return arr.map((v) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 1 && n <= 5 ? Math.round(n) : 3;
+  });
+}
