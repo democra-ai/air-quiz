@@ -154,3 +154,106 @@ export const REALISTIC_ANSWERS = {
   'Correctional Officers and Jailers':                [2,3,4,3, 3,3,3,2, 4,2,3,4, 2,4,5,3],
   'Firefighters':                                     [2,3,4,4, 2,2,4,3, 5,2,2,5, 3,3,5,4],
 };
+
+/**
+ * SUPPLEMENTARY occupations — common jobs people self-identify as that are NOT
+ * in the 96-job PROFILE_CAREERS set. These enrich the GUESS library only (they
+ * have no archetype "typical careers" list on the result page). Each carries its
+ * own realistic anchor; `near` is the acceptance regex used by the validator
+ * (which occupation titles count as a correct guess for this job).
+ *                  Q1 Q2 Q3 Q4 Q5 Q6 Q7 Q8 Q9 Q10 Q11 Q12 Q13 Q14 Q15 Q16
+ */
+export const SUPPLEMENTARY_OCCUPATIONS = [
+  // ── Management (11) ──
+  { en: 'Chief Executives', zh: '首席执行官', answers: [4,2,5,4, 3,2,5,4, 4,3,3,4, 5,2,3,5], near: /chief|executive|general and operations|operations manager|manager/i },
+  { en: 'Marketing Managers', zh: '市场营销经理', answers: [5,3,4,4, 3,2,5,4, 3,3,4,3, 4,2,2,4], near: /marketing|manager|public relations|sales manager/i },
+  { en: 'Human Resources Managers', zh: '人力资源经理', answers: [5,3,4,3, 3,3,4,3, 3,3,3,4, 4,2,3,4], near: /human resources|manager/i },
+  { en: 'Construction Managers', zh: '建筑项目经理', answers: [3,3,4,3, 4,3,4,3, 4,3,3,4, 4,2,4,3], near: /construction|manager|operations|supervisor/i },
+  { en: 'Architectural and Engineering Managers', zh: '建筑与工程经理', answers: [5,3,4,4, 4,3,4,3, 4,3,3,4, 4,2,3,3], near: /engineer|manager|architect/i },
+
+  // ── Business & Financial (13) ──
+  { en: 'Financial Analysts', zh: '金融分析师', answers: [5,4,3,3, 5,3,3,2, 3,4,4,2, 3,3,1,2], near: /financial|market research|management analyst|accountant|securities/i },
+  { en: 'Personal Financial Advisors', zh: '理财顾问', answers: [5,4,3,3, 4,3,3,3, 3,4,3,3, 5,2,2,4], near: /financial|advisor|insurance|securities|sales/i },
+  { en: 'Loan Officers', zh: '信贷专员', answers: [5,4,2,2, 5,4,2,2, 3,3,3,3, 4,3,2,3], near: /loan|financial|insurance|credit|sales agent/i },
+  { en: 'Compliance Officers', zh: '合规官', answers: [5,4,3,2, 5,4,2,2, 4,2,2,4, 3,3,2,3], near: /compliance|auditor|accountant|inspector|officer/i },
+  { en: 'Logisticians', zh: '物流分析师', answers: [5,4,2,2, 5,4,3,2, 3,4,4,2, 3,3,2,2], near: /logistic|operations|management analyst|business operation/i },
+
+  // ── Computer & Mathematical (15) ──
+  { en: 'Web Developers', zh: '网页开发工程师', answers: [5,4,3,3, 4,2,4,4, 2,5,4,2, 2,4,1,2], near: /web|software|developer|programmer|interface designer/i },
+  { en: 'Computer Programmers', zh: '计算机程序员', answers: [5,4,3,3, 4,3,4,3, 3,4,4,2, 2,4,1,2], near: /programmer|software|developer|systems|web/i },
+  { en: 'Information Security Analysts', zh: '信息安全分析师', answers: [5,4,3,3, 4,3,4,2, 4,3,3,3, 2,3,2,2], near: /security analyst|software|systems|network|information/i },
+  { en: 'Database Administrators', zh: '数据库管理员', answers: [5,4,3,2, 5,4,3,2, 3,4,4,2, 2,4,1,2], near: /database|systems admin|network|software|programmer/i },
+  { en: 'Web and Digital Interface Designers', zh: '网页与界面设计师', answers: [5,2,4,4, 2,2,4,5, 2,5,4,2, 3,3,1,3], near: /web|interface|designer|graphic|software/i },
+
+  // ── Architecture, Engineering & Science (17/19) ──
+  { en: 'Aerospace Engineers', zh: '航空航天工程师', answers: [5,4,4,4, 4,3,4,3, 5,2,2,3, 2,3,3,3], near: /aerospace|engineer|mechanical/i },
+  { en: 'Chemical Engineers', zh: '化学工程师', answers: [5,4,4,3, 4,3,4,3, 5,2,2,3, 2,3,3,3], near: /chemical|engineer|scientist/i },
+  { en: 'Surveyors', zh: '测量员', answers: [3,4,3,2, 5,4,3,2, 4,3,3,3, 3,3,4,2], near: /survey|engineer|technician|civil/i },
+  { en: 'Chemists', zh: '化学家', answers: [5,3,4,4, 4,2,4,3, 4,4,3,3, 3,2,3,3], near: /chemist|scientist|engineer/i },
+  { en: 'Biological Scientists', zh: '生物科学家', answers: [5,3,4,5, 4,2,4,3, 4,4,3,3, 3,2,3,3], near: /biolog|scientist|medical scientist|research/i },
+  { en: 'Economists', zh: '经济学家', answers: [5,4,3,4, 4,2,4,3, 3,4,4,3, 3,2,1,3], near: /economist|scientist|analyst|statistician|research/i },
+  { en: 'Statisticians', zh: '统计学家', answers: [5,4,3,3, 5,3,4,2, 3,4,4,2, 2,3,1,2], near: /statistic|data scien|economist|analyst/i },
+  { en: 'Urban and Regional Planners', zh: '城市规划师', answers: [5,3,4,4, 3,2,4,4, 4,3,3,4, 3,2,3,3], near: /planner|urban|architect|engineer|scientist/i },
+  { en: 'Psychologists', zh: '心理学家', answers: [4,3,5,4, 2,1,5,4, 4,3,2,5, 5,2,4,5], near: /psycholog|counsel|social worker|therap|scientist/i },
+
+  // ── Community & Social Service (21) ──
+  { en: 'Substance Abuse and Mental Health Counselors', zh: '心理健康咨询师', answers: [3,3,5,4, 1,1,5,4, 4,3,2,5, 5,2,4,5], near: /counsel|social worker|psycholog|therap|mental health/i },
+  { en: 'Clergy', zh: '神职人员', answers: [2,2,5,4, 1,1,5,5, 3,3,2,5, 5,1,4,5], near: /clergy|social worker|counsel|director|teacher/i },
+
+  // ── Education (25) ──
+  { en: 'Librarians and Media Collections Specialists', zh: '图书馆员', answers: [5,4,3,2, 3,3,4,3, 2,4,4,3, 3,3,3,3], near: /librar|teacher|clerk|technician/i },
+  { en: 'Teaching Assistants', zh: '助教', answers: [3,4,3,2, 3,3,4,3, 2,4,4,3, 3,4,5,3], near: /teaching assistant|teacher|childcare|preschool/i },
+
+  // ── Arts, Design, Media (27) ──
+  { en: 'Writers and Authors', zh: '作家', answers: [5,2,5,5, 1,1,5,5, 2,5,4,3, 4,2,1,4], near: /writer|author|editor|journalist|interpret/i },
+  { en: 'News Reporters and Journalists', zh: '记者', answers: [5,3,4,4, 2,2,4,4, 3,3,3,4, 3,3,3,4], near: /report|journalist|news|editor|public relations|writer/i },
+  { en: 'Photographers', zh: '摄影师', answers: [3,2,5,4, 2,1,5,5, 2,4,4,3, 4,3,4,4], near: /photograph|designer|producer|artist|video|interior/i },
+  { en: 'Musicians and Singers', zh: '音乐家与歌手', answers: [2,2,5,4, 1,1,5,5, 2,4,4,4, 5,2,5,5], near: /musician|singer|artist|producer|director/i },
+  { en: 'Actors', zh: '演员', answers: [2,2,5,4, 1,1,5,5, 2,4,4,4, 4,3,5,5], near: /actor|producer|director|musician/i },
+  { en: 'Fashion Designers', zh: '时装设计师', answers: [5,2,5,4, 2,1,5,5, 2,5,4,3, 4,3,2,3], near: /fashion|designer|graphic|interior|producer/i },
+  { en: 'Film and Video Editors', zh: '影视剪辑师', answers: [5,2,4,4, 2,2,4,5, 2,5,4,2, 3,3,1,3], near: /film|video|editor|producer|designer/i },
+
+  // ── Healthcare Practitioners (29) ──
+  { en: 'Physicians and Surgeons', zh: '医生与外科医生', answers: [3,4,5,4, 3,2,4,3, 5,1,1,5, 4,2,5,5], near: /physician|surgeon|nurse practitioner|medical scientist|dentist/i },
+  { en: 'Dentists', zh: '牙医', answers: [3,4,5,3, 4,3,3,3, 5,1,2,5, 4,2,5,5], near: /dentist|physician|surgeon|nurse|hygienist/i },
+  { en: 'Pharmacists', zh: '药剂师', answers: [4,5,3,2, 5,5,2,1, 5,2,1,5, 3,3,4,4], near: /pharmacist|pharmacy|nurse|physician|medical/i },
+  { en: 'Physician Assistants', zh: '医师助理', answers: [3,4,4,3, 4,3,3,2, 5,2,2,5, 3,3,5,4], near: /physician assistant|nurse|medical|practitioner/i },
+  { en: 'Physical Therapists', zh: '物理治疗师', answers: [3,4,5,3, 3,2,4,3, 4,3,2,5, 4,2,5,5], near: /physical therap|therap|nurse|trainer/i },
+  { en: 'Occupational Therapists', zh: '职业治疗师', answers: [3,4,5,3, 3,2,4,3, 4,3,2,5, 4,2,5,5], near: /occupational therap|physical therap|therap|nurse/i },
+  { en: 'Speech-Language Pathologists', zh: '言语病理师', answers: [4,4,4,3, 3,2,4,3, 4,3,2,4, 4,2,4,5], near: /speech|patholog|therap|nurse/i },
+  { en: 'Veterinarians', zh: '兽医', answers: [3,4,5,3, 4,3,3,3, 5,2,2,4, 4,2,5,4], near: /veterinar|physician|surgeon|animal|nurse/i },
+  { en: 'Dental Hygienists', zh: '口腔卫生师', answers: [3,4,4,2, 4,4,3,2, 4,2,3,4, 3,3,5,4], near: /dental|hygienist|dentist|nurse|assistant/i },
+  { en: 'Dietitians and Nutritionists', zh: '营养师', answers: [4,4,4,3, 3,2,4,3, 3,3,3,4, 4,3,4,4], near: /dietit|nutrition|therap|nurse|counsel/i },
+  { en: 'Radiologic Technologists', zh: '放射技师', answers: [4,4,3,2, 5,4,3,2, 4,2,3,4, 2,4,5,3], near: /radiolog|technologist|technician|nurse|medical/i },
+  { en: 'Emergency Medical Technicians and Paramedics', zh: '急救医护员', answers: [2,4,4,3, 3,3,3,2, 5,2,2,4, 3,3,5,4], near: /emergency medical|paramedic|nurse|firefighter|medical assistant/i },
+
+  // ── Healthcare Support (31) ──
+  { en: 'Dental Assistants', zh: '牙科助理', answers: [3,4,3,2, 4,4,3,2, 4,3,3,4, 2,4,5,3], near: /dental assistant|dental|hygienist|medical assistant|nurse/i },
+  { en: 'Home Health and Personal Care Aides', zh: '居家护理员', answers: [1,3,4,3, 2,3,3,3, 4,3,3,4, 3,4,5,4], near: /home health|personal care|aide|nursing assistant|childcare/i },
+  { en: 'Massage Therapists', zh: '按摩治疗师', answers: [1,3,5,2, 2,2,3,4, 3,4,4,3, 5,3,5,4], near: /massage|therap|personal|hairdress|fitness/i },
+
+  // ── Sales (41) ──
+  { en: 'Real Estate Sales Agents', zh: '房地产经纪人', answers: [4,3,4,3, 3,2,4,3, 3,4,3,3, 5,2,3,4], near: /real estate|sales|insurance|agent/i },
+  { en: 'Sales Engineers', zh: '销售工程师', answers: [5,4,4,3, 4,3,3,3, 3,4,3,3, 4,3,2,3], near: /sales engineer|engineer|sales/i },
+  { en: 'Securities and Financial Services Sales Agents', zh: '证券经纪人', answers: [5,4,3,3, 4,3,3,2, 3,4,3,3, 4,3,1,3], near: /securities|financial|sales|advisor/i },
+  { en: 'Travel Agents', zh: '旅行顾问', answers: [5,4,2,2, 4,4,2,2, 2,4,4,2, 4,4,2,3], near: /travel|agent|sales|reservation|clerk/i },
+
+  // ── Installation, Maintenance & Repair (49) ──
+  { en: 'Automotive Service Technicians and Mechanics', zh: '汽车维修技师', answers: [2,3,4,3, 4,4,2,2, 4,4,3,3, 3,4,5,2], near: /automotive|mechanic|repair|technician|maintenance/i },
+  { en: 'Heating, Air Conditioning, and Refrigeration Mechanics', zh: '暖通空调技工', answers: [2,3,4,3, 4,4,2,2, 4,3,3,3, 3,4,5,2], near: /heating|air conditioning|mechanic|maintenance|repair|hvac/i },
+  { en: 'Aircraft Mechanics and Service Technicians', zh: '飞机维修技师', answers: [3,4,4,3, 5,4,2,2, 5,2,2,4, 2,4,5,2], near: /aircraft|mechanic|technician|maintenance|repair/i },
+  { en: 'Industrial Machinery Mechanics', zh: '工业机械维修工', answers: [2,4,4,2, 5,4,2,2, 4,3,3,3, 2,4,5,2], near: /industrial|machinery|mechanic|maintenance|repair|machinist/i },
+
+  // ── Transportation (53) ──
+  { en: 'Airline Pilots, Copilots, and Flight Engineers', zh: '飞行员', answers: [4,4,4,3, 5,4,2,2, 5,1,2,4, 2,3,5,3], near: /pilot|flight|aircraft/i },
+  { en: 'Flight Attendants', zh: '空乘人员', answers: [2,4,2,2, 3,4,3,2, 4,3,3,3, 3,4,5,3], near: /flight attendant|attendant|waiter|recreation/i },
+  { en: 'Bus Drivers, Transit and Intercity', zh: '公交车司机', answers: [2,4,2,2, 4,4,2,1, 4,3,3,3, 2,4,5,2], near: /bus driver|driver|truck|transit|tractor/i },
+  { en: 'Couriers and Delivery Drivers', zh: '快递配送员', answers: [3,4,2,1, 4,4,2,1, 3,4,4,2, 2,5,5,2], near: /courier|delivery|driver|truck|laborer|material mover/i },
+
+  // ── Farming (45) ──
+  { en: 'Farmers, Ranchers, and Agricultural Managers', zh: '农场主与农业经理', answers: [2,3,4,3, 4,3,3,3, 4,3,4,2, 3,3,5,2], near: /farmer|rancher|agricultural|landscap|operating engineer/i },
+
+  // ── Food (35) ──
+  { en: 'Chefs and Head Cooks', zh: '主厨', answers: [1,3,5,3, 2,2,4,5, 3,4,4,3, 4,3,5,4], near: /chef|head cook|cook|food|supervisor/i },
+];
+

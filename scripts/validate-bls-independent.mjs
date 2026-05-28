@@ -55,7 +55,7 @@ const T = [
   ['Carpenter',             [1,3,4,3, 3,3,2,3, 3,4,3,3, 3,3,5,3], /carpenter|construction|plumber|electrician|maintenance|operating engineer/i],
   ['Machinist',             [2,4,3,2, 5,4,2,2, 4,3,3,3, 2,4,5,2], /machinist|welder|inspector|operator|production|operating engineer/i],
   ['Welder',                [1,3,4,2, 4,4,2,2, 4,3,3,3, 2,4,5,2], /welder|machinist|inspector|construction|operator|production|carpenter/i],
-  ['Truck driver',          [2,4,2,2, 4,4,2,1, 4,4,3,3, 2,4,5,3], /truck driver|laborer|stocker|operating engineer|material mover|tractor/i],
+  ['Truck driver',          [2,4,2,2, 4,4,2,1, 4,4,3,3, 2,4,5,3], /truck driver|laborer|stocker|operating engineer|material mover|tractor|bus driver|delivery|courier/i],
   ['Warehouse / laborer',   [2,4,2,2, 4,4,2,1, 3,4,4,2, 2,5,5,2], /laborer|stocker|material mover|janitor|order filler|packaging|freight/i],
   ['Chef / cook',           [1,3,5,3, 2,2,3,5, 2,4,4,3, 3,3,5,4], /cook|chef|food prep|baker|food preparation|supervisors of food/i],
   ['Waiter / server',       [2,4,2,2, 3,3,2,2, 2,4,4,2, 3,4,5,3], /waiter|waitress|fast food|counter|food|server|bartender/i],

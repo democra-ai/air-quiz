@@ -21,7 +21,7 @@
 import { writeFileSync } from 'node:fs';
 import { PROFILE_CAREERS } from '../lib/air_career_data.ts';
 import { calculateQuizResult } from '../lib/air_quiz_calculator.ts';
-import { REALISTIC_ANSWERS } from './realistic-answers.mjs';
+import { REALISTIC_ANSWERS, SUPPLEMENTARY_OCCUPATIONS } from './realistic-answers.mjs';
 
 function computeArchetype(vec) {
   const core = Object.fromEntries(vec.map((a, i) => [`Q${i + 1}`, a]));
@@ -53,6 +53,17 @@ for (const [placement, careers] of Object.entries(PROFILE_CAREERS)) {
   }
 }
 
+// Supplementary common occupations (guess-only; no PROFILE_CAREERS list).
+let supCount = 0;
+for (const s of SUPPLEMENTARY_OCCUPATIONS) {
+  const id = slug(s.en);
+  if (seen.has(id)) continue;
+  seen.add(id);
+  const archetype = computeArchetype(s.answers);
+  out.push({ id, title: { en: s.en, zh: s.zh }, socGroup: 0, archetype, answers: s.answers });
+  supCount++;
+}
+
 if (missing.length) {
   console.error(`\n✗ ${missing.length} occupations missing a realistic vector:`);
   for (const m of missing) console.error(`    ${m}`);
@@ -79,7 +90,7 @@ writeFileSync(new URL('../lib/occupation_anchors.generated.ts', import.meta.url)
 // ── Diagnostic report ──
 const byFam = {};
 for (const o of out) byFam[o.archetype] = (byFam[o.archetype] || 0) + 1;
-console.log(`\nwrote ${out.length} occupations to lib/occupation_anchors.generated.ts`);
+console.log(`\nwrote ${out.length} occupations (${out.length - supCount} PROFILE_CAREERS + ${supCount} supplementary) to lib/occupation_anchors.generated.ts`);
 console.log(`computed-archetype distribution (${Object.keys(byFam).length}/16 families populated):`);
 console.log('  ' + Object.entries(byFam).sort().map(([k, v]) => `${k}:${v}`).join('  '));
 console.log(`\nplacement vs computed: ${out.length - mismatches.length}/${out.length} match PROFILE_CAREERS`);
