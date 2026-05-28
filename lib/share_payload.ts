@@ -16,17 +16,10 @@ export type SharePayloadV2 = SharePayloadBase & {
   v: 2;
   profileCode?: string;  // 4-letter code e.g. "EOFH"
   /**
-   * 4 raw dimension averages (1.0–5.0), order:
-   *   [learnability, evaluation, riskTolerance, humanPresence].
-   * @deprecated since coreAnswers (v2.1+) — kept so older share URLs
-   * still get a (cruder) inferred occupation section.
+   * @deprecated Older payloads may carry these fields from the (now removed)
+   * occupation-inference feature. New URLs no longer set them.
    */
   dimAvg?: [number, number, number, number];
-  /**
-   * Raw user answers to Q1..Q16 in declaration order, each 1–5.
-   * Required for the per-answer occupation inference on the result page.
-   * Older URLs without coreAnswers fall back to the dimAvg path.
-   */
   coreAnswers?: number[];
   insights?: {
     primaryDriver: string;
@@ -124,20 +117,6 @@ export function encodeSharePayload(payload: Omit<SharePayloadV2, 'v'>): string {
     lang: payload.lang,
     profileCode: payload.profileCode && /^[ETOSFRHP]{4}$/i.test(payload.profileCode)
       ? payload.profileCode.toUpperCase()
-      : undefined,
-    dimAvg: Array.isArray(payload.dimAvg) && payload.dimAvg.length === 4
-      ? (payload.dimAvg.map((x) => {
-          const n = Number(x);
-          if (!Number.isFinite(n)) return 3;
-          return Math.round(Math.max(1, Math.min(5, n)) * 10) / 10;
-        }) as [number, number, number, number])
-      : undefined,
-    coreAnswers: Array.isArray(payload.coreAnswers) && payload.coreAnswers.length === 16
-      ? payload.coreAnswers.map((x) => {
-          const n = Number(x);
-          if (!Number.isFinite(n)) return 3;
-          return Math.round(Math.max(1, Math.min(5, n)));
-        })
       : undefined,
     insights: payload.insights
       ? {

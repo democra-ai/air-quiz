@@ -36,7 +36,6 @@ interface ProfileView {
 
 interface AdviceView { icon: string; title: string; body: string; }
 interface CareerView { title: string; reason: string; riskScore: number; }
-interface InferredJob { id: string; title: string; confidence: number; }
 
 interface Props {
   lang: ShareLang;
@@ -47,11 +46,10 @@ interface Props {
   dimensions: DimensionView[];
   advice: AdviceView[];
   careers: CareerView[];
-  inferredJobs: InferredJob[];
 }
 
 export default function ResultPage(props: Props) {
-  const { lang, profile, dimensions, advice, careers, data, shareUrl, inferredJobs } = props;
+  const { lang, profile, dimensions, advice, careers, data, shareUrl } = props;
 
   return (
     <main style={{ minHeight: '100dvh' }}>
@@ -59,7 +57,6 @@ export default function ResultPage(props: Props) {
       <HeroResult lang={lang} profile={profile} prob={data.replacementProbability} year={data.predictedReplacementYear} confidence={{ earliest: data.earliestYear, latest: data.latestYear }} />
       <DimensionStrip lang={lang} dimensions={dimensions} />
       <Narrative lang={lang} profile={profile} />
-      <InferredSection lang={lang} jobs={inferredJobs} accent={profile.color} />
       <AdviceSection lang={lang} advice={advice} />
       <CareersSection lang={lang} profile={profile} careers={careers} />
       <ShareSection lang={lang} shareUrl={shareUrl} profile={profile} />
@@ -260,57 +257,6 @@ function Narrative({ lang, profile }: { lang: ShareLang; profile: ProfileView })
           </div>
         </aside>
       </div>
-    </section>
-  );
-}
-
-/* ─── Inferred occupation (from raw dimension averages) ───────────────── */
-
-function InferredSection({ lang, jobs, accent }: { lang: ShareLang; jobs: InferredJob[]; accent: string }) {
-  if (!jobs || jobs.length === 0) return null;
-  const t = ui(lang).result;
-  return (
-    <section className="page" style={{ paddingTop: 'clamp(1.5rem, 4vw, 3rem)', paddingBottom: 'clamp(1.5rem, 4vw, 3rem)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <span className="section-number">{t.eyebrow_inferred}</span>
-        <span className="rule-h" style={{ flex: 1 }} />
-      </div>
-      <h2 className="display-md" style={{ maxWidth: '24ch', marginBottom: 'clamp(1.25rem, 3vw, 2rem)' }}>
-        {t.inferred_headline}
-      </h2>
-      <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column' }}>
-        {jobs.map((j, i) => (
-          <li
-            key={j.id}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto minmax(0, 1fr) auto',
-              alignItems: 'baseline',
-              gap: 'clamp(0.75rem, 2vw, 1.5rem)',
-              padding: '14px 0',
-              borderTop: '1px dotted var(--paper-rule)',
-            }}
-          >
-            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-soft)', fontSize: '0.78rem', minWidth: 28 }}>
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <span className="italic-display" style={{ fontStyle: 'italic', color: 'var(--ink-strong)', fontSize: 'var(--step-2)' }}>
-              {j.title}
-            </span>
-            <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', color: accent, fontVariantNumeric: 'tabular-nums', fontSize: 'var(--step-1)' }}>
-                {j.confidence}%
-              </span>
-              <span className="smallcaps" style={{ color: 'var(--ink-mute)', fontSize: '0.7rem' }}>
-                {t.inferred_confidence_label}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ol>
-      <p className="marginalia" style={{ marginTop: 18, maxWidth: '64ch' }}>
-        {t.inferred_caveat}
-      </p>
     </section>
   );
 }

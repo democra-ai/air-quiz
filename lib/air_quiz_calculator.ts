@@ -349,9 +349,13 @@ function scoreDimension(dimension: QuizDimension, answers: Record<string, QuizAn
   });
 
   const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-  // Exactly 3.0 = neutral → lean resistant (conservative, protects user)
-  // The letter code is for display only; probability is fully continuous
-  const isFavorable = avg > 3;
+  // Tie-break: at exactly 3.0 (perfect middle), lean FAVOURABLE.
+  // Picking middle answers means "no strong evidence either way" — which is
+  // not the same as evidence of resistance. Labelling a middle-picker as
+  // T/S/R/H ("rigid/tacit/etc.") was confusing real users who reported
+  // feeling mis-labeled. The probability calculation is continuous anyway;
+  // the letter is just a display anchor.
+  const isFavorable = avg >= 3;
 
   return {
     dimensionId: dimension.id,
