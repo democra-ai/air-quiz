@@ -446,10 +446,13 @@ function CareersSection({ lang, profile, careers }: { lang: ShareLang; profile: 
 function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: string; profile: ProfileView }) {
   const t = ui(lang).result;
   const [copied, setCopied] = useState(false);
+  const [qr, setQr] = useState<{ platform: 'wechat' | 'xiaohongshu'; dataUrl: string } | null>(null);
 
   const tweet = `${profile.archetypeEn} (${profile.code}) — AIR`;
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}&url=${encodeURIComponent(shareUrl)}`;
   const weiboUrl = `https://service.weibo.com/share/share.php?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(tweet)}`;
+  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+  const redditUrl = `https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(tweet)}`;
 
   const copy = async () => {
     try {
@@ -457,6 +460,27 @@ function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: 
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
       trackShareClick('copy', lang);
+    } catch {}
+  };
+
+  // WeChat & Xiaohongshu have no web "share intent" — show a QR code the user
+  // scans to open the result on their phone, then shares from inside the app.
+  const openQr = async (platform: 'wechat' | 'xiaohongshu') => {
+    trackShareClick(platform, lang);
+    try {
+      const q = (await import('qrcode')) as unknown as {
+        toDataURL?: (text: string, opts?: object) => Promise<string>;
+        default?: { toDataURL: (text: string, opts?: object) => Promise<string> };
+      };
+      const toDataURL = q.toDataURL ?? q.default?.toDataURL;
+      if (!toDataURL) return;
+      const dataUrl = await toDataURL(shareUrl, {
+        margin: 1,
+        width: 320,
+        color: { dark: '#1f1814', light: '#ffffff' },
+        errorCorrectionLevel: 'M',
+      });
+      setQr({ platform, dataUrl });
     } catch {}
   };
 
@@ -470,9 +494,17 @@ function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: 
         <a className="btn btn-ghost btn-sm" href={tweetUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackShareClick('twitter', lang)}>
           {t.share_twitter}<span aria-hidden>↗</span>
         </a>
+        <a className="btn btn-ghost btn-sm" href={linkedInUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackShareClick('linkedin', lang)}>
+          {t.share_linkedin}<span aria-hidden>↗</span>
+        </a>
+        <a className="btn btn-ghost btn-sm" href={redditUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackShareClick('reddit', lang)}>
+          {t.share_reddit}<span aria-hidden>↗</span>
+        </a>
         <a className="btn btn-ghost btn-sm" href={weiboUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackShareClick('weibo', lang)}>
           {t.share_weibo}<span aria-hidden>↗</span>
         </a>
+        <button className="btn btn-ghost btn-sm" onClick={() => openQr('wechat')}>{t.share_wechat}</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => openQr('xiaohongshu')}>{t.share_xiaohongshu}</button>
         <button className="btn btn-ghost btn-sm" onClick={copy}>
           {copied ? t.share_copied : t.share_copy}
         </button>
@@ -493,6 +525,43 @@ function ShareSection({ lang, shareUrl, profile }: { lang: ShareLang; shareUrl: 
           {shareUrl.replace(/^https?:\/\//, '')}
         </code>
       </div>
+
+      {qr && (
+        <div
+          onClick={() => setQr(null)}
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(31,24,20,0.55)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'var(--paper-card)',
+              border: '1px solid var(--paper-rule)',
+              borderRadius: 16,
+              padding: '28px 28px 22px',
+              maxWidth: 340,
+              width: '100%',
+              textAlign: 'center',
+              boxShadow: '0 24px 60px rgba(31,24,20,0.28)',
+            }}
+          >
+            <div className="italic-display" style={{ fontStyle: 'italic', fontSize: '1.25rem', marginBottom: 18, color: 'var(--ink)' }}>
+              {qr.platform === 'wechat' ? t.share_wechat : t.share_xiaohongshu}
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={qr.dataUrl} alt="QR code" width={240} height={240} style={{ width: 240, height: 240, display: 'block', margin: '0 auto', borderRadius: 8 }} />
+            <p style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', margin: '16px 0 18px', lineHeight: 1.5 }}>
+              {t.share_scan}
+            </p>
+            <button className="btn btn-ghost btn-sm" onClick={() => setQr(null)}>{t.share_qr_close}</button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -139,6 +139,12 @@ export interface UIStrings {
     share_copied: string;
     share_twitter: string;
     share_weibo: string;
+    share_linkedin: string;
+    share_reddit: string;
+    share_wechat: string;
+    share_xiaohongshu: string;
+    share_scan: string;
+    share_qr_close: string;
 
     retake_eyebrow: string;          // "Answer differently?"
     retake_headline: string;
@@ -266,6 +272,12 @@ const EN: UIStrings = {
     share_copied: 'Copied ✓',
     share_twitter: 'Twitter',
     share_weibo: 'Weibo',
+    share_linkedin: 'LinkedIn',
+    share_reddit: 'Reddit',
+    share_wechat: 'WeChat',
+    share_xiaohongshu: 'RED (Xiaohongshu)',
+    share_scan: 'Scan the QR code with your phone to open, then share',
+    share_qr_close: 'Close',
     retake_eyebrow: 'Answer differently?',
     retake_headline: 'Take the test again.',
     retake_cta: 'Start over',
@@ -391,6 +403,12 @@ const ZH: UIStrings = {
     share_copied: '已复制 ✓',
     share_twitter: 'Twitter',
     share_weibo: '微博',
+    share_linkedin: 'LinkedIn',
+    share_reddit: 'Reddit',
+    share_wechat: '微信',
+    share_xiaohongshu: '小红书',
+    share_scan: '用手机扫码打开，再分享到对应 App',
+    share_qr_close: '关闭',
     retake_eyebrow: '想再答一次？',
     retake_headline: '重测一遍。',
     retake_cta: '重新开始',
@@ -516,6 +534,12 @@ const JA: UIStrings = {
     share_copied: 'コピーしました ✓',
     share_twitter: 'Twitter',
     share_weibo: 'Weibo',
+    share_linkedin: 'LinkedIn',
+    share_reddit: 'Reddit',
+    share_wechat: 'WeChat',
+    share_xiaohongshu: 'RED（小紅書）',
+    share_scan: 'QRコードをスマホで読み取って開き、シェアしてください',
+    share_qr_close: '閉じる',
     retake_eyebrow: '別の答えで試す？',
     retake_headline: 'もう一度受ける。',
     retake_cta: 'やり直す',
@@ -641,6 +665,12 @@ const KO: UIStrings = {
     share_copied: '복사됨 ✓',
     share_twitter: 'Twitter',
     share_weibo: 'Weibo',
+    share_linkedin: 'LinkedIn',
+    share_reddit: 'Reddit',
+    share_wechat: 'WeChat',
+    share_xiaohongshu: 'RED(샤오훙슈)',
+    share_scan: 'QR 코드를 휴대폰으로 스캔해 연 뒤 공유하세요',
+    share_qr_close: '닫기',
     retake_eyebrow: '다른 답변으로 다시?',
     retake_headline: '다시 테스트.',
     retake_cta: '처음부터',
@@ -766,6 +796,12 @@ const DE: UIStrings = {
     share_copied: 'Kopiert ✓',
     share_twitter: 'Twitter',
     share_weibo: 'Weibo',
+    share_linkedin: 'LinkedIn',
+    share_reddit: 'Reddit',
+    share_wechat: 'WeChat',
+    share_xiaohongshu: 'RED (Xiaohongshu)',
+    share_scan: 'QR-Code mit dem Handy scannen, öffnen und teilen',
+    share_qr_close: 'Schließen',
     retake_eyebrow: 'Anders antworten?',
     retake_headline: 'Test erneut machen.',
     retake_cta: 'Von vorn',
