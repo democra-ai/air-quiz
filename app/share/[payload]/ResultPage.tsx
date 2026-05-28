@@ -14,6 +14,8 @@ interface DimensionView {
   dimensionId: string;
   letter: string;
   isFavorable: boolean;
+  /** 1.0–5.0 dimension average; drives the bar marker + percentage display. */
+  rawAverage: number;
   name: string;
   favorableLabel: string;
   resistantLabel: string;
@@ -169,6 +171,19 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
         <div style={{ display: 'grid', gap: 'clamp(1.25rem, 2.5vw, 2rem)' }}>
           {dimensions.map((d, i) => {
             const color = ['var(--dim-1)', 'var(--dim-2)', 'var(--dim-3)', 'var(--dim-4)'][i];
+            // Bar geometry: favorable side is on the LEFT, resistant on the RIGHT.
+            //   rawAvg 5 (max favorable) → marker at 0%
+            //   rawAvg 3 (neutral)       → marker at 50%
+            //   rawAvg 1 (max resistant) → marker at 100%
+            const barPct = Math.max(0, Math.min(100, ((5 - d.rawAverage) / 4) * 100));
+            // Percentage TOWARD the displayed letter (favorable or resistant side).
+            //   isFavorable → leans favorable; pct = (rawAvg-1)/4 * 100  (50% at neutral, 100% at avg=5)
+            //   else        → leans resistant; pct = (5-rawAvg)/4 * 100
+            const towardLetterPct = Math.round(
+              d.isFavorable
+                ? ((d.rawAverage - 1) / 4) * 100
+                : ((5 - d.rawAverage) / 4) * 100,
+            );
             return (
               <div
                 key={d.dimensionId}
@@ -197,7 +212,7 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
                     <div
                       className="dim-bar-marker"
                       style={{
-                        left: d.isFavorable ? '22%' : '78%',
+                        left: `${barPct}%`,
                         background: color,
                         borderColor: color,
                       }}
@@ -205,19 +220,41 @@ function DimensionStrip({ lang, dimensions }: { lang: ShareLang; dimensions: Dim
                   </div>
                 </div>
 
+                {/* Big italic letter + small mono percent stacked under it */}
                 <div
                   style={{
-                    fontFamily: 'var(--font-display)',
-                    fontStyle: 'italic',
-                    fontSize: 'var(--step-5)',
-                    lineHeight: 1,
-                    color,
-                    fontVariationSettings: '"opsz" 144, "SOFT" 100, "WONK" 1',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                     paddingLeft: 'clamp(0.5rem, 2vw, 1.25rem)',
                     paddingRight: 'clamp(0.25rem, 1vw, 0.5rem)',
+                    minWidth: 56,
                   }}
                 >
-                  {d.letter}
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontStyle: 'italic',
+                      fontSize: 'var(--step-5)',
+                      lineHeight: 1,
+                      color,
+                      fontVariationSettings: '"opsz" 144, "SOFT" 100, "WONK" 1',
+                    }}
+                  >
+                    {d.letter}
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 4,
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--step--1)',
+                      fontVariantNumeric: 'tabular-nums',
+                      color: 'var(--ink-mute)',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    {towardLetterPct}%
+                  </div>
                 </div>
               </div>
             );

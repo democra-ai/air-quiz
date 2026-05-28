@@ -86,14 +86,19 @@ export default async function SharePage({ params, searchParams }: Props) {
   const profile = PROFILE_TYPES[code];
   if (!profile) notFound();
 
-  // Per-dimension favorable/resistant inference from the 4-letter code.
+  // Per-dimension favorable/resistant inference from the 4-letter code, plus
+  // the raw average score from dimAvg (if present) so §II can render the
+  // precise percentage and marker position. Older share URLs without dimAvg
+  // get a neutral 3.0 — the bar marker just lands at 50%.
   const dimensions = QUIZ_DIMENSIONS.map((d, i) => {
     const letter = code[i];
     const isFavorable = letter === d.favorableLetter;
+    const rawAverage = (safeData.v === 2 && safeData.dimAvg) ? safeData.dimAvg[i] : 3.0;
     return {
       dimensionId: d.id,
       letter,
       isFavorable,
+      rawAverage,
       name: pickL(d.name, lang),
       favorableLabel: pickL(d.favorableLabel, lang),
       resistantLabel: pickL(d.resistantLabel, lang),

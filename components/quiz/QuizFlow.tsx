@@ -192,6 +192,11 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
         latestYear: isFinite(result.confidenceInterval.latest) ? result.confidenceInterval.latest : 2099,
         lang: lang as 'en' | 'zh' | 'ja' | 'ko' | 'de',
         profileCode: result.profileCode,
+        // Needed by the result page §II to show each axis's percentage and
+        // to position the marker on the bar at the precise dimension score.
+        dimAvg: result.dimensions.map((d) =>
+          Math.round(d.rawAverage * 10) / 10,
+        ) as [number, number, number, number],
       });
 
       try { sessionStorage.removeItem(storageKey); } catch {}

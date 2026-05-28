@@ -16,10 +16,12 @@ export type SharePayloadV2 = SharePayloadBase & {
   v: 2;
   profileCode?: string;  // 4-letter code e.g. "EOFH"
   /**
-   * @deprecated Older payloads may carry these fields from the (now removed)
-   * occupation-inference feature. New URLs no longer set them.
+   * 4 raw dimension averages (1.0–5.0), order:
+   *   [learnability, evaluation, riskTolerance, humanPresence].
+   * Drives the per-axis percentage + marker position in §II of the result page.
    */
   dimAvg?: [number, number, number, number];
+  /** @deprecated removed with the occupation-inference feature. Older URLs may still carry it. */
   coreAnswers?: number[];
   insights?: {
     primaryDriver: string;
@@ -117,6 +119,13 @@ export function encodeSharePayload(payload: Omit<SharePayloadV2, 'v'>): string {
     lang: payload.lang,
     profileCode: payload.profileCode && /^[ETOSFRHP]{4}$/i.test(payload.profileCode)
       ? payload.profileCode.toUpperCase()
+      : undefined,
+    dimAvg: Array.isArray(payload.dimAvg) && payload.dimAvg.length === 4
+      ? (payload.dimAvg.map((x) => {
+          const n = Number(x);
+          if (!Number.isFinite(n)) return 3;
+          return Math.round(Math.max(1, Math.min(5, n)) * 10) / 10;
+        }) as [number, number, number, number])
       : undefined,
     insights: payload.insights
       ? {
