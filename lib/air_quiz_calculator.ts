@@ -673,6 +673,13 @@ export function calculateQuizResultFull(
   answers: Record<string, QuizAnswer>,
   dimensionQuestions: { id: string; direction: 'forward' | 'reverse' }[][],
   selectedSOC?: number | null,
+  /**
+   * Optional S1–S4 "current AI capability" answers. When provided (Full mode's
+   * final section), currentAICapability / currentReplacementDegree become a
+   * real reading of how much AI can do the user's work TODAY, instead of the
+   * neutral 50 default.
+   */
+  snapshotAnswers?: Record<string, QuizAnswer>,
 ): QuizResult {
   const dimensionResults = QUIZ_DIMENSIONS.map((d, i) =>
     scoreDimension(d, answers, dimensionQuestions[i])
@@ -689,6 +696,9 @@ export function calculateQuizResultFull(
   const probability = calculateProbability(profileCode, dimensionResults);
   const { year, confidenceInterval } = predictYear(profileCode, dimensionResults, probability);
 
+  const hasSnapshot = snapshotAnswers && Object.keys(snapshotAnswers).length > 0;
+  const snapshotScore = hasSnapshot ? scoreSnapshot(snapshotAnswers!) : 50;
+
   return {
     profileCode,
     profile,
@@ -696,10 +706,10 @@ export function calculateQuizResultFull(
     favorableCount,
     replacementProbability: probability,
     predictedReplacementYear: year,
-    currentAICapability: 50,
+    currentAICapability: snapshotScore,
     confidenceInterval,
     riskLevel: riskLevelFromProbability(probability),
-    currentReplacementDegree: 50,
+    currentReplacementDegree: snapshotScore,
     occupationSOC: resolveOccupation(selectedSOC ?? null, profileCode),
   };
 }

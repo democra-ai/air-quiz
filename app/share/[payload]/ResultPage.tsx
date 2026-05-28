@@ -56,7 +56,15 @@ export default function ResultPage(props: Props) {
   return (
     <main style={{ minHeight: '100dvh' }}>
       <Nav />
-      <HeroResult lang={lang} profile={profile} prob={data.replacementProbability} year={data.predictedReplacementYear} confidence={{ earliest: data.earliestYear, latest: data.latestYear }} />
+      <HeroResult
+        lang={lang}
+        profile={profile}
+        prob={data.replacementProbability}
+        year={data.predictedReplacementYear}
+        confidence={{ earliest: data.earliestYear, latest: data.latestYear }}
+        currentDegree={data.currentReplacementDegree}
+        snapshotMeasured={data.v === 2 ? data.snapshotMeasured === true : false}
+      />
       <DimensionStrip lang={lang} dimensions={dimensions} />
       <Narrative lang={lang} profile={profile} />
       <AdviceSection lang={lang} advice={advice} />
@@ -71,13 +79,15 @@ export default function ResultPage(props: Props) {
 
 /* ─── Hero block ─────────────────────────────────────────────────────── */
 function HeroResult({
-  lang, profile, prob, year, confidence,
+  lang, profile, prob, year, confidence, currentDegree, snapshotMeasured,
 }: {
   lang: ShareLang;
   profile: ProfileView;
   prob: number;
   year: number;
   confidence: { earliest: number; latest: number };
+  currentDegree: number;
+  snapshotMeasured: boolean;
 }) {
   const t = ui(lang).result;
   const yrText = year >= 2100 ? '∞' : `${year}`;
@@ -135,6 +145,14 @@ function HeroResult({
             {confidence.latest >= 2099 ? '∞' : confidence.latest}
           </span>
         </Stat>
+        {snapshotMeasured ? (
+          <Stat label={t.stat_current}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--step-5)', lineHeight: 1, color: 'var(--ink-strong)', fontVariantNumeric: 'tabular-nums' }}>
+              {Math.round(currentDegree)}
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.4rem', color: 'var(--ink-mute)', marginLeft: 4 }}>%</span>
+          </Stat>
+        ) : null}
       </div>
     </section>
   );

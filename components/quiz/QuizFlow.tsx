@@ -6,6 +6,7 @@ import {
   ALL_CORE_QUESTIONS,
   CORE_QUESTION_COUNT,
   QUIZ_DIMENSIONS,
+  AI_SNAPSHOT_QUESTIONS,
   type QuizAnswer,
   type QuizQuestion,
 } from '@/lib/air_quiz_data';
@@ -59,6 +60,11 @@ const FULL_DIMENSION_META: { id: string; direction: 'forward' | 'reverse' }[][] 
   DIMENSION_HUMAN_FULL.map(q => ({ id: q.id, direction: q.direction })),
 ];
 
+// Snapshot questions (S1–S4) appended to Full mode — "how much can AI do your
+// work TODAY". Shape-compatible with QuizQuestion so QuestionCard renders them.
+const SNAPSHOT_QUESTIONS = AI_SNAPSHOT_QUESTIONS as unknown as QuizQuestion[];
+const SNAPSHOT_IDS = new Set(SNAPSHOT_QUESTIONS.map(q => q.id));
+
 export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>('intro');
@@ -71,9 +77,11 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
     if (mode === 'full') {
       const dimMap = new Map<string, number>();
       FULL_DIMENSION_META.forEach((dim, di) => dim.forEach((q) => dimMap.set(q.id, di)));
+      // 60 structural questions + 4 "current reality" snapshot questions = 64.
+      const fullList = [...(ALL_FULL_QUESTIONS as QuizQuestion[]), ...SNAPSHOT_QUESTIONS];
       return {
-        questions: ALL_FULL_QUESTIONS as QuizQuestion[],
-        total: FULL_QUESTION_COUNT,
+        questions: fullList,
+        total: fullList.length,
         storageKey: `${STORAGE_KEY_PREFIX}-full`,
         dimensionForQid: dimMap,
       };
@@ -114,6 +122,9 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
 
   const sectionCaption = useMemo(() => {
     if (!q) return '';
+    if (SNAPSHOT_IDS.has(q.id)) {
+      return `V · ${ui(lang).question.snapshot_section.toUpperCase()}`;
+    }
     const di = dimensionForQid.get(q.id) ?? 0;
     const roman = ['I', 'II', 'III', 'IV'][di];
     const name = QUIZ_DIMENSIONS[di].name;
@@ -175,13 +186,22 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
   const submit = async () => {
     setPhase('submitting');
     try {
+      // Split answers into core (dimension) vs snapshot (S1–S4, Full mode only).
+      const coreAnswers: Record<string, QuizAnswer> = {};
+      const snapshotAnswers: Record<string, QuizAnswer> = {};
+      for (const [k, v] of Object.entries(answers)) {
+        if (SNAPSHOT_IDS.has(k)) snapshotAnswers[k] = v;
+        else coreAnswers[k] = v;
+      }
+      const snapshotMeasured = Object.keys(snapshotAnswers).length > 0;
+
       const result = mode === 'full'
-        ? calculateQuizResultFull(answers, FULL_DIMENSION_META, null)
-        : calculateQuizResult({ core: answers, snapshot: {}, survey: {} } as QuizAnswers, null);
+        ? calculateQuizResultFull(coreAnswers, FULL_DIMENSION_META, null, snapshotAnswers)
+        : calculateQuizResult({ core: coreAnswers, snapshot: {}, survey: {} } as QuizAnswers, null);
 
       // fire-and-forget telemetry
-      void trackQuizComplete(result, { core: answers, snapshot: {}, survey: {} }, lang);
-      void trackAnswerDistribution(answers as Record<string, number>, result.profileCode, lang);
+      void trackQuizComplete(result, { core: coreAnswers, snapshot: snapshotAnswers, survey: {} }, lang);
+      void trackAnswerDistribution(coreAnswers as Record<string, number>, result.profileCode, lang);
 
       const sp = encodeSharePayload({
         riskLevel: result.riskLevel,
@@ -192,11 +212,13 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
         latestYear: isFinite(result.confidenceInterval.latest) ? result.confidenceInterval.latest : 2099,
         lang: lang as 'en' | 'zh' | 'ja' | 'ko' | 'de',
         profileCode: result.profileCode,
-        // Needed by the result page §II to show each axis's percentage and
-        // to position the marker on the bar at the precise dimension score.
+        // §II axis percentages + marker positions
         dimAvg: result.dimensions.map((d) =>
           Math.round(d.rawAverage * 10) / 10,
         ) as [number, number, number, number],
+        // Only Full mode collects the snapshot — flag it so the result page
+        // knows whether to surface the "AI can do X% of your work today" stat.
+        snapshotMeasured,
       });
 
       try { sessionStorage.removeItem(storageKey); } catch {}

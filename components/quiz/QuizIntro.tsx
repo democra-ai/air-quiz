@@ -2,9 +2,12 @@
 
 import { useState } from 'react';
 import type { Language } from '@/lib/translations';
-import { CORE_QUESTION_COUNT } from '@/lib/air_quiz_data';
+import { CORE_QUESTION_COUNT, AI_SNAPSHOT_QUESTIONS } from '@/lib/air_quiz_data';
 import { FULL_QUESTION_COUNT } from '@/lib/air_quiz_data_60';
 import { ui } from '@/lib/ui_text';
+
+// Full mode = 60 structural + 4 current-reality snapshot questions.
+const FULL_TOTAL = FULL_QUESTION_COUNT + AI_SNAPSHOT_QUESTIONS.length;
 
 export type QuizMode = 'quick' | 'full';
 
@@ -62,7 +65,7 @@ export default function QuizIntro({ lang, initialMode = 'quick', onStart, onCanc
             selected={mode === 'full'}
             onClick={() => setMode('full')}
             label={t.mode_full}
-            count={`${FULL_QUESTION_COUNT}`}
+            count={`${FULL_TOTAL}`}
             meta={t.mode_full_meta}
           />
         </div>

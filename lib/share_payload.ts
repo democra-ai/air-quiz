@@ -23,6 +23,9 @@ export type SharePayloadV2 = SharePayloadBase & {
   dimAvg?: [number, number, number, number];
   /** @deprecated removed with the occupation-inference feature. Older URLs may still carry it. */
   coreAnswers?: number[];
+  /** True when the Full-mode AI-snapshot section was answered — gates the
+   *  "AI can already do X% of your work today" stat on the result page. */
+  snapshotMeasured?: boolean;
   insights?: {
     primaryDriver: string;
     secondaryFactors: string[];
@@ -127,6 +130,7 @@ export function encodeSharePayload(payload: Omit<SharePayloadV2, 'v'>): string {
           return Math.round(Math.max(1, Math.min(5, n)) * 10) / 10;
         }) as [number, number, number, number])
       : undefined,
+    snapshotMeasured: payload.snapshotMeasured === true ? true : undefined,
     insights: payload.insights
       ? {
           primaryDriver: sanitizeText(payload.insights.primaryDriver),

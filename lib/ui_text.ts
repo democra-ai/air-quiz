@@ -98,6 +98,7 @@ export interface UIStrings {
     continue: string;
     see_result: string;
     progress_label: string;          // "Question"
+    snapshot_section: string;        // "Current reality" — caption for the S1–S4 section
   };
 
   completing: {
@@ -119,6 +120,7 @@ export interface UIStrings {
     stat_prob: string;
     stat_year: string;
     stat_confidence: string;
+    stat_current: string;            // "AI can already do … of your work today"
 
     axis_favorable: string;          // "AI catches up easily on this axis."
     axis_resistant: string;          // "This axis is your moat."
@@ -219,7 +221,7 @@ const EN: UIStrings = {
     mode_quick: 'Quick',
     mode_quick_meta: '16 Q · ~4 min',
     mode_full: 'Full',
-    mode_full_meta: '60 Q · ~15 min · finer dimension scoring',
+    mode_full_meta: '64 Q · ~15 min · structural + current-reality',
   },
   question: {
     section_prefix: '',
@@ -227,6 +229,7 @@ const EN: UIStrings = {
     continue: 'Continue',
     see_result: 'See result',
     progress_label: 'Question',
+    snapshot_section: 'Current reality',
   },
   completing: {
     headline: 'Computing your archetype',
@@ -245,6 +248,7 @@ const EN: UIStrings = {
     stat_prob: 'Replacement probability',
     stat_year: 'Predicted year',
     stat_confidence: 'Confidence interval',
+    stat_current: 'AI can already do this much of your work today',
     axis_favorable: 'AI catches up easily on this axis.',
     axis_resistant: 'This axis is your moat.',
     moat_label: 'Your superpower',
@@ -338,7 +342,7 @@ const ZH: UIStrings = {
     mode_quick: '简版',
     mode_quick_meta: '16 题 · 约 4 分钟',
     mode_full: '完整版',
-    mode_full_meta: '60 题 · 约 15 分钟 · 维度评分更精细',
+    mode_full_meta: '64 题 · 约 15 分钟 · 结构 + 当下现状',
   },
   question: {
     section_prefix: '',
@@ -346,6 +350,7 @@ const ZH: UIStrings = {
     continue: '继续',
     see_result: '查看结果',
     progress_label: '进度',
+    snapshot_section: '当下现实',
   },
   completing: {
     headline: '正在计算',
@@ -364,6 +369,7 @@ const ZH: UIStrings = {
     stat_prob: '替代概率',
     stat_year: '预测替代年份',
     stat_confidence: '置信区间',
+    stat_current: 'AI 今天已经能做你这么多工作',
     axis_favorable: 'AI 在这一维度上很容易追上你。',
     axis_resistant: '这一维度是你的护城河。',
     moat_label: '你的护城河',
@@ -457,7 +463,7 @@ const JA: UIStrings = {
     mode_quick: '簡易版',
     mode_quick_meta: '16問 · 約4分',
     mode_full: '完全版',
-    mode_full_meta: '60問 · 約15分 · より精緻な次元スコア',
+    mode_full_meta: '64問 · 約15分 · 構造 + 現状',
   },
   question: {
     section_prefix: '',
@@ -465,6 +471,7 @@ const JA: UIStrings = {
     continue: '次へ',
     see_result: '結果を見る',
     progress_label: '質問',
+    snapshot_section: '現状',
   },
   completing: {
     headline: '原型を計算中',
@@ -483,6 +490,7 @@ const JA: UIStrings = {
     stat_prob: '代替確率',
     stat_year: '予測代替年',
     stat_confidence: '信頼区間',
+    stat_current: 'AIが今あなたの仕事をこれだけこなせる',
     axis_favorable: 'AIがこの軸ですぐ追いついてくる。',
     axis_resistant: 'この軸はあなたの堀。',
     moat_label: 'あなたの強み',
@@ -576,7 +584,7 @@ const KO: UIStrings = {
     mode_quick: '간단 버전',
     mode_quick_meta: '16문항 · 약 4분',
     mode_full: '전체 버전',
-    mode_full_meta: '60문항 · 약 15분 · 더 정밀한 차원 점수',
+    mode_full_meta: '64문항 · 약 15분 · 구조 + 현재 상황',
   },
   question: {
     section_prefix: '',
@@ -584,6 +592,7 @@ const KO: UIStrings = {
     continue: '계속',
     see_result: '결과 보기',
     progress_label: '진행',
+    snapshot_section: '현재 상황',
   },
   completing: {
     headline: '원형을 계산 중',
@@ -602,6 +611,7 @@ const KO: UIStrings = {
     stat_prob: '대체 확률',
     stat_year: '예측 대체 연도',
     stat_confidence: '신뢰 구간',
+    stat_current: 'AI가 지금 당신의 일을 이만큼 할 수 있다',
     axis_favorable: 'AI가 이 축에서는 쉽게 따라잡는다.',
     axis_resistant: '이 축이 당신의 해자.',
     moat_label: '당신의 강점',
@@ -695,7 +705,7 @@ const DE: UIStrings = {
     mode_quick: 'Kurz',
     mode_quick_meta: '16 Fragen · ca. 4 Min',
     mode_full: 'Vollständig',
-    mode_full_meta: '60 Fragen · ca. 15 Min · feinere Bewertung',
+    mode_full_meta: '64 Fragen · ca. 15 Min · Struktur + aktuelle Lage',
   },
   question: {
     section_prefix: '',
@@ -703,6 +713,7 @@ const DE: UIStrings = {
     continue: 'Weiter',
     see_result: 'Ergebnis ansehen',
     progress_label: 'Frage',
+    snapshot_section: 'Aktuelle Lage',
   },
   completing: {
     headline: 'Ihr Archetyp wird berechnet',
@@ -721,6 +732,7 @@ const DE: UIStrings = {
     stat_prob: 'Ersetzungs­wahrscheinlichkeit',
     stat_year: 'Prognosejahr',
     stat_confidence: 'Konfidenzintervall',
+    stat_current: 'So viel Ihrer Arbeit kann KI heute schon erledigen',
     axis_favorable: 'Auf dieser Achse holt KI rasch auf.',
     axis_resistant: 'Diese Achse ist Ihr Burggraben.',
     moat_label: 'Ihre Stärke',
