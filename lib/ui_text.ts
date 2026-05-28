@@ -111,10 +111,11 @@ export interface UIStrings {
     eyebrow_result: string;          // "§ I · Your archetype"
     eyebrow_axes: string;            // "§ II · Across four axes"
     eyebrow_meaning: string;         // "§ III · What this means"
-    eyebrow_advice: string;          // "§ IV · What to do"
-    eyebrow_careers: string;         // "§ V · Representative careers"
-    eyebrow_share: string;           // "§ VI · Share"
-    eyebrow_other: string;           // "§ VII · The other 15"
+    eyebrow_inferred: string;        // "§ IV · Probable role"
+    eyebrow_advice: string;          // "§ V · What to do"
+    eyebrow_careers: string;         // "§ VI · Representative careers"
+    eyebrow_share: string;           // "§ VII · Share"
+    eyebrow_other: string;           // "§ VIII · The other 15"
 
     stat_prob: string;
     stat_year: string;
@@ -125,6 +126,10 @@ export interface UIStrings {
 
     moat_label: string;              // "Your superpower"
     kryptonite_label: string;        // "Your kryptonite"
+
+    inferred_headline: string;       // "Based on your answers, your work looks most like:"
+    inferred_caveat: string;         // "Inferred from 16 answers, not from your job title — treat as suggestive."
+    inferred_confidence_label: string; // "match"
 
     careers_headline: string;
 
@@ -237,10 +242,11 @@ const EN: UIStrings = {
     eyebrow_result: '§ I · Your archetype',
     eyebrow_axes: '§ II · Across four axes',
     eyebrow_meaning: '§ III · What this means',
-    eyebrow_advice: '§ IV · What to do',
-    eyebrow_careers: '§ V · Representative careers',
-    eyebrow_share: '§ VI · Share',
-    eyebrow_other: '§ VII · The other 15',
+    eyebrow_inferred: '§ IV · Probable role',
+    eyebrow_advice: '§ V · What to do',
+    eyebrow_careers: '§ VI · Representative careers',
+    eyebrow_share: '§ VII · Share',
+    eyebrow_other: '§ VIII · The other 15',
     stat_prob: 'Replacement probability',
     stat_year: 'Predicted year',
     stat_confidence: 'Confidence interval',
@@ -248,6 +254,9 @@ const EN: UIStrings = {
     axis_resistant: 'This axis is your moat.',
     moat_label: 'Your superpower',
     kryptonite_label: 'Your kryptonite',
+    inferred_headline: 'Based on your answers, your work looks most like:',
+    inferred_caveat: 'Inferred from your 16 answers, not from a job title — treat as suggestive.',
+    inferred_confidence_label: 'match',
     careers_headline: 'Jobs that typically land in this archetype.',
     share_copy: 'Copy link',
     share_copied: 'Copied ✓',
@@ -356,10 +365,11 @@ const ZH: UIStrings = {
     eyebrow_result: '§ I · 你的原型',
     eyebrow_axes: '§ II · 四维分布',
     eyebrow_meaning: '§ III · 解读',
-    eyebrow_advice: '§ IV · 建议',
-    eyebrow_careers: '§ V · 典型职业',
-    eyebrow_share: '§ VI · 分享',
-    eyebrow_other: '§ VII · 其他原型',
+    eyebrow_inferred: '§ IV · 你大概是什么职业',
+    eyebrow_advice: '§ V · 建议',
+    eyebrow_careers: '§ VI · 典型职业',
+    eyebrow_share: '§ VII · 分享',
+    eyebrow_other: '§ VIII · 其他原型',
     stat_prob: '替代概率',
     stat_year: '预测替代年份',
     stat_confidence: '置信区间',
@@ -367,6 +377,9 @@ const ZH: UIStrings = {
     axis_resistant: '这一维度是你的护城河。',
     moat_label: '你的护城河',
     kryptonite_label: '你的弱点',
+    inferred_headline: '从你的 16 题回答看，你的工作最像：',
+    inferred_caveat: '基于 16 题答案推断，不是基于你填的职业名称——仅供参考。',
+    inferred_confidence_label: '匹配度',
     careers_headline: '落在这个原型上的，常是这些职业。',
     share_copy: '复制链接',
     share_copied: '已复制 ✓',
@@ -475,10 +488,11 @@ const JA: UIStrings = {
     eyebrow_result: '§ I · あなたの原型',
     eyebrow_axes: '§ II · 4軸の分布',
     eyebrow_meaning: '§ III · 解釈',
-    eyebrow_advice: '§ IV · できること',
-    eyebrow_careers: '§ V · 代表的な職業',
-    eyebrow_share: '§ VI · シェア',
-    eyebrow_other: '§ VII · 他の15種',
+    eyebrow_inferred: '§ IV · あなたの推定職業',
+    eyebrow_advice: '§ V · できること',
+    eyebrow_careers: '§ VI · 代表的な職業',
+    eyebrow_share: '§ VII · シェア',
+    eyebrow_other: '§ VIII · 他の15種',
     stat_prob: '代替確率',
     stat_year: '予測代替年',
     stat_confidence: '信頼区間',
@@ -486,6 +500,9 @@ const JA: UIStrings = {
     axis_resistant: 'この軸はあなたの堀。',
     moat_label: 'あなたの強み',
     kryptonite_label: 'あなたの弱点',
+    inferred_headline: '16問の回答から、あなたの仕事は次に最も近い：',
+    inferred_caveat: '16問の回答からの推定であり、職業名から判断したものではありません — 参考程度に。',
+    inferred_confidence_label: '一致度',
     careers_headline: 'この原型に該当しやすい職業。',
     share_copy: 'リンクをコピー',
     share_copied: 'コピーしました ✓',
@@ -594,10 +611,11 @@ const KO: UIStrings = {
     eyebrow_result: '§ I · 당신의 원형',
     eyebrow_axes: '§ II · 네 축의 분포',
     eyebrow_meaning: '§ III · 해석',
-    eyebrow_advice: '§ IV · 해야 할 일',
-    eyebrow_careers: '§ V · 대표 직업',
-    eyebrow_share: '§ VI · 공유',
-    eyebrow_other: '§ VII · 나머지 15가지',
+    eyebrow_inferred: '§ IV · 추정 직업',
+    eyebrow_advice: '§ V · 해야 할 일',
+    eyebrow_careers: '§ VI · 대표 직업',
+    eyebrow_share: '§ VII · 공유',
+    eyebrow_other: '§ VIII · 나머지 15가지',
     stat_prob: '대체 확률',
     stat_year: '예측 대체 연도',
     stat_confidence: '신뢰 구간',
@@ -605,6 +623,9 @@ const KO: UIStrings = {
     axis_resistant: '이 축이 당신의 해자.',
     moat_label: '당신의 강점',
     kryptonite_label: '당신의 약점',
+    inferred_headline: '16개 응답을 보면, 당신의 일은 다음과 가장 가깝다:',
+    inferred_caveat: '16개 응답을 바탕으로 추정한 것이며, 직업명으로 판단한 것이 아닙니다 — 참고용입니다.',
+    inferred_confidence_label: '일치도',
     careers_headline: '이 원형에 자주 해당되는 직업.',
     share_copy: '링크 복사',
     share_copied: '복사됨 ✓',
@@ -713,10 +734,11 @@ const DE: UIStrings = {
     eyebrow_result: '§ I · Ihr Archetyp',
     eyebrow_axes: '§ II · Über vier Achsen',
     eyebrow_meaning: '§ III · Was das bedeutet',
-    eyebrow_advice: '§ IV · Was Sie tun können',
-    eyebrow_careers: '§ V · Typische Berufe',
-    eyebrow_share: '§ VI · Teilen',
-    eyebrow_other: '§ VII · Die anderen 15',
+    eyebrow_inferred: '§ IV · Vermuteter Beruf',
+    eyebrow_advice: '§ V · Was Sie tun können',
+    eyebrow_careers: '§ VI · Typische Berufe',
+    eyebrow_share: '§ VII · Teilen',
+    eyebrow_other: '§ VIII · Die anderen 15',
     stat_prob: 'Ersetzungs­wahrscheinlichkeit',
     stat_year: 'Prognosejahr',
     stat_confidence: 'Konfidenzintervall',
@@ -724,6 +746,9 @@ const DE: UIStrings = {
     axis_resistant: 'Diese Achse ist Ihr Burggraben.',
     moat_label: 'Ihre Stärke',
     kryptonite_label: 'Ihre Schwäche',
+    inferred_headline: 'Aufgrund Ihrer 16 Antworten ähnelt Ihre Arbeit am ehesten:',
+    inferred_caveat: 'Aus den 16 Antworten abgeleitet, nicht aus einer Berufsbezeichnung — als Hinweis verstehen.',
+    inferred_confidence_label: 'Übereinstimmung',
     careers_headline: 'Berufe, die typisch zu diesem Archetyp gehören.',
     share_copy: 'Link kopieren',
     share_copied: 'Kopiert ✓',

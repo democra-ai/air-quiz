@@ -112,6 +112,13 @@ export function encodeSharePayload(payload: Omit<SharePayloadV2, 'v'>): string {
     profileCode: payload.profileCode && /^[ETOSFRHP]{4}$/i.test(payload.profileCode)
       ? payload.profileCode.toUpperCase()
       : undefined,
+    dimAvg: Array.isArray(payload.dimAvg) && payload.dimAvg.length === 4
+      ? (payload.dimAvg.map((x) => {
+          const n = Number(x);
+          if (!Number.isFinite(n)) return 3;
+          return Math.round(Math.max(1, Math.min(5, n)) * 10) / 10;
+        }) as [number, number, number, number])
+      : undefined,
     insights: payload.insights
       ? {
           primaryDriver: sanitizeText(payload.insights.primaryDriver),

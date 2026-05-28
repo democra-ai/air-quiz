@@ -23,6 +23,7 @@ import {
   type QuizAnswers,
 } from '@/lib/air_quiz_calculator';
 import { encodeSharePayload } from '@/lib/share_payload';
+import { packDimAvg } from '@/lib/occupation_inference';
 import { L, type Language } from '@/lib/translations';
 import { ui } from '@/lib/ui_text';
 import {
@@ -192,6 +193,7 @@ export default function QuizFlow({ lang, initialMode = 'quick', onExit }: Props)
         latestYear: isFinite(result.confidenceInterval.latest) ? result.confidenceInterval.latest : 2099,
         lang: lang as 'en' | 'zh' | 'ja' | 'ko' | 'de',
         profileCode: result.profileCode,
+        dimAvg: packDimAvg(result.dimensions) as [number, number, number, number],
       });
 
       try { sessionStorage.removeItem(storageKey); } catch {}

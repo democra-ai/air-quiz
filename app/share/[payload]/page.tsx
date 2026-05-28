@@ -5,6 +5,7 @@ import { decodeSharePayload, type SharePayload, type ShareLang } from '@/lib/sha
 import { PROFILE_TYPES, QUIZ_DIMENSIONS, RISK_TIER_INFO } from '@/lib/air_quiz_data';
 import { generateAdvice } from '@/lib/air_advice_data';
 import { PROFILE_CAREERS } from '@/lib/air_career_data';
+import { inferOccupation, unpackDimAvg } from '@/lib/occupation_inference';
 import ResultPage from './ResultPage';
 
 type Props = {
@@ -97,6 +98,18 @@ export default async function SharePage({ params, searchParams }: Props) {
     riskScore: c.riskScore,
   }));
 
+  // Per-answer occupation inference: requires the 4 dimension averages we
+  // packed into the share payload at quiz-submit time. Older share URLs
+  // generated before this change won't have dimAvg → just skip the section.
+  const dimAvg = safeData.v === 2 ? unpackDimAvg(safeData.dimAvg) : null;
+  const inferredJobs = dimAvg
+    ? inferOccupation(dimAvg, 3).map((g) => ({
+        id: g.id,
+        title: pickL(g.title as L10n, lang),
+        confidence: g.confidence,
+      }))
+    : [];
+
   const riskTierInfo = RISK_TIER_INFO[profile.riskTier];
   const riskLabel = pickL(riskTierInfo.label as L10n, lang);
 
@@ -126,6 +139,7 @@ export default async function SharePage({ params, searchParams }: Props) {
       dimensions={dimensions}
       advice={advice}
       careers={careers}
+      inferredJobs={inferredJobs}
     />
   );
 }
