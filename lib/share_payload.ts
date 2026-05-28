@@ -18,11 +18,16 @@ export type SharePayloadV2 = SharePayloadBase & {
   /**
    * 4 raw dimension averages (1.0–5.0), order:
    *   [learnability, evaluation, riskTolerance, humanPresence].
-   * Used on the result page to re-run `inferOccupation()` and show
-   * "based on your answers, your work looks most like…". Old share
-   * URLs without dimAvg still decode; the inferred section just hides.
+   * @deprecated since coreAnswers (v2.1+) — kept so older share URLs
+   * still get a (cruder) inferred occupation section.
    */
   dimAvg?: [number, number, number, number];
+  /**
+   * Raw user answers to Q1..Q16 in declaration order, each 1–5.
+   * Required for the per-answer occupation inference on the result page.
+   * Older URLs without coreAnswers fall back to the dimAvg path.
+   */
+  coreAnswers?: number[];
   insights?: {
     primaryDriver: string;
     secondaryFactors: string[];
@@ -126,6 +131,13 @@ export function encodeSharePayload(payload: Omit<SharePayloadV2, 'v'>): string {
           if (!Number.isFinite(n)) return 3;
           return Math.round(Math.max(1, Math.min(5, n)) * 10) / 10;
         }) as [number, number, number, number])
+      : undefined,
+    coreAnswers: Array.isArray(payload.coreAnswers) && payload.coreAnswers.length === 16
+      ? payload.coreAnswers.map((x) => {
+          const n = Number(x);
+          if (!Number.isFinite(n)) return 3;
+          return Math.round(Math.max(1, Math.min(5, n)));
+        })
       : undefined,
     insights: payload.insights
       ? {
