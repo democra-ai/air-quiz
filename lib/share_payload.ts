@@ -15,6 +15,14 @@ export type SharePayloadV1 = SharePayloadBase & { v: 1 };
 export type SharePayloadV2 = SharePayloadBase & {
   v: 2;
   profileCode?: string;  // 4-letter code e.g. "EOFH"
+  /**
+   * 4 raw dimension averages (1.0–5.0), order:
+   *   [learnability, evaluation, riskTolerance, humanPresence].
+   * Used on the result page to re-run `inferOccupation()` and show
+   * "based on your answers, your work looks most like…". Old share
+   * URLs without dimAvg still decode; the inferred section just hides.
+   */
+  dimAvg?: [number, number, number, number];
   insights?: {
     primaryDriver: string;
     secondaryFactors: string[];
