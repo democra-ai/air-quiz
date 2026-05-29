@@ -54,7 +54,7 @@ export default function Footer() {
             <FooterLink href="/">{t.nav_home}</FooterLink>
             <FooterLink href="/?quiz=1">{t.nav_take}</FooterLink>
             <FooterLink href="/#archetypes">{t.nav_archetypes}</FooterLink>
-            <FooterLink href="https://risk.democra.ai" external>{t.nav_macro}</FooterLink>
+            <FooterLink href="/macro">{t.nav_macro}</FooterLink>
           </nav>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
