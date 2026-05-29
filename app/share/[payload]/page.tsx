@@ -69,9 +69,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       title,
       description: tag,
       url: `${base}/share/${payload}`,
-      images: [{ url: `${base}/share/${payload}/opengraph-image`, width: 1200, height: 630, alt: title }],
+      images: [{ url: `${base}/api/og/${payload}`, width: 1200, height: 630, alt: title }],
     },
-    twitter: { card: 'summary_large_image', title, description: tag, images: [`${base}/share/${payload}/opengraph-image`] },
+    twitter: { card: 'summary_large_image', title, description: tag, images: [`${base}/api/og/${payload}`] },
   };
 }
 
