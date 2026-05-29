@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { Language } from '@/lib/translations';
-import { detectBrowserLanguage, getHtmlLang } from '@/lib/translations';
+import { getHtmlLang } from '@/lib/translations';
 
 const SUPPORTED: Language[] = ['en', 'zh', 'ja', 'ko', 'de'];
 const LANG_EVENT = 'air-lang-change';
@@ -16,8 +16,12 @@ export function useLang(initial: Language = 'en'): [Language, (l: Language) => v
   const [lang, setLangState] = useState<Language>(initial);
 
   useEffect(() => {
+    // Default is ALWAYS English. We deliberately do NOT auto-detect the browser
+    // locale — a Chinese-browser visitor should still land in English unless they
+    // explicitly switch (which persists to localStorage). This keeps the product
+    // default — and therefore the share/OG card language — English by default.
     const saved = (typeof window !== 'undefined' && localStorage.getItem('air-lang')) as Language | null;
-    const next: Language = saved && SUPPORTED.includes(saved) ? saved : detectBrowserLanguage();
+    const next: Language = saved && SUPPORTED.includes(saved) ? saved : 'en';
     setLangState(next);
     document.documentElement.setAttribute('lang', getHtmlLang(next));
 
