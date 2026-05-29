@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ArchetypeSvg from './ArchetypeSvg';
 import { PROFILE_TYPES } from '@/lib/air_quiz_data';
-import { PROFILE_CAREERS } from '@/lib/air_career_data';
 import { L, type Language } from '@/lib/translations';
 
 interface Props {
@@ -90,11 +89,8 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
   const profile = PROFILE_TYPES[code];
   if (!profile) return null;
 
-  // First 2 careers — keep the line short
-  const careerList = (PROFILE_CAREERS[code] ?? [])
-    .slice(0, 2)
-    .map((c) => L(c.title, lang))
-    .filter(Boolean);
+  // Same small text as the grid cards below: the archetype tagline.
+  const tagline = L(profile.tagline, lang);
 
   return (
     <div style={{ position: 'relative', maxWidth: 380, width: '100%', marginInline: 'auto' }}>
@@ -154,24 +150,24 @@ export default function HeroCarousel({ lang, codes: codesProp, initialCode }: Pr
         </div>
       </button>
 
-      {/* Caption: name / code / typical careers */}
+      {/* Caption: name / code / tagline (same small text as the grid cards below) */}
       <div key={`cap-${code}`} className="animate-fade-in" style={{ textAlign: 'center', marginTop: 8, animationDuration: '350ms' }}>
         <p className="italic-display" style={{ fontSize: '1.45rem', color: 'var(--ink-strong)' }}>
           {L(profile.archetype, lang)}
         </p>
         <p className="smallcaps" style={{ marginTop: 4 }}>{code}</p>
-        {careerList.length > 0 ? (
+        {tagline ? (
           <p
             style={{
               marginTop: 8,
               fontSize: '0.82rem',
               lineHeight: 1.45,
               color: 'var(--ink-mute)',
-              maxWidth: '26ch',
+              maxWidth: '30ch',
               marginInline: 'auto',
             }}
           >
-            {careerList.join(' · ')}
+            {tagline}
           </p>
         ) : null}
       </div>
