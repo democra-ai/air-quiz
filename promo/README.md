@@ -7,10 +7,12 @@ A bilingual **16:9** social promo for **AIR · The AI-Resistance Career Personal
 Framework: **Hook → Stakes → How → Payoff → CTA**, wired with the personality-test virality engine
 (it's an identity badge — "which one are YOU?"). Lead with the MBTI analogy: *"You know your MBTI —
 do you know your AI-resistance type? 16 career archetypes for the AI age."* Real live-site footage
-(Playwright @2×) for the demo beats with a **Screen-Studio click focus-zoom** on the quiz; clean
-motion-graphics for the grid + axes.
+(Playwright @2×) for the demo beats with a **Screen-Studio click focus-zoom** on the quiz; a
+**two-row floating archetype wall** (the homepage feel) for the grid + clean motion-graphics for the axes.
 
-7 beats: `hook (MBTI) · grid (16 types) · axes (4 questions) · quiz (free, ~1 min) · example (dev → ESFP, 45%, ~2038) · which-one-are-YOU (grid, your slot empty) · CTA (air.democra.ai, post it)`.
+7 beats: `hook (MBTI) · grid (16 types — two floating rows) · axes (4 questions, 2 fall to AI / 2 you hold) · quiz (free, ~1 min) · example (researcher → ESRP, low risk) · which-one-are-YOU (your slot empty) · CTA (air.democra.ai)`.
+Framed throughout as **AI resistance** — *how well can your career withstand the wave?* — not replacement.
+Captions sit on a soft translucent-white lower-third band (thin serif).
 
 ## Audio (same engine as `democra-ai/ai-video-studio`)
 - **Voiceover** — edge-tts neural female voices: **Ava Multilingual** (EN) / **晓晓 Xiaoxiao** (ZH). (`scripts/gen-vo.sh`)
@@ -18,14 +20,16 @@ motion-graphics for the grid + axes.
   *"Carefree" Kevin MacLeod (incompetech.com) — Licensed under CC BY 4.0.*
 
 ## Outputs (`out/`, git-ignored — local)
-`air-promo-en.mp4`, `air-promo-zh.mp4` (1920×1080, ~54s) + `poster-en.png` / `poster-zh.png`.
+`air-promo-en.mp4` (~61s), `air-promo-zh.mp4` (~58s) — 1920×1080 — + `poster-en.png` / `poster-zh.png` (the floating 16-type wall).
 
 ## Rebuild
 ```bash
 npm install
 npx playwright install chromium
-# capture real site states (needs the ESFP result share URLs)
+# capture real site states; the example result is a researcher → ESRP:
+#   npx tsx ../scripts/_make-researcher-url.mjs   → share URLs
 RESULT_EN="<share-url-en>" RESULT_ZH="<share-url-zh>" node scripts/capture.mjs
+RESULT_EN="<esrp-url-en>" RESULT_ZH="<esrp-url-zh>" node scripts/capture-result.mjs
 bash scripts/gen-vo.sh                  # edge-tts voiceover + durations.json
 python3 scripts/gen-bgm.py              # (or fetch Carefree) → public/audio/bgm.mp3
 npx remotion render AirPromoEN out/air-promo-en.mp4
