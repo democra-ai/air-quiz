@@ -4,11 +4,13 @@ A bilingual **16:9** social promo for **AIR · The AI-Resistance Career Personal
 (air.democra.ai). Lives inside the AIR project (this folder), built with **Remotion**.
 
 ## Approach
-Scenes use **real screenshots of the live site** (captured with Playwright at 2×) animated with
-Ken-Burns zoom + an on-screen cursor — so it reads like a real product demo — interleaved with a
-few clean motion-graphic beats. Opening = the real Hero (doubles as the poster/cover).
+Framework: **Hook → Stakes → How → Payoff → CTA**, wired with the personality-test virality engine
+(it's an identity badge — "which one are YOU?"). Lead with the MBTI analogy: *"You know your MBTI —
+do you know your AI-resistance type? 16 career archetypes for the AI age."* Real live-site footage
+(Playwright @2×) for the demo beats with a **Screen-Studio click focus-zoom** on the quiz; clean
+motion-graphics for the grid + axes.
 
-8 beats: `s1 hero/poster · s2 archetypes · s3 four-axes · s4 quiz (cursor+zoom) · s5 example (Software Developer→ESFP) · s6 result reveal · s7 macro · s8 CTA`.
+7 beats: `hook (MBTI) · grid (16 types) · axes (4 questions) · quiz (free, ~1 min) · example (dev → ESFP, 45%, ~2038) · which-one-are-YOU (grid, your slot empty) · CTA (air.democra.ai, post it)`.
 
 ## Audio (same engine as `democra-ai/ai-video-studio`)
 - **Voiceover** — edge-tts neural female voices: **Ava Multilingual** (EN) / **晓晓 Xiaoxiao** (ZH). (`scripts/gen-vo.sh`)

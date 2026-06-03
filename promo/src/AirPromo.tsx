@@ -18,7 +18,7 @@ export const AirPromo: React.FC<{ lang: Lang }> = ({ lang }) => {
           })
         }
       />
-      {SCENES.map((s) => {
+      {SCENES.map((s, i) => {
         const dur = sceneFrames(s, lang);
         const from = start;
         start += dur;
@@ -27,7 +27,7 @@ export const AirPromo: React.FC<{ lang: Lang }> = ({ lang }) => {
           <Sequence key={s.id} from={from} durationInFrames={dur} name={s.id}>
             <SceneSwitch id={s.id} lang={lang} dur={dur} caption={caption} />
             <Sequence from={LEAD}>
-              <Audio src={staticFile(`audio/vo-${lang}-${s.id}.mp3`)} />
+              <Audio src={staticFile(`audio/vo-${lang}-s${i + 1}.mp3`)} />
             </Sequence>
           </Sequence>
         );
