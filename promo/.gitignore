@@ -1,0 +1,7 @@
+node_modules/
+out/
+public/audio/
+public/shots/
+.remotion/
+*.log
+.DS_Store
