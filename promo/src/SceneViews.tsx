@@ -9,12 +9,10 @@ const shot = (lang: Lang, name: string) => staticFile(`shots/${name}-${lang}.png
 
 type SP = { lang: Lang; dur: number; caption: string };
 
-/** Full-bleed real screenshot with a slow Ken-Burns scale toward a focal point. */
-const KenBurns: React.FC<{ src: string; dur: number; from?: number; to?: number; ox?: string; oy?: string }> = ({ src, dur, from = 1, to = 1.08, ox = '50%', oy = '50%' }) => {
-  const f = useCurrentFrame();
-  const s = interpolate(f, [0, dur], [from, to], { extrapolateRight: 'clamp' });
-  return <Img src={src} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', transform: `scale(${s})`, transformOrigin: `${ox} ${oy}` }} />;
-};
+/** Static full-bleed real screenshot — the footage sits still (no Ken-Burns drift). */
+const Plate: React.FC<{ src: string; opacity?: number }> = ({ src, opacity = 1 }) => (
+  <Img src={src} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', opacity }} />
+);
 
 /** Animated pointer that eases to (x,y) and pulses at click frames. */
 const Cursor: React.FC<{ x: number; y: number; clicks?: number[] }> = ({ x, y, clicks = [] }) => {
@@ -22,7 +20,7 @@ const Cursor: React.FC<{ x: number; y: number; clicks?: number[] }> = ({ x, y, c
   let press = 1;
   for (const c of clicks) press = Math.min(press, interpolate(f, [c - 4, c, c + 6], [1, 0.78, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }));
   return (
-    <svg width="46" height="46" viewBox="0 0 24 24" style={{ position: 'absolute', left: x, top: y, transform: `scale(${press})`, transformOrigin: '3px 3px', filter: 'drop-shadow(0 3px 5px rgba(0,0,0,.35))', zIndex: 5 }}>
+    <svg width="44" height="44" viewBox="0 0 24 24" style={{ position: 'absolute', left: x, top: y, transform: `scale(${press})`, transformOrigin: '3px 3px', filter: 'drop-shadow(0 3px 5px rgba(0,0,0,.35))', zIndex: 5 }}>
       <path d="M3 2 L3 20 L8 15 L11 22 L14 21 L11 14 L18 14 Z" fill="#fff" stroke={C.inkStrong} strokeWidth="1.4" strokeLinejoin="round" />
     </svg>
   );
@@ -35,23 +33,23 @@ const Sub: React.FC<{ text: string; f: number; dur: number }> = ({ text, f, dur 
   </div>
 );
 
-/* ── S1 · Hero (real page; doubles as poster/cover) ── */
+/* ── S1 · Hero (real page; doubles as poster/cover) — static ── */
 const S1: React.FC<SP> = ({ lang, dur }) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
-      <KenBurns src={shot(lang, 'hero')} dur={dur} from={1.0} to={1.05} oy="40%" />
+      <Plate src={shot(lang, 'hero')} />
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
     </AbsoluteFill>
   );
 };
 
-/* ── S2 · Archetype grid (real page, slow pan) ── */
+/* ── S2 · Archetype grid (real page) — static ── */
 const S2: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
-      <KenBurns src={shot(lang, 'grid')} dur={dur} from={1.04} to={1.12} oy="30%" />
+      <Plate src={shot(lang, 'grid')} />
       <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
@@ -97,26 +95,28 @@ const S3: React.FC<SP> = ({ lang, dur, caption }) => {
   );
 };
 
-/* ── S4 · How to take it (real quiz; cursor click + zoom) ── */
+/* ── S4 · How to take it — real quiz, Screen-Studio focus-zoom on the click ── */
 const S4: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
-  const FX = 540, FY = 300; // option-2 focal point (canvas coords)
-  const click1 = Math.round(dur * 0.34);
-  const click2 = Math.round(dur * 0.68);
-  const oSel = ease(f, click1, click1 + 8);
-  const oNext = ease(f, click2, click2 + 10);
-  const cx = interpolate(ease(f, 6, click1 - 4), [0, 1], [1500, FX + 80]);
-  const cy = interpolate(ease(f, 6, click1 - 4), [0, 1], [820, FY + 8]);
-  const zoom = interpolate(ease(f, click1 - 6, click2 + 20), [0, 1], [1.0, 1.13]);
-  const img = (name: string, opacity: number) => (
-    <Img src={shot(lang, name)} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', opacity }} />
-  );
+  const { fps } = useVideoConfig();
+  const FX = 540, FY = 300; // option-2 click point (canvas coords)
+  const click1 = Math.round(dur * 0.34); // select
+  const click2 = Math.round(dur * 0.66); // click again → advance
+  const oSel = ease(f, click1, click1 + 7);
+  const oNext = ease(f, click2, click2 + 9);
+  const cx = interpolate(ease(f, 6, click1 - 4), [0, 1], [1520, FX + 78]);
+  const cy = interpolate(ease(f, 6, click1 - 4), [0, 1], [840, FY + 6]);
+  // Focus zoom: punch IN toward the click point at click1, hold through click2, ease OUT to reveal the next question.
+  const Z = 1.55;
+  const zin = spring({ frame: f - (click1 - 8), fps, config: { damping: 20, mass: 0.7 } });
+  const zout = spring({ frame: f - (click2 + 6), fps, config: { damping: 22, mass: 0.7 } });
+  const scale = 1 + (Z - 1) * Math.max(0, zin - zout);
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', width: 1920, height: 1080, transform: `scale(${zoom})`, transformOrigin: `${FX}px ${FY}px` }}>
-        {img('quiz', 1)}
-        {img('quiz-sel', oSel * (1 - oNext))}
-        {img('quiz-2', oNext)}
+      <div style={{ position: 'absolute', width: 1920, height: 1080, transform: `scale(${scale})`, transformOrigin: `${FX}px ${FY}px` }}>
+        <Plate src={shot(lang, 'quiz')} />
+        <Plate src={shot(lang, 'quiz-sel')} opacity={oSel * (1 - oNext)} />
+        <Plate src={shot(lang, 'quiz-2')} opacity={oNext} />
         <Cursor x={cx} y={cy} clicks={[click1, click2]} />
       </div>
       <Sub text={caption} f={f} dur={dur} />
@@ -153,32 +153,26 @@ const S5: React.FC<SP> = ({ lang, dur }) => {
   );
 };
 
-/* ── S6 · Result reveal (real result page; zoom + scroll) ── */
+/* ── S6 · Result reveal — real result page, static beats (no full-frame zoom) ── */
 const S6: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
-  const scrollAt = Math.round(dur * 0.52);
-  const oMid = ease(f, scrollAt, scrollAt + 4); // quick cut (no double-exposure)
-  // first beat zooms in on the headline/%, second beat (axes/occupation) settles
-  const zoom = f < scrollAt
-    ? interpolate(ease(f, 6, scrollAt), [0, 1], [1.04, 1.12])
-    : interpolate(ease(f, scrollAt, dur), [0, 1], [1.02, 1.07]);
+  const cutAt = Math.round(dur * 0.52);
+  const oMid = ease(f, cutAt, cutAt + 6); // quick cut top → axes
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', width: 1920, height: 1080, transform: `scale(${zoom})`, transformOrigin: '30% 40%' }}>
-        <Img src={shot(lang, 'result')} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', opacity: 1 - oMid }} />
-        <Img src={shot(lang, 'result-mid')} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', opacity: oMid }} />
-      </div>
+      <Plate src={shot(lang, 'result')} opacity={1 - oMid} />
+      <Plate src={shot(lang, 'result-mid')} opacity={oMid} />
       <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
 };
 
-/* ── S7 · Macro (real progress bar; zoom) ── */
+/* ── S7 · Macro (real progress bar) — static ── */
 const S7: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
-      <KenBurns src={shot(lang, 'macro')} dur={dur} from={1.02} to={1.12} oy="35%" />
+      <Plate src={shot(lang, 'macro')} />
       <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
