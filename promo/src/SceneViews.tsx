@@ -219,10 +219,7 @@ const Quiz: React.FC<SP> = ({ lang, dur, caption }) => {
         <Plate src={shot(lang, 'quiz-2')} opacity={oNext} />
         <Cursor x={cx} y={cy} clicks={[click1, click2]} />
       </div>
-      {/* compact corner chip — never covers the options/buttons */}
-      <div style={{ position: 'absolute', right: 54, bottom: 48, opacity: fadeIO(f, dur), background: 'rgba(251,247,238,0.9)', border: `1px solid ${C.rule}88`, borderRadius: 12, padding: '10px 18px', boxShadow: '0 4px 14px rgba(31,24,20,0.1)' }}>
-        <div style={{ fontFamily: serif, fontWeight: 400, fontSize: 25, lineHeight: 1.3, color: C.inkStrong, textAlign: 'right', whiteSpace: 'pre-line' }}>{caption}</div>
-      </div>
+      <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
 };

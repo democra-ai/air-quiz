@@ -53,10 +53,10 @@
       "beat": "答题演示 / 零摩擦",
       "visualType": "quiz-real",
       "durationSecHint": 7,
-      "narrationEn": "Sixteen questions, about a minute, no sign-up. Tap, tap — done before your coffee goes cold.",
-      "narrationZh": "十六道题，一分钟，不用注册。点一点、再点一点，咖啡还没凉就测完了。",
-      "captionEn": "16 questions · ~1 min\nFree, no email",
-      "captionZh": "16 题 · 约 1 分钟\n免费，不留邮箱",
+      "narrationEn": "There are two versions. The quick one is sixteen questions, about three minutes. Want it sharper? Sixty questions, about twelve. Both free, no sign-up.",
+      "narrationZh": "有两个版本。想快，十六道题，三分钟搞定；想更准，六十道题，大概十二分钟。都免费，不用注册。",
+      "captionEn": "16 questions · ~3 min\n60 questions · ~12 min · free",
+      "captionZh": "16 题 · 约 3 分钟\n60 题 · 约 12 分钟 · 免费",
       "visualNotes": "真实答题页录屏：鼠标移到一个选项上点选 → Screen Studio 式局部聚焦放大到点击处(背景轻微虚化压暗，点击点起一圈涟漪、选中态泛起赤陶红) → 进度条往前跳一格 → 再点下一题。展示两到三次点选，节奏轻快利落。底角小字'16 题 · 约 1 分钟 · 免费'常驻。"
     },
     {
@@ -64,8 +64,8 @@
       "beat": "结果示范 / 研究人员=高压炼金师",
       "visualType": "result-real",
       "durationSecHint": 9,
-      "narrationEn": "A researcher takes it and lands on ESRP — the Pressure Alchemist. Low risk: only about twenty-nine percent is AI's to take. The rest stays theirs. Because when failure isn't an option, you call a human.",
-      "narrationZh": "一个搞科研的来测，是 E S R P，高压炼金师。低风险，只有大约三成会被 AI 接手，剩下的，都是他自己的。因为一旦不许出错，还是得找个活人来兜底。",
+      "narrationEn": "I took it myself and came out ESRP — the Pressure Alchemist. Low risk: only about twenty-nine percent is AI's to take. The rest stays mine. Because when failure isn't an option, you call a human.",
+      "narrationZh": "我自己测了一下，是 E S R P，高压炼金师。低风险，只有大约三成会被 AI 接手，剩下的，都是我的。因为一旦不许出错，还是得找个活人来兜底。",
       "captionEn": "ESRP · AI can take ~29%.\nThe rest is yours.",
       "captionZh": "ESRP · 约 29% 会被接手。\n剩下的，是你的。",
       "visualNotes": "真实结果页：顶部大字原型名'高压炼金师 / The Pressure Alchemist'配 ESRP 水彩像，左上角小标签'研究人员'。镜头从人格名 + 水彩像切到下滑的数据区，'低风险'徽章和'~29%'数字逐个点亮，赤陶红填充条只填到约 29%，其余大段留白高亮成'你的'。下滑露出该型签语一行。节奏先停顿给惊喜，再缓滑揭数据。"
