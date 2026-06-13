@@ -119,6 +119,16 @@ const Hook: React.FC<SP> = ({ lang, dur, caption }) => {
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
       <Plate src={shot(lang, 'hero')} />
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
+      {/* opening big-text hook flash over a soft scrim, then dissolves to reveal the real homepage */}
+      {(() => {
+        const flash = interpolate(f, [2, 11, 28, 42], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+        const line1 = caption.split('\n')[0];
+        return (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: flash, background: `rgba(247,242,232,${0.55 * flash})` }}>
+            <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 92, color: C.inkStrong, textAlign: 'center', maxWidth: 1360, lineHeight: 1.06, transform: `scale(${interpolate(flash, [0, 1], [1.06, 1])})` }}>{line1}</div>
+          </div>
+        );
+      })()}
       <Sub text={caption} f={f} dur={dur} size={42} />
     </AbsoluteFill>
   );
@@ -130,6 +140,10 @@ const Grid: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
       <TwoRowWall lang={lang} mode="float" />
+      {/* a giant faint "16" briefly overlays the wall — echoing MBTI's 16 types */}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 560, color: C.accent, lineHeight: 1, opacity: interpolate(f, [10, 28, 58, 82], [0, 0.2, 0.2, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }) }}>16</div>
+      </div>
       <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
@@ -249,6 +263,7 @@ const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   const uw = interpolate(ease(f, 36, 66), [0, 1], [0, 100]);
   const lines = caption.split('\n');
+  const headline = lines.find((l) => !l.toLowerCase().includes('democra')) || lines[0];
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), alignItems: 'center', justifyContent: 'center' }}>
       <TwoRowWall lang={lang} mode="bg" />
@@ -258,17 +273,19 @@ const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
           <div style={{ position: 'absolute', inset: '-12%', borderRadius: '50%', background: `radial-gradient(circle at 50% 45%, ${C.accent}33, transparent 65%)`, filter: 'blur(6px)' }} />
           <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 200, height: 200, borderRadius: 16, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
         </div>
-        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 76, color: C.inkStrong, textAlign: 'center', opacity: ease(f, 14, 32) }}>{lines[0]}</div>
+        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 64, color: C.inkStrong, textAlign: 'center', maxWidth: 1200, lineHeight: 1.1, opacity: ease(f, 14, 32) }}>{headline}</div>
         <div style={{ position: 'relative', opacity: ease(f, 28, 44) }}>
           <div style={{ fontFamily: MONO, fontSize: 58, letterSpacing: 3, color: C.accent }}>air.democra.ai</div>
           <div style={{ position: 'absolute', left: 0, bottom: -10, height: 4, width: `${uw}%`, background: C.accent }} />
         </div>
       </div>
+      {/* playful share nudge — the viral loop */}
+      <div style={{ position: 'absolute', right: 96, bottom: 104, transform: `rotate(-6deg) scale(${interpolate(ease(f, 52, 68), [0, 1], [0.82, 1])})`, opacity: ease(f, 52, 68), background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 12, padding: '13px 22px', boxShadow: '0 8px 22px rgba(31,24,20,0.14)', fontFamily: serif, fontStyle: 'italic', fontSize: 29, color: C.accent }}>{lang === 'zh' ? '测完截图发群里' : 'Send it to a coworker'}</div>
     </AbsoluteFill>
   );
 };
 
-const MAP: Record<string, React.FC<SP>> = { hook: Hook, grid: Grid, axes: Axes, quiz: Quiz, example: Example, which: Which, cta: Cta };
+const MAP: Record<string, React.FC<SP>> = { 'hero-real': Hook, 'grid-float': Grid, 'axes-anim': Axes, 'quiz-real': Quiz, 'result-real': Example, 'which-pivot': Which, cta: Cta };
 export const SceneSwitch: React.FC<{ id: string } & SP> = ({ id, ...p }) => {
   const Comp = MAP[id] ?? Hook;
   return <Comp {...p} />;

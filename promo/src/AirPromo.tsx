@@ -24,10 +24,10 @@ export const AirPromo: React.FC<{ lang: Lang }> = ({ lang }) => {
         start += dur;
         const caption = lang === 'en' ? s.captionEn : s.captionZh;
         return (
-          <Sequence key={s.id} from={from} durationInFrames={dur} name={s.id}>
-            <SceneSwitch id={s.id} lang={lang} dur={dur} caption={caption} />
+          <Sequence key={s.id} from={from} durationInFrames={dur} name={`${s.id}-${s.visualType}`}>
+            <SceneSwitch id={s.visualType} lang={lang} dur={dur} caption={caption} />
             <Sequence from={LEAD}>
-              <Audio src={staticFile(`audio/vo-${lang}-s${i + 1}.mp3`)} />
+              <Audio src={staticFile(`audio/${lang}/scene-${String(i + 1).padStart(2, '0')}.mp3`)} />
             </Sequence>
           </Sequence>
         );
