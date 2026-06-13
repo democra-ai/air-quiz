@@ -2,11 +2,11 @@
 // Scene timing derived from measured edge-tts voiceover (ai-video-studio prepare.py method).
 export interface SceneDef { id: string; visualType: string; frEn: number; frZh: number; captionEn: string; captionZh: string; }
 export const SCENES: SceneDef[] = [
-  { id: "s1", visualType: "hero-real", frEn: 267, frZh: 298, captionEn: "You know your MBTI.\nWhat's your AI-resistance type?", captionZh: "MBTI 你都测过了\n那你的「AI 抗替代型」呢？" },
-  { id: "s2", visualType: "grid-float", frEn: 303, frZh: 308, captionEn: "16 personalities → 16 career archetypes\nEach one: a way to hold the line", captionZh: "16 型人格 → 16 种职业原型\n每一型，都是一种「守得住」的活法" },
+  { id: "s1", visualType: "hero-real", frEn: 267, frZh: 298, captionEn: "You know your MBTI.\nWhat's your AI-resistance type?", captionZh: "MBTI 你都测过了\n那你的「AI 职业人格」呢？" },
+  { id: "s2", visualType: "grid-float", frEn: 309, frZh: 308, captionEn: "16 personalities → 16 career archetypes\nEach one: a way to hold the line", captionZh: "16 型人格 → 16 种职业原型\n每一型，都是一种「守得住」的活法" },
   { id: "s3", visualType: "axes-anim", frEn: 357, frZh: 331, captionEn: "Learn it? Grade it?\nRisk it? Need you?", captionZh: "学得会吗？打得了分吗？\n敢替你冒险吗？非你不可吗？" },
   { id: "s4", visualType: "quiz-real", frEn: 223, frZh: 234, captionEn: "16 questions · ~1 min\nFree, no email", captionZh: "16 题 · 约 1 分钟\n免费，不留邮箱" },
   { id: "s5", visualType: "result-real", frEn: 422, frZh: 439, captionEn: "ESRP · AI can take ~29%.\nThe rest is yours.", captionZh: "ESRP · 约 29% 会被接手。\n剩下的，是你的。" },
-  { id: "s6", visualType: "which-pivot", frEn: 228, frZh: 262, captionEn: "One slot is still you-shaped.\nWhich type are you?", captionZh: "十五格都有脸了。\n还有一格，写着「你？」" },
+  { id: "s6", visualType: "which-pivot", frEn: 231, frZh: 262, captionEn: "One slot is still you-shaped.\nWhich type are you?", captionZh: "十五格都有脸了。\n还有一格，写着「你？」" },
   { id: "s7", visualType: "cta", frEn: 303, frZh: 381, captionEn: "air.democra.ai\nFind your type. Keep your half.", captionZh: "air.democra.ai\n测出你的型，守住你那一半。" },
 ];

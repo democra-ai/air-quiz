@@ -12,8 +12,8 @@
       "rate": "+13%"
     }
   },
-  "title": "AIR — 你的 AI 抗替代型是哪一种（终稿 / 好奇身份徽章版）",
-  "logline": "MBTI 你早测过了，那你的「AI 抗替代型」呢？60 秒、16 种职业原型，免费测出你能从 AI 手里守住哪一半。",
+  "title": "AIR — 你的 AI 职业人格是哪一种（终稿 / 好奇身份徽章版）",
+  "logline": "MBTI 你早测过了，那你的「AI 职业人格」呢？60 秒、16 种职业原型，免费测出你能从 AI 手里守住哪一半。",
   "scenes": [
     {
       "id": "s1",
@@ -21,9 +21,9 @@
       "visualType": "hero-real",
       "durationSecHint": 8,
       "narrationEn": "You know your MBTI. But what's your AI-resistance type? Same idea — it tells you how much of your job AI just can't touch.",
-      "narrationZh": "MBTI 你早测过了。那你的「AI 抗替代型」呢？玩法一样，测的是：你的饭碗，AI 到底动得了几分。",
+      "narrationZh": "MBTI 你早测过了。那你的「AI 职业人格」呢？玩法一样，测的是：你的饭碗，AI 到底动得了几分。",
       "captionEn": "You know your MBTI.\nWhat's your AI-resistance type?",
-      "captionZh": "MBTI 你都测过了\n那你的「AI 抗替代型」呢？",
+      "captionZh": "MBTI 你都测过了\n那你的「AI 职业人格」呢？",
       "visualNotes": "真实首页截图：暖米色背景 + 赤陶红编辑杂志风排版，顶部一条赤陶红装饰细线缓缓画过。镜头从首页大标题微微下推(slow push-in)，右上角飘进一行手写体小字'你的 MBTI 你早知道了'。第 1 秒画面只有一句烧录大字钩子盖在首页上，0.8 秒后大字淡出、露出真实首页质感。节奏轻快，0.5 秒一个微动作，开场不要太素。第一句必须 2 秒内说完。"
     },
     {

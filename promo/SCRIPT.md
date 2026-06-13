@@ -4,7 +4,7 @@
 > 胜出角度：**好奇 + 身份徽章**。配音/BGM 走原项目 `ai-video-studio` 管线（script.raw.json → edge-tts 女声 → 时长测量；BGM = Carefree）。
 > **改这份文件，或直接在对话里告诉我改动**。三层：分镜=画面 · 字幕=烧录文字 · 配音=女声口播。
 
-**Logline:** MBTI 你早测过了，那你的「AI 抗替代型」呢？60 秒、16 种职业原型，免费测出你能从 AI 手里守住哪一半。
+**Logline:** MBTI 你早测过了，那你的「AI 职业人格」呢？60 秒、16 种职业原型，免费测出你能从 AI 手里守住哪一半。
 
 **固定 7 拍 · durationSecHint 合计 ≈ 57s**（中文略长，edge-tts 实测后定稿）
 
@@ -15,9 +15,9 @@
 - **字幕 EN:** You know your MBTI.
 What's your AI-resistance type?
 - **字幕 ZH:** MBTI 你都测过了
-那你的「AI 抗替代型」呢？
+那你的「AI 职业人格」呢？
 - **配音 EN:** You know your MBTI by heart. But what's your AI-resistance type? Same idea — this one tells you how much of your job AI just can't touch.
-- **配音 ZH:** MBTI 你早就背得出来了。那你的 AI 抗替代型呢？玩法一样，但它测的是：你的饭碗，AI 到底动得了几分。
+- **配音 ZH:** MBTI 你早就背得出来了。那你的 AI 职业人格呢？玩法一样，但它测的是：你的饭碗，AI 到底动得了几分。
 
 ## ② 16 型类比 / 眼球钩子 — `grid-float` · ~9s
 **分镜:** 两行水彩人格卡左右反向缓缓浮动(首页那种艺术感)，上行右移、下行左移，每张卡看得清水彩头像 + 四字母代号 + 原型名。镜头先全景展示满墙 16 张，再像逛画廊般横移扫过'终审印章''签名手艺人''神谕者'几张特写。一个赤陶大字'16'短暂叠在卡墙中央再化开，与 MBTI 的'16'对照。可在 B-roll 角落浮一行小字旁注'不是测你谈恋爱什么样'。节奏从容。

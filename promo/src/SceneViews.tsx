@@ -119,16 +119,6 @@ const Hook: React.FC<SP> = ({ lang, dur, caption }) => {
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
       <Plate src={shot(lang, 'hero')} />
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
-      {/* opening big-text hook flash over a soft scrim, then dissolves to reveal the real homepage */}
-      {(() => {
-        const flash = interpolate(f, [2, 11, 28, 42], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-        const line1 = caption.split('\n')[0];
-        return (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: flash, background: `rgba(247,242,232,${0.55 * flash})` }}>
-            <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 92, color: C.inkStrong, textAlign: 'center', maxWidth: 1360, lineHeight: 1.06, transform: `scale(${interpolate(flash, [0, 1], [1.06, 1])})` }}>{line1}</div>
-          </div>
-        );
-      })()}
       <Sub text={caption} f={f} dur={dur} size={42} />
     </AbsoluteFill>
   );
@@ -140,10 +130,6 @@ const Grid: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
       <TwoRowWall lang={lang} mode="float" />
-      {/* a giant faint "16" briefly overlays the wall — echoing MBTI's 16 types */}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 560, color: C.accent, lineHeight: 1, opacity: interpolate(f, [10, 28, 58, 82], [0, 0.2, 0.2, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }) }}>16</div>
-      </div>
       <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
@@ -209,26 +195,34 @@ const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
 const Quiz: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const FX = 540, FY = 300;
-  const click1 = Math.round(dur * 0.36);
-  const click2 = Math.round(dur * 0.7);
+  // option 2's row center (cursor target) + a horizontally-centered zoom origin so the
+  // full-width option card never clips. Gentle Z keeps everything in frame.
+  const OX = 465, OY = 462;
+  const ZOX = 960, ZOY = 470, Z = 1.2;
+  const CONT_X = 1392, CONT_Y = 975; // "Continue" button
+  const click1 = Math.round(dur * 0.34); // select option 2
+  const zoutAt = Math.round(dur * 0.6);  // zoom back out (so Continue is visible)
+  const click2 = Math.round(dur * 0.84); // click Next
   const oSel = ease(f, click1, click1 + 7);
   const oNext = ease(f, click2, click2 + 9);
-  const cx = interpolate(ease(f, 6, click1 - 4), [0, 1], [1520, FX + 78]);
-  const cy = interpolate(ease(f, 6, click1 - 4), [0, 1], [840, FY + 6]);
-  const Z = 1.55;
+  const p2 = ease(f, zoutAt + 4, click2 - 4); // travel to Continue
+  const cx = p2 <= 0 ? interpolate(ease(f, 6, click1 - 4), [0, 1], [1620, OX]) : interpolate(p2, [0, 1], [OX, CONT_X]);
+  const cy = p2 <= 0 ? interpolate(ease(f, 6, click1 - 4), [0, 1], [980, OY]) : interpolate(p2, [0, 1], [OY, CONT_Y]);
   const zin = spring({ frame: f - (click1 - 8), fps, config: { damping: 20, mass: 0.7 } });
-  const zout = spring({ frame: f - (click2 + 6), fps, config: { damping: 22, mass: 0.7 } });
+  const zout = spring({ frame: f - zoutAt, fps, config: { damping: 22, mass: 0.7 } });
   const scale = 1 + (Z - 1) * Math.max(0, zin - zout);
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', width: 1920, height: 1080, transform: `scale(${scale})`, transformOrigin: `${FX}px ${FY}px` }}>
+      <div style={{ position: 'absolute', width: 1920, height: 1080, transform: `scale(${scale})`, transformOrigin: `${ZOX}px ${ZOY}px` }}>
         <Plate src={shot(lang, 'quiz')} />
         <Plate src={shot(lang, 'quiz-sel')} opacity={oSel * (1 - oNext)} />
         <Plate src={shot(lang, 'quiz-2')} opacity={oNext} />
         <Cursor x={cx} y={cy} clicks={[click1, click2]} />
       </div>
-      <Sub text={caption} f={f} dur={dur} />
+      {/* compact corner chip — never covers the options/buttons */}
+      <div style={{ position: 'absolute', right: 54, bottom: 48, opacity: fadeIO(f, dur), background: 'rgba(251,247,238,0.9)', border: `1px solid ${C.rule}88`, borderRadius: 12, padding: '10px 18px', boxShadow: '0 4px 14px rgba(31,24,20,0.1)' }}>
+        <div style={{ fontFamily: serif, fontWeight: 400, fontSize: 25, lineHeight: 1.3, color: C.inkStrong, textAlign: 'right', whiteSpace: 'pre-line' }}>{caption}</div>
+      </div>
     </AbsoluteFill>
   );
 };
@@ -236,11 +230,14 @@ const Quiz: React.FC<SP> = ({ lang, dur, caption }) => {
 /* ── example · real result page — a researcher → ESRP "The Pressure Alchemist" ── */
 const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
-  const cutAt = Math.round(dur * 0.55);
-  const oMid = ease(f, cutAt, cutAt + 6);
+  const t1 = Math.round(dur * 0.52);
+  // dip through the paper background: result fully fades out BEFORE result-mid fades in,
+  // so the two page states are never superimposed (no overlap/ghosting).
+  const oResult = interpolate(f, [t1, t1 + 6], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const oMid = interpolate(f, [t1 + 6, t1 + 13], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <Plate src={shot(lang, 'result')} opacity={1 - oMid} />
+      <Plate src={shot(lang, 'result')} opacity={oResult} />
       <Plate src={shot(lang, 'result-mid')} opacity={oMid} />
       <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
