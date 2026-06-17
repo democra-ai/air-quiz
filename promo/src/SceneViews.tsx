@@ -412,40 +412,33 @@ const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
 };
 
 /* ── opening cover poster — magazine-style promo title card (no VO) ── */
+// STATIC cover poster — fully rendered at frame 0 so it works as the social thumbnail.
 export const Poster: React.FC<{ lang: Lang }> = ({ lang }) => {
-  const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const railW = ease(f, 2, 14);
   const belt = lang === 'zh' ? '16 种 AI 职业人格　·　一分钟　·　免费' : '16 AI CAREER PERSONAS · ONE MINUTE · FREE';
   const sub = lang === 'zh' ? 'The human AI cannot replace.' : '16 career archetypes for the AI age';
-  const badge = (code: string, rot: number, dx: number, w: number, z: number, off: number) => {
-    const s = spring({ frame: f - (8 + off), fps, config: { damping: 16 } });
-    return (
-      <div key={code} style={{ position: 'absolute', left: '50%', bottom: 0, width: w, transformOrigin: '50% 95%', zIndex: z, opacity: s, transform: `translateX(calc(-50% + ${dx * s}px)) rotate(${rot * s}deg) scale(${interpolate(s, [0, 1], [0.9, 1])})` }}>
-        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 14, padding: 8, boxShadow: `0 16px 40px rgba(31,24,20,${z === 3 ? 0.24 : 0.16})` }}>
-          <Img src={charSrc(code)} style={{ width: '100%', height: w, objectFit: 'cover', borderRadius: 10 }} />
-        </div>
+  const badge = (code: string, rot: number, dx: number, w: number, z: number) => (
+    <div key={code} style={{ position: 'absolute', left: '50%', bottom: 0, width: w, transformOrigin: '50% 95%', zIndex: z, transform: `translateX(calc(-50% + ${dx}px)) rotate(${rot}deg)` }}>
+      <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 14, padding: 8, boxShadow: `0 16px 40px rgba(31,24,20,${z === 3 ? 0.24 : 0.16})` }}>
+        <Img src={charSrc(code)} style={{ width: '100%', height: w, objectFit: 'cover', borderRadius: 10 }} />
       </div>
-    );
-  };
+    </div>
+  );
   return (
     <AbsoluteFill style={{ background: C.paper, alignItems: 'center', justifyContent: 'center' }}>
-      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, transform: `scaleX(${railW})`, transformOrigin: 'center' }} />
-      <div aria-hidden style={{ position: 'absolute', inset: 40, border: `1px solid ${C.rule}`, opacity: 0.6 * ease(f, 2, 14), pointerEvents: 'none' }} />
-      {/* report header */}
-      <div style={{ position: 'absolute', top: 150, left: 0, right: 0, textAlign: 'center', opacity: ease(f, 6, 20) }}>
+      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
+      <div aria-hidden style={{ position: 'absolute', inset: 40, border: `1px solid ${C.rule}`, opacity: 0.6, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 150, left: 0, right: 0, textAlign: 'center' }}>
         <div style={{ fontFamily: serif, fontStyle: 'italic', fontWeight: 900, fontSize: 70, color: C.inkStrong, letterSpacing: 2 }}>AIR</div>
         <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: 8, color: C.inkSoft, marginTop: 8 }}>{lang === 'zh' ? 'AI 职业人格测试' : 'THE AI-RESISTANCE CAREER TEST'}</div>
       </div>
-      {/* centered core */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30, marginTop: 40 }}>
         <div style={{ position: 'relative', width: 320, height: 220, marginBottom: 10 }}>
-          {badge('ESRP', -9, -132, 168, 1, 4)}
-          {badge('TSRH', 9, 132, 168, 1, 8)}
-          {badge('ESRH', -1.5, 0, 200, 3, 0)}
+          {badge('ESRP', -9, -132, 168, 1)}
+          {badge('TSRH', 9, 132, 168, 1)}
+          {badge('ESRH', -1.5, 0, 200, 3)}
         </div>
-        <div style={{ width: 120, height: 2, background: C.accent, opacity: ease(f, 24, 38) }} />
-        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: lang === 'zh' ? 112 : 92, lineHeight: 1.05, color: C.inkStrong, textAlign: 'center', opacity: ease(f, 26, 44), transform: `translateY(${interpolate(ease(f, 26, 44), [0, 1], [22, 0])}px)` }}>
+        <div style={{ width: 120, height: 2, background: C.accent }} />
+        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: lang === 'zh' ? 112 : 92, lineHeight: 1.05, color: C.inkStrong, textAlign: 'center' }}>
           {lang === 'zh' ? (
             <>
               <div>AI 取代不了的</div>
@@ -458,15 +451,15 @@ export const Poster: React.FC<{ lang: Lang }> = ({ lang }) => {
             </>
           )}
         </div>
-        <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 38, color: C.inkMute, opacity: ease(f, 42, 58) }}>{sub}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, opacity: ease(f, 46, 62) }}>
+        <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 38, color: C.inkMute }}>{sub}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 320, height: 1, background: C.rule }} />
           <div style={{ fontFamily: MONO, fontSize: 25, letterSpacing: 2, color: C.inkMute }}>{belt}</div>
           <div style={{ width: 320, height: 1, background: C.rule }} />
         </div>
-        <div style={{ background: C.inkStrong, color: C.paper, fontFamily: serif, fontWeight: 600, fontSize: 34, padding: '17px 42px', borderRadius: 999, marginTop: 4, opacity: ease(f, 52, 66), transform: `scale(${interpolate(ease(f, 52, 66), [0, 1], [0.94, 1])})` }}>air.democra.ai →</div>
+        <div style={{ background: C.inkStrong, color: C.paper, fontFamily: serif, fontWeight: 600, fontSize: 34, padding: '17px 42px', borderRadius: 999, marginTop: 4 }}>air.democra.ai →</div>
       </div>
-      <div style={{ position: 'absolute', bottom: 150, left: 0, right: 0, textAlign: 'center', fontFamily: MONO, fontSize: 18, letterSpacing: 3, color: C.inkSoft, opacity: ease(f, 58, 70) }}>ISSUE 01 · DEMOCRA.AI</div>
+      <div style={{ position: 'absolute', bottom: 150, left: 0, right: 0, textAlign: 'center', fontFamily: MONO, fontSize: 18, letterSpacing: 3, color: C.inkSoft }}>ISSUE 01 · DEMOCRA.AI</div>
     </AbsoluteFill>
   );
 };
