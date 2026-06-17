@@ -2,11 +2,10 @@
 // Scene timing derived from measured edge-tts voiceover (ai-video-studio prepare.py method).
 export interface SceneDef { id: string; visualType: string; frEn: number; frZh: number; captionEn: string; captionZh: string; }
 export const SCENES: SceneDef[] = [
-  { id: "s1", visualType: "hero-real", frEn: 266, frZh: 298, captionEn: "You know your MBTI.\nWhat's your AI-resistance type?", captionZh: "MBTI 你都测过了\n那你的「AI 职业人格」呢？" },
-  { id: "s2", visualType: "grid-float", frEn: 309, frZh: 308, captionEn: "16 personalities → 16 career archetypes\nEach one: a way to hold the line", captionZh: "16 型人格 → 16 种职业原型\n每一型，都是一种「守得住」的活法" },
-  { id: "s3", visualType: "axes-anim", frEn: 357, frZh: 331, captionEn: "Learn it? Grade it?\nRisk it? Need you?", captionZh: "学得会吗？打得了分吗？\n敢替你冒险吗？非你不可吗？" },
-  { id: "s4", visualType: "quiz-real", frEn: 333, frZh: 313, captionEn: "16 questions · ~3 min\n60 questions · ~12 min · free", captionZh: "16 题 · 约 3 分钟\n60 题 · 约 12 分钟 · 免费" },
-  { id: "s5", visualType: "result-real", frEn: 408, frZh: 418, captionEn: "ESRP · AI can take ~29%.\nThe rest is yours.", captionZh: "ESRP · 约 29% 会被接手。\n剩下的，是你的。" },
-  { id: "s6", visualType: "which-pivot", frEn: 231, frZh: 262, captionEn: "One slot is still you-shaped.\nWhich type are you?", captionZh: "十五格都有脸了。\n还有一格，写着「你？」" },
-  { id: "s7", visualType: "cta", frEn: 303, frZh: 381, captionEn: "air.democra.ai\nFind your type. Keep your half.", captionZh: "air.democra.ai\n测出你的型，守住你那一半。" },
+  { id: "s1", visualType: "hero-real", frEn: 168, frZh: 175, captionEn: "AI is redrawing which jobs still need a human. Which kind is yours?", captionZh: "AI 正在重新决定，哪些工作还需要人——你的，算哪一种？" },
+  { id: "s2", visualType: "grid-float", frEn: 149, frZh: 163, captionEn: "Like MBTI, we sort careers into 16 archetypes.", captionZh: "像 MBTI 一样，我们把职业也分成了 16 种原型。" },
+  { id: "s3", visualType: "axes-anim", frEn: 243, frZh: 281, captionEn: "Sorted by four questions: Can AI learn it? Is there a clear standard? Who takes the blame? Does it have to be you?", captionZh: "靠四个问题来分：AI 能不能学会？有没有判断标准？能不能担责？是否必须人来做？" },
+  { id: "s4", visualType: "result-real", frEn: 662, frZh: 619, captionEn: "I took it myself — I'm an ESRP, the Pressure Alchemist: making creative calls when the stakes are high, the move is irreversible, and a mistake costs everything. AI can learn the craft, but good is too subjective and one wrong call costs too much, so the higher the stakes, the more it stays human. Low risk — only about thirty percent gets taken, the rest stays mine.", captionZh: "我自己测了一下，是 ESRP，高压炼金师——在高压、不可逆、错了代价极高的时刻做创造性决策。这种活 AI 学得会，可好坏太主观、错了赔不起，所以越关键越得交给人。低风险，大概只有三成会被接手，剩下七成是我的。" },
+  { id: "s5", visualType: "which-pivot", frEn: 120, frZh: 149, captionEn: "Which of the 16 are you? You can find out right now.", captionZh: "16 种里，你是哪一种？现在就能测出来。" },
+  { id: "s6", visualType: "cta", frEn: 393, frZh: 354, captionEn: "Free, no signup — 16 questions in three minutes for a quick read, 60 in twelve for a precise one. When you're done, send it to someone who should see their own map too. air dot democra dot ai.", captionZh: "免费，不用留邮箱——16 题 3 分钟更快，60 题 12 分钟更准。测完，发给那个也该看看自己坐标的人。air democra ai。" },
 ];

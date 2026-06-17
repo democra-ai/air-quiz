@@ -34,6 +34,49 @@ const Sub: React.FC<{ text: string; f: number; dur: number; size?: number }> = (
   </div>
 );
 
+/* ── timed subtitle — caption == voiceover, shown chunk-by-chunk roughly in sync with the VO.
+   VO occupies [LEAD, dur-TAIL] frames (set by prepare.mjs); chunks are time-sliced by length. ── */
+const SUB_LEAD = 10, SUB_TAIL = 14;
+const chunkSplit = (t: string): string[] => {
+  const sentences = t
+    .split(/\n+/)
+    .flatMap((line) => line.split(/(?<=[。！？?!])|(?<=——)/))
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const out: string[] = [];
+  for (const s of sentences) {
+    if (s.length > 60) {
+      let buf = '';
+      for (const p of s.split(/(?<=[，,、])/)) {
+        if ((buf + p).length > 60 && buf) { out.push(buf.trim()); buf = p; } else buf += p;
+      }
+      if (buf.trim()) out.push(buf.trim());
+    } else out.push(s);
+  }
+  return out;
+};
+const TimedSub: React.FC<{ text: string; f: number; dur: number; size?: number }> = ({ text, f, dur, size = 38 }) => {
+  const chunks = chunkSplit(text);
+  const voStart = SUB_LEAD;
+  const voEnd = Math.max(voStart + 1, dur - SUB_TAIL);
+  const weights = chunks.map((c) => Math.max(c.length, 4));
+  const tot = weights.reduce((a, b) => a + b, 0);
+  let acc = voStart;
+  const spans = weights.map((w) => { const s = acc; const e = acc + (voEnd - voStart) * (w / tot); acc = e; return [s, e] as [number, number]; });
+  let idx = spans.findIndex(([s, e]) => f >= s && f < e);
+  if (idx < 0) idx = f < voStart ? 0 : chunks.length - 1;
+  const [s, e] = spans[idx];
+  const chunkOp = chunks.length > 1 ? Math.min(ease(f, s, s + 4), 1 - ease(f, e - 4, e)) : 1;
+  const op = Math.min(fadeIO(f, dur), chunkOp);
+  return (
+    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 70, display: 'flex', justifyContent: 'center', opacity: op, zIndex: 8 }}>
+      <div style={{ background: 'rgba(251,247,238,0.86)', border: `1px solid ${C.rule}88`, borderRadius: 16, padding: '13px 34px', maxWidth: 1500, boxShadow: '0 4px 18px rgba(31,24,20,0.10)', backdropFilter: 'blur(3px)' }}>
+        <div style={{ fontFamily: serif, fontWeight: 400, fontSize: size, lineHeight: 1.34, color: C.inkStrong, textAlign: 'center', whiteSpace: 'pre-line' }}>{chunks[idx]}</div>
+      </div>
+    </div>
+  );
+};
+
 /* ── Two-row floating archetype wall — the original homepage feel; big enough to read each card ── */
 const ROW_A = ARCHETYPES.slice(0, 8);
 const ROW_B = ARCHETYPES.slice(8, 16);
@@ -119,7 +162,7 @@ const Hook: React.FC<SP> = ({ lang, dur, caption }) => {
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
       <Plate src={shot(lang, 'hero')} />
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
-      <Sub text={caption} f={f} dur={dur} size={42} />
+      <TimedSub text={caption} f={f} dur={dur} size={42} />
     </AbsoluteFill>
   );
 };
@@ -130,17 +173,17 @@ const Grid: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
       <TwoRowWall lang={lang} mode="float" />
-      <Sub text={caption} f={f} dur={dur} />
+      <TimedSub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
 };
 
 /* ── axes · 4 dimensions — exposed pole (AI takes, left) vs resistant pole (you hold, right); example lands 2-2 ── */
 const AXES: { label: { en: string; zh: string }; q: { en: string; zh: string }; exposed: string; resist: string; pick: 'exposed' | 'resist'; letter: string }[] = [
-  { label: { en: 'Learnability', zh: '可学习性' }, q: { en: 'Can a machine learn your work?', zh: 'AI 学得会你的活儿吗？' }, exposed: 'Explicit', resist: 'Tacit', pick: 'exposed', letter: 'E' },
-  { label: { en: 'Evaluation', zh: '评判标准' }, q: { en: 'Can "good" be measured?', zh: '“好”量得出来吗？' }, exposed: 'Objective', resist: 'Subjective', pick: 'resist', letter: 'S' },
-  { label: { en: 'Risk', zh: '容错空间' }, q: { en: 'Can mistakes be undone?', zh: '错了，挽回得了吗？' }, exposed: 'Flexible', resist: 'Rigid', pick: 'resist', letter: 'R' },
-  { label: { en: 'Human', zh: '人的在场' }, q: { en: 'Does it have to be YOU?', zh: '非你不可吗？' }, exposed: 'Product', resist: 'Human', pick: 'exposed', letter: 'P' },
+  { label: { en: 'Learnability', zh: '可学习性' }, q: { en: 'Can AI learn it?', zh: 'AI 能不能学会？' }, exposed: 'Explicit', resist: 'Tacit', pick: 'exposed', letter: 'E' },
+  { label: { en: 'Evaluation', zh: '评判标准' }, q: { en: 'Is there a clear standard?', zh: '有没有判断标准？' }, exposed: 'Objective', resist: 'Subjective', pick: 'resist', letter: 'S' },
+  { label: { en: 'Accountability', zh: '容错 · 担责' }, q: { en: 'Who takes the blame?', zh: '能不能担责？' }, exposed: 'Flexible', resist: 'Rigid', pick: 'resist', letter: 'R' },
+  { label: { en: 'Human', zh: '人的在场' }, q: { en: 'Does it have to be you?', zh: '是否必须人来做？' }, exposed: 'Product', resist: 'Human', pick: 'exposed', letter: 'P' },
 ];
 const TAG = { takes: { en: 'AI takes it', zh: 'AI 拿走' }, hold: { en: 'you hold', zh: '你守住' } };
 const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
@@ -148,27 +191,29 @@ const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), padding: '78px 150px 0', justifyContent: 'flex-start' }}>
-      {/* assembled code — exposed picks gray, resistant picks terracotta → reads as 2-2 */}
+      {/* each letter lights up as its question is answered; exposed=gray, resistant=terracotta → 2-2 */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 30, marginBottom: 8 }}>
         {AXES.map((ax, i) => {
-          const s = spring({ frame: f - (24 + i * 16), fps, config: { damping: 14 } });
+          const A = 40 + i * Math.max(34, (dur - 150) / 3);
+          const s = spring({ frame: f - A, fps, config: { damping: 14 } });
           const col = ax.pick === 'resist' ? C.accent : C.inkSoft;
           return <div key={i} style={{ fontFamily: serif, fontWeight: 900, fontSize: 104, color: col, opacity: s, transform: `translateY(${interpolate(s, [0, 1], [40, 0])}px)` }}>{ax.letter}</div>;
         })}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 30, marginBottom: 30, opacity: ease(f, 30, 48) }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 30, marginBottom: 30, opacity: ease(f, 26, 44) }}>
         <span style={{ fontFamily: MONO, fontSize: 16, letterSpacing: 1, color: C.inkSoft }}>{lang === 'zh' ? '灰 = AI 拿走' : 'gray = AI takes it'}</span>
         <span style={{ fontFamily: MONO, fontSize: 16, letterSpacing: 1, color: C.accent }}>{lang === 'zh' ? '红 = 你守得住' : 'terracotta = you hold'}</span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1420, margin: '0 auto', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1420, margin: '0 auto', width: '100%' }}>
         {AXES.map((ax, i) => {
-          const p = spring({ frame: f - (40 + i * 18), fps, config: { damping: 16 } });
+          const A = 40 + i * Math.max(34, (dur - 150) / 3);
+          const p = spring({ frame: f - (A + 2), fps, config: { damping: 16 } });
           const pos = ax.pick === 'exposed' ? interpolate(p, [0, 1], [50, 13]) : interpolate(p, [0, 1], [50, 87]);
           return (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 28, opacity: ease(f, 34 + i * 14, 52 + i * 14) }}>
-              <div style={{ width: 360, flexShrink: 0 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 28, opacity: ease(f, A, A + 14) }}>
+              <div style={{ width: 400, flexShrink: 0 }}>
                 <div style={{ fontFamily: MONO, fontSize: 13, letterSpacing: 2, color: C.inkSoft, marginBottom: 2 }}>{ax.label[lang]}</div>
-                <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 25, color: C.inkStrong, lineHeight: 1.1 }}>{ax.q[lang]}</div>
+                <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 28, color: C.inkStrong, lineHeight: 1.1 }}>{ax.q[lang]}</div>
               </div>
               <div style={{ flex: 1, position: 'relative', height: 58 }}>
                 <div style={{ position: 'absolute', top: 17, left: 92, right: 92, height: 3, background: C.rule, borderRadius: 2 }} />
@@ -186,7 +231,6 @@ const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
           );
         })}
       </div>
-      <Sub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
 };
@@ -227,7 +271,7 @@ const Quiz: React.FC<SP> = ({ lang, dur, caption }) => {
 /* ── example · real result page — a researcher → ESRP "The Pressure Alchemist" ── */
 const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
-  const t1 = Math.round(dur * 0.52);
+  const t1 = Math.round(dur * 0.62);
   // dip through the paper background: result fully fades out BEFORE result-mid fades in,
   // so the two page states are never superimposed (no overlap/ghosting).
   const oResult = interpolate(f, [t1, t1 + 6], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
@@ -236,7 +280,7 @@ const Example: React.FC<SP> = ({ lang, dur, caption }) => {
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
       <Plate src={shot(lang, 'result')} opacity={oResult} />
       <Plate src={shot(lang, 'result-mid')} opacity={oMid} />
-      <Sub text={caption} f={f} dur={dur} />
+      <TimedSub text={caption} f={f} dur={dur} size={36} />
     </AbsoluteFill>
   );
 };
@@ -247,7 +291,7 @@ const Which: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
       <TwoRowWall lang={lang} mode="which" />
-      <Sub text={caption} f={f} dur={dur} size={46} />
+      <TimedSub text={caption} f={f} dur={dur} size={46} />
     </AbsoluteFill>
   );
 };
@@ -255,31 +299,38 @@ const Which: React.FC<SP> = ({ lang, dur, caption }) => {
 /* ── cta ── */
 const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
-  const uw = interpolate(ease(f, 36, 66), [0, 1], [0, 100]);
-  const lines = caption.split('\n');
-  const headline = lines.find((l) => !l.toLowerCase().includes('democra')) || lines[0];
+  const uw = interpolate(ease(f, 34, 64), [0, 1], [0, 100]);
+  const versions = lang === 'zh'
+    ? [{ t: '16 题 · 3 分钟', s: '更快' }, { t: '60 题 · 12 分钟', s: '更准' }]
+    : [{ t: '16 Q · 3 min', s: 'quick' }, { t: '60 Q · 12 min', s: 'precise' }];
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), alignItems: 'center', justifyContent: 'center' }}>
       <TwoRowWall lang={lang} mode="bg" />
       <div aria-hidden style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, transparent, ${C.accent} 50%, transparent)` }} />
-      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
-        <div style={{ position: 'relative', width: 200, height: 200, transform: `scale(${interpolate(ease(f, 4, 28), [0, 1], [1.06, 1])})`, opacity: ease(f, 4, 28) }}>
-          <div style={{ position: 'absolute', inset: '-12%', borderRadius: '50%', background: `radial-gradient(circle at 50% 45%, ${C.accent}33, transparent 65%)`, filter: 'blur(6px)' }} />
-          <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 200, height: 200, borderRadius: 16, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28, marginTop: -110 }}>
+        <div style={{ position: 'relative', width: 148, height: 148, opacity: ease(f, 4, 24), transform: `scale(${interpolate(ease(f, 4, 24), [0, 1], [1.06, 1])})` }}>
+          <div style={{ position: 'absolute', inset: '-14%', borderRadius: '50%', background: `radial-gradient(circle at 50% 45%, ${C.accent}33, transparent 65%)`, filter: 'blur(6px)' }} />
+          <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 148, height: 148, borderRadius: 16, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
         </div>
-        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 64, color: C.inkStrong, textAlign: 'center', maxWidth: 1200, lineHeight: 1.1, opacity: ease(f, 14, 32) }}>{headline}</div>
-        <div style={{ position: 'relative', opacity: ease(f, 28, 44) }}>
-          <div style={{ fontFamily: MONO, fontSize: 58, letterSpacing: 3, color: C.accent }}>air.democra.ai</div>
+        <div style={{ display: 'flex', gap: 26, opacity: ease(f, 14, 34) }}>
+          {versions.map((v, i) => (
+            <div key={i} style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 14, padding: '14px 32px', textAlign: 'center', boxShadow: '0 6px 18px rgba(31,24,20,0.10)' }}>
+              <div style={{ fontFamily: serif, fontWeight: 600, fontSize: 34, color: C.inkStrong }}>{v.t}</div>
+              <div style={{ fontFamily: MONO, fontSize: 16, letterSpacing: 2, color: C.accent, marginTop: 5 }}>{v.s}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ position: 'relative', opacity: ease(f, 28, 48), marginTop: 4 }}>
+          <div style={{ fontFamily: MONO, fontSize: 56, letterSpacing: 3, color: C.accent }}>air.democra.ai</div>
           <div style={{ position: 'absolute', left: 0, bottom: -10, height: 4, width: `${uw}%`, background: C.accent }} />
         </div>
       </div>
-      {/* playful share nudge — the viral loop */}
-      <div style={{ position: 'absolute', right: 96, bottom: 104, transform: `rotate(-6deg) scale(${interpolate(ease(f, 52, 68), [0, 1], [0.82, 1])})`, opacity: ease(f, 52, 68), background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 12, padding: '13px 22px', boxShadow: '0 8px 22px rgba(31,24,20,0.14)', fontFamily: serif, fontStyle: 'italic', fontSize: 29, color: C.accent }}>{lang === 'zh' ? '测完截图发群里' : 'Send it to a coworker'}</div>
+      <TimedSub text={caption} f={f} dur={dur} size={34} />
     </AbsoluteFill>
   );
 };
 
-const MAP: Record<string, React.FC<SP>> = { 'hero-real': Hook, 'grid-float': Grid, 'axes-anim': Axes, 'quiz-real': Quiz, 'result-real': Example, 'which-pivot': Which, cta: Cta };
+const MAP: Record<string, React.FC<SP>> = { 'hero-real': Hook, 'grid-float': Grid, 'axes-anim': Axes, 'result-real': Example, 'which-pivot': Which, cta: Cta };
 export const SceneSwitch: React.FC<{ id: string } & SP> = ({ id, ...p }) => {
   const Comp = MAP[id] ?? Hook;
   return <Comp {...p} />;
