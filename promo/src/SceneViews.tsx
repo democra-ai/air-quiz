@@ -16,6 +16,16 @@ const Plate: React.FC<{ src: string; opacity?: number }> = ({ src, opacity = 1 }
   <Img src={src} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', opacity }} />
 );
 
+/* scrolls a tall page screenshot like a screen recording (content reveals, not a frozen shot) */
+const ScrollPlate: React.FC<{ src: string; f: number; dur: number; imgH: number; to: number }> = ({ src, f, dur, imgH, to }) => {
+  const y = interpolate(ease(f, dur * 0.1, dur * 0.9), [0, 1], [0, to]);
+  return (
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <Img src={src} style={{ position: 'absolute', top: 0, left: 0, width: W, height: imgH, transform: `translateY(${y}px)` }} />
+    </AbsoluteFill>
+  );
+};
+
 /* soft top/bottom fade to paper so a floating wall dissolves at the edges (no hard cut) */
 const EdgeFade: React.FC = () => (
   <>
@@ -147,10 +157,8 @@ const Hook: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
-      <AbsoluteFill style={{ transform: `scale(${interpolate(f, [0, dur], [1.0, 1.05], { extrapolateRight: 'clamp' })})`, transformOrigin: '50% 38%' }}>
-        <Plate src={shot(lang, 'hero')} />
-      </AbsoluteFill>
-      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
+      <ScrollPlate src={shot(lang, 'hero')} f={f} dur={dur} imgH={2800} to={-820} />
+      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, zIndex: 7 }} />
       <TimedSub text={caption} f={f} dur={dur} size={42} />
     </AbsoluteFill>
   );
@@ -181,7 +189,7 @@ const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
   const { fps } = useVideoConfig();
   const step = Math.max(34, (dur - 150) / 4);
   return (
-    <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), padding: '120px 84px 0', justifyContent: 'flex-start' }}>
+    <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), padding: '0 84px', justifyContent: 'center' }}>
       {/* assembled code — exposed picks gray, resistant picks terracotta → reads as 2-2 */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 26, marginBottom: 10 }}>
         {AXES.map((ax, i) => {
@@ -218,6 +226,9 @@ const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
           );
         })}
       </div>
+      <div style={{ fontFamily: serif, fontSize: 34, color: C.inkMute, textAlign: 'center', marginTop: 56, lineHeight: 1.35, opacity: ease(f, 50 + 4 * step, 74 + 4 * step) }}>
+        {lang === 'zh' ? '两样 AI 拿得走，两样你守得住——四个答案，拼出你的代号。' : 'Two go to AI, two you keep — four answers make your code.'}
+      </div>
     </AbsoluteFill>
   );
 };
@@ -227,9 +238,7 @@ const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <AbsoluteFill style={{ transform: `scale(${interpolate(f, [0, dur], [1.0, 1.04], { extrapolateRight: 'clamp' })})`, transformOrigin: '50% 30%' }}>
-        <Plate src={shot(lang, 'result')} />
-      </AbsoluteFill>
+      <ScrollPlate src={shot(lang, 'result')} f={f} dur={dur} imgH={3000} to={-1080} />
       <TimedSub text={caption} f={f} dur={dur} size={38} />
     </AbsoluteFill>
   );
@@ -251,9 +260,7 @@ const Which: React.FC<SP> = ({ lang, dur, caption }) => {
 const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   const uw = interpolate(ease(f, 34, 64), [0, 1], [0, 100]);
-  const versions = lang === 'zh'
-    ? [{ t: '16 题 · 3 分钟', s: '更快' }, { t: '60 题 · 12 分钟', s: '更准' }]
-    : [{ t: '16 Q · 3 min', s: 'quick' }, { t: '60 Q · 12 min', s: 'precise' }];
+  const badge = lang === 'zh' ? '免费 · 最快 3 分钟出结果' : 'Free · results in ~3 min';
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), alignItems: 'center', justifyContent: 'center' }}>
       <Wall lang={lang} mode="bg" />
@@ -262,14 +269,7 @@ const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
           <div style={{ position: 'absolute', inset: '-16%', borderRadius: '50%', background: `radial-gradient(circle at 50% 45%, ${C.accent}33, ${C.accent}00 65%)`, filter: 'blur(8px)' }} />
           <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 200, height: 200, borderRadius: 18, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
         </div>
-        <div style={{ display: 'flex', gap: 24, opacity: ease(f, 14, 34) }}>
-          {versions.map((v, i) => (
-            <div key={i} style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 16, padding: '18px 30px', textAlign: 'center', boxShadow: '0 6px 18px rgba(31,24,20,0.10)' }}>
-              <div style={{ fontFamily: serif, fontWeight: 600, fontSize: 36, color: C.inkStrong }}>{v.t}</div>
-              <div style={{ fontFamily: MONO, fontSize: 17, letterSpacing: 2, color: C.accent, marginTop: 6 }}>{v.s}</div>
-            </div>
-          ))}
-        </div>
+        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 999, padding: '13px 32px', opacity: ease(f, 14, 34), fontFamily: MONO, fontSize: 24, letterSpacing: 2, color: C.accent, boxShadow: '0 6px 18px rgba(31,24,20,0.10)' }}>{badge}</div>
         <div style={{ position: 'relative', opacity: ease(f, 28, 48), marginTop: 6 }}>
           <div style={{ fontFamily: MONO, fontSize: 58, letterSpacing: 3, color: C.accent }}>air.democra.ai</div>
           <div style={{ position: 'absolute', left: 0, bottom: -12, height: 4, width: `${uw}%`, background: C.accent }} />
