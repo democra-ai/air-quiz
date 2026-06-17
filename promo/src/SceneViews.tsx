@@ -153,7 +153,41 @@ const Wall: React.FC<{ lang: Lang; mode: 'float' | 'which' | 'bg' }> = ({ lang, 
 };
 
 /* ── hook · real Hero (portrait) ── */
-// Recreates the real air.democra.ai Hero (editorial headline + floating archetype card), animated.
+// A tasteful 3-card archetype fan: two wings deal out, the main card lifts to the front.
+const CardStack: React.FC<{ lang: Lang; startF: number; top: number }> = ({ lang, startF, top }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const wing = (code: string, rot: number, dx: number, off: number) => {
+    const s = spring({ frame: f - (startF + off), fps, config: { damping: 18 } });
+    return (
+      <div key={code} style={{ position: 'absolute', left: '50%', top, width: 300, transformOrigin: '50% 92%', zIndex: 1, opacity: s * 0.96, transform: `translateX(calc(-50% + ${dx * s}px)) translateY(${18}px) rotate(${rot * s}deg) scale(${interpolate(s, [0, 1], [0.9, 0.82])})` }}>
+        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 18, padding: 12, boxShadow: '0 26px 60px rgba(31,24,20,0.16)' }}>
+          <Img src={charSrc(code)} style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: 14, border: `1px solid ${C.rule}` }} />
+          <div style={{ textAlign: 'center', marginTop: 8, fontFamily: MONO, fontSize: 15, letterSpacing: 5, color: C.inkSoft }}>{code}</div>
+        </div>
+      </div>
+    );
+  };
+  const sc = spring({ frame: f - (startF + 12), fps, config: { damping: 17 } });
+  const bob = Math.sin(f / 22) * 7;
+  return (
+    <>
+      {wing('ESRP', -10, -188, 0)}
+      {wing('TSRH', 10, 188, 6)}
+      <div style={{ position: 'absolute', left: '50%', top, width: 372, transformOrigin: '50% 92%', zIndex: 3, opacity: sc, transform: `translateX(-50%) translateY(${-10 + bob * sc}px) rotate(${interpolate(sc, [0, 1], [-6, -2])}deg) scale(${interpolate(sc, [0, 1], [0.9, 1])})` }}>
+        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 24, padding: 22, boxShadow: '0 22px 56px rgba(31,24,20,0.24)' }}>
+          <Img src={charSrc('ESRH')} style={{ width: '100%', height: 360, objectFit: 'cover', borderRadius: 16, border: `1px solid ${C.rule}` }} />
+          <div style={{ marginTop: 14, textAlign: 'center' }}>
+            <div style={{ fontFamily: MONO, fontSize: 15, letterSpacing: 5, color: C.inkSoft }}>ESRH</div>
+            <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 32, color: C.inkStrong, marginTop: 2 }}>{lang === 'zh' ? '神谕者' : 'The Oracle'}</div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// Recreates the real air.democra.ai Hero (editorial headline + a 3-card archetype fan), animated.
 const Hook: React.FC<SP> = ({ lang, dur }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -166,8 +200,6 @@ const Hook: React.FC<SP> = ({ lang, dur }) => {
     : 'A 16-question test maps your work to one of sixteen archetypes — from the Glass Cannon to the Iron Fortress.';
   const pill = lang === 'zh' ? '开始测试 →' : 'Take the test →';
   const railW = ease(f, 4, 22);
-  const float = spring({ frame: f - 44, fps, config: { damping: 17 } });
-  const bob = Math.sin(f / 20) * 9;
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, transform: `scaleX(${railW})`, transformOrigin: 'center', zIndex: 7 }} />
@@ -188,14 +220,8 @@ const Hook: React.FC<SP> = ({ lang, dur }) => {
         <div style={{ marginTop: 34, fontFamily: serif, fontSize: 32, lineHeight: 1.42, color: C.inkMute, maxWidth: 840, opacity: ease(f, 42, 60) }}>{sub}</div>
         <div style={{ marginTop: 40, display: 'inline-block', background: C.inkStrong, color: C.paper, fontFamily: serif, fontWeight: 600, fontSize: 30, padding: '17px 36px', borderRadius: 999, opacity: ease(f, 56, 74), transform: `scale(${interpolate(ease(f, 56, 74), [0, 1], [0.94, 1])})` }}>{pill}</div>
       </div>
-      {/* floating archetype showcase card (mirrors the hero's rotating preview) */}
-      <div style={{ position: 'absolute', top: 1060 + bob, left: '50%', width: 372, transform: `translateX(-50%) rotate(-2.5deg) scale(${interpolate(float, [0, 1], [0.9, 1])})`, opacity: float, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 24, boxShadow: '0 22px 56px rgba(31,24,20,0.18)', padding: 22 }}>
-        <Img src={charSrc('ESRH')} style={{ width: '100%', height: 360, objectFit: 'cover', borderRadius: 16, border: `1px solid ${C.rule}` }} />
-        <div style={{ marginTop: 16, textAlign: 'center' }}>
-          <div style={{ fontFamily: MONO, fontSize: 15, letterSpacing: 5, color: C.inkSoft }}>ESRH</div>
-          <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 32, color: C.inkStrong, marginTop: 2 }}>{lang === 'zh' ? '神谕者' : 'The Oracle'}</div>
-        </div>
-      </div>
+      {/* 3-card archetype fan (replaces the single floating card) */}
+      <CardStack lang={lang} startF={44} top={910} />
     </AbsoluteFill>
   );
 };
@@ -282,8 +308,8 @@ const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const name = lang === 'zh' ? '高压炼金师' : 'The Pressure Alchemist';
   const why = lang === 'zh' ? '错不起的关键时刻，还得是人来拍板。' : 'When you can’t afford to be wrong, it still takes a human.';
   return (
-    <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
-      <div style={{ position: 'absolute', top: 96, left: 120, width: 840, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 28, boxShadow: '0 18px 50px rgba(31,24,20,0.14)', clipPath: `inset(0 0 ${100 * (1 - rev)}% 0)`, padding: '48px 46px 42px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+    <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 840, marginBottom: 150, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 28, boxShadow: '0 18px 50px rgba(31,24,20,0.14)', clipPath: `inset(0 0 ${100 * (1 - rev)}% 0)`, padding: '48px 46px 42px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
         <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, borderRadius: '28px 28px 0 0', background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow})` }} />
         <div style={{ display: 'flex', gap: 26 }}>
           {code.map(([ch, resist], i) => {
@@ -377,8 +403,70 @@ const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
           <div style={{ fontFamily: MONO, fontSize: 22, letterSpacing: 3, color: C.inkMute }}>{lang === 'zh' ? '扫码 · 马上开测' : 'SCAN TO TAKE IT'}</div>
         </div>
         <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 999, padding: '11px 30px', opacity: ease(f, 44, 64), fontFamily: MONO, fontSize: 22, letterSpacing: 2, color: C.accent, boxShadow: '0 6px 18px rgba(31,24,20,0.10)' }}>{badge}</div>
+        {/* version detail — on screen only (not spoken) */}
+        <div style={{ fontFamily: MONO, fontSize: 19, letterSpacing: 1, color: C.inkSoft, opacity: ease(f, 54, 74) }}>{lang === 'zh' ? '16 题 · 约 3 分钟　　60 题 · 约 12 分钟' : '16 Q · ~3 min      60 Q · ~12 min'}</div>
       </div>
       <TimedSub text={caption} f={f} dur={dur} size={36} />
+    </AbsoluteFill>
+  );
+};
+
+/* ── opening cover poster — magazine-style promo title card (no VO) ── */
+export const Poster: React.FC<{ lang: Lang }> = ({ lang }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const railW = ease(f, 2, 14);
+  const belt = lang === 'zh' ? '16 种 AI 职业人格　·　一分钟　·　免费' : '16 AI CAREER PERSONAS · ONE MINUTE · FREE';
+  const sub = lang === 'zh' ? 'The human AI cannot replace.' : '16 career archetypes for the AI age';
+  const badge = (code: string, rot: number, dx: number, w: number, z: number, off: number) => {
+    const s = spring({ frame: f - (8 + off), fps, config: { damping: 16 } });
+    return (
+      <div key={code} style={{ position: 'absolute', left: '50%', bottom: 0, width: w, transformOrigin: '50% 95%', zIndex: z, opacity: s, transform: `translateX(calc(-50% + ${dx * s}px)) rotate(${rot * s}deg) scale(${interpolate(s, [0, 1], [0.9, 1])})` }}>
+        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 14, padding: 8, boxShadow: `0 16px 40px rgba(31,24,20,${z === 3 ? 0.24 : 0.16})` }}>
+          <Img src={charSrc(code)} style={{ width: '100%', height: w, objectFit: 'cover', borderRadius: 10 }} />
+        </div>
+      </div>
+    );
+  };
+  return (
+    <AbsoluteFill style={{ background: C.paper, alignItems: 'center', justifyContent: 'center' }}>
+      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, transform: `scaleX(${railW})`, transformOrigin: 'center' }} />
+      <div aria-hidden style={{ position: 'absolute', inset: 40, border: `1px solid ${C.rule}`, opacity: 0.6 * ease(f, 2, 14), pointerEvents: 'none' }} />
+      {/* report header */}
+      <div style={{ position: 'absolute', top: 150, left: 0, right: 0, textAlign: 'center', opacity: ease(f, 6, 20) }}>
+        <div style={{ fontFamily: serif, fontStyle: 'italic', fontWeight: 900, fontSize: 70, color: C.inkStrong, letterSpacing: 2 }}>AIR</div>
+        <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: 8, color: C.inkSoft, marginTop: 8 }}>{lang === 'zh' ? 'AI 职业人格测试' : 'THE AI-RESISTANCE CAREER TEST'}</div>
+      </div>
+      {/* centered core */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30, marginTop: 40 }}>
+        <div style={{ position: 'relative', width: 320, height: 220, marginBottom: 10 }}>
+          {badge('ESRP', -9, -132, 168, 1, 4)}
+          {badge('TSRH', 9, 132, 168, 1, 8)}
+          {badge('ESRH', -1.5, 0, 200, 3, 0)}
+        </div>
+        <div style={{ width: 120, height: 2, background: C.accent, opacity: ease(f, 24, 38) }} />
+        <div style={{ fontFamily: serif, fontWeight: 900, fontSize: lang === 'zh' ? 112 : 92, lineHeight: 1.05, color: C.inkStrong, textAlign: 'center', opacity: ease(f, 26, 44), transform: `translateY(${interpolate(ease(f, 26, 44), [0, 1], [22, 0])}px)` }}>
+          {lang === 'zh' ? (
+            <>
+              <div>AI 取代不了的</div>
+              <div>那种<span style={{ color: C.accent, fontStyle: 'italic', fontSize: 138 }}>「人」</span></div>
+            </>
+          ) : (
+            <>
+              <div>The <span style={{ color: C.accent, fontStyle: 'italic' }}>human</span></div>
+              <div>AI cannot replace.</div>
+            </>
+          )}
+        </div>
+        <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 38, color: C.inkMute, opacity: ease(f, 42, 58) }}>{sub}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, opacity: ease(f, 46, 62) }}>
+          <div style={{ width: 320, height: 1, background: C.rule }} />
+          <div style={{ fontFamily: MONO, fontSize: 25, letterSpacing: 2, color: C.inkMute }}>{belt}</div>
+          <div style={{ width: 320, height: 1, background: C.rule }} />
+        </div>
+        <div style={{ background: C.inkStrong, color: C.paper, fontFamily: serif, fontWeight: 600, fontSize: 34, padding: '17px 42px', borderRadius: 999, marginTop: 4, opacity: ease(f, 52, 66), transform: `scale(${interpolate(ease(f, 52, 66), [0, 1], [0.94, 1])})` }}>air.democra.ai →</div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 150, left: 0, right: 0, textAlign: 'center', fontFamily: MONO, fontSize: 18, letterSpacing: 3, color: C.inkSoft, opacity: ease(f, 58, 70) }}>ISSUE 01 · DEMOCRA.AI</div>
     </AbsoluteFill>
   );
 };

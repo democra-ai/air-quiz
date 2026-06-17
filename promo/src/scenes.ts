@@ -12,6 +12,8 @@ export const WIDTH = 1080;
 export const HEIGHT = 1920;
 /** VO starts this many frames into each scene (must match LEAD in prepare.mjs). */
 export const LEAD = 10;
+/** Opening cover-poster hold (frames), shown before scene 1. No VO. */
+export const POSTER = 76;
 
 export const sceneFrames = (s: SceneDef, lang: Lang) => (lang === 'en' ? s.frEn : s.frZh);
-export const totalFrames = (lang: Lang) => SCENES.reduce((a, s) => a + sceneFrames(s, lang), 0);
+export const totalFrames = (lang: Lang) => POSTER + SCENES.reduce((a, s) => a + sceneFrames(s, lang), 0);

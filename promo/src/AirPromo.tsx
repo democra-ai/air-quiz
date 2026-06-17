@@ -1,11 +1,11 @@
 import { AbsoluteFill, Audio, interpolate, Sequence, staticFile } from 'remotion';
 import { C, type Lang } from './theme';
-import { SCENES, sceneFrames, LEAD, totalFrames } from './scenes';
-import { SceneSwitch } from './SceneViews';
+import { SCENES, sceneFrames, LEAD, POSTER, totalFrames } from './scenes';
+import { SceneSwitch, Poster } from './SceneViews';
 
 export const AirPromo: React.FC<{ lang: Lang }> = ({ lang }) => {
   const total = totalFrames(lang);
-  let start = 0;
+  let start = POSTER;
   return (
     <AbsoluteFill style={{ background: C.paper }}>
       {/* light BGM bed — fade in/out at the video edges */}
@@ -18,6 +18,10 @@ export const AirPromo: React.FC<{ lang: Lang }> = ({ lang }) => {
           })
         }
       />
+      {/* opening cover poster (no VO) */}
+      <Sequence from={0} durationInFrames={POSTER} name="poster">
+        <Poster lang={lang} />
+      </Sequence>
       {SCENES.map((s, i) => {
         const dur = sceneFrames(s, lang);
         const from = start;
