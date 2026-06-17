@@ -153,43 +153,49 @@ const Wall: React.FC<{ lang: Lang; mode: 'float' | 'which' | 'bg' }> = ({ lang, 
 };
 
 /* ── hook · real Hero (portrait) ── */
+// Recreates the real air.democra.ai Hero (editorial headline + floating archetype card), animated.
 const Hook: React.FC<SP> = ({ lang, dur }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const kicker = lang === 'zh' ? 'AIR · 第 01 节 · 关于你的可替代性' : 'AIR · SECTION 01 · ON REPLACEABILITY';
-  const setup = lang === 'zh' ? 'AI 越来越能干，' : 'AI keeps getting better,';
-  const lines = lang === 'zh' ? ['你这份工作，', '它到底能——'] : ['Your job —', 'how much can AI take?'];
-  const railW = ease(f, 6, 24);
-  const adv = f < 102 ? interpolate(ease(f, 64, 102), [0, 1], [0, 0.33]) : interpolate(ease(f, 102, 122), [0, 1], [0.33, 0.28], { extrapolateRight: 'clamp' });
-  const phraseW = W - 168;
-  const bandX = adv * phraseW;
-  const bandOp = Math.min(ease(f, 60, 72), 1 - ease(f, dur - 28, dur - 14));
-  let gi = 0;
+  const kicker = lang === 'zh' ? '§ 01 · 一份关于你工作的问卷' : '§ 01 · A SURVEY ABOUT YOUR WORK';
+  const head = lang === 'zh'
+    ? [[{ t: '哪种 ', a: false }, { t: '人', a: true }, { t: '，', a: false }], [{ t: 'AI 取代不了？', a: false }]]
+    : [[{ t: 'The kind of ', a: false }, { t: 'human', a: true }], [{ t: 'AI cannot replace.', a: false }]];
+  const sub = lang === 'zh'
+    ? '16 道题，把你的工作对到 16 种原型之一——从玻璃大炮到铁壁堡垒。'
+    : 'A 16-question test maps your work to one of sixteen archetypes — from the Glass Cannon to the Iron Fortress.';
+  const pill = lang === 'zh' ? '开始测试 →' : 'Take the test →';
+  const railW = ease(f, 4, 22);
+  const float = spring({ frame: f - 44, fps, config: { damping: 17 } });
+  const bob = Math.sin(f / 20) * 9;
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, transform: `scaleX(${railW})`, transformOrigin: 'center', zIndex: 7 }} />
-      <div style={{ position: 'absolute', top: 290, left: 84, right: 84, opacity: ease(f, 10, 26) }}>
-        <div style={{ fontFamily: MONO, fontSize: 22, letterSpacing: 5, color: C.inkSoft, textAlign: 'center' }}>{kicker}</div>
-        <div style={{ height: 1, background: C.rule, marginTop: 16, transform: `scaleX(${railW})`, transformOrigin: 'center' }} />
+      {/* top nav, like the real hero */}
+      <div style={{ position: 'absolute', top: 44, left: 64, right: 64, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', opacity: ease(f, 4, 20) }}>
+        <span style={{ fontFamily: serif, fontStyle: 'italic', fontWeight: 600, fontSize: 34, color: C.inkStrong }}>AIR</span>
+        <span style={{ fontFamily: MONO, fontSize: 14, letterSpacing: 3, color: C.inkSoft }}>{lang === 'zh' ? 'AI 职业人格测试' : 'AI-RESISTANCE CAREER TEST'}</span>
       </div>
-      <div style={{ position: 'absolute', top: 470, right: 96, textAlign: 'right', fontFamily: serif, fontStyle: 'italic', fontSize: 48, color: C.inkMute, opacity: ease(f, 14, 32), transform: `translateX(${interpolate(ease(f, 14, 32), [0, 1], [40, 0])}px)` }}>{setup}</div>
-      <div style={{ position: 'absolute', top: 640, left: 84, width: phraseW }}>
-        {lines.map((line, li) => (
-          <div key={li} style={{ display: 'flex', flexWrap: 'wrap', fontFamily: serif, fontWeight: 900, fontSize: lang === 'zh' ? 104 : 72, lineHeight: 1.1, color: C.inkStrong }}>
-            {[...line].map((ch, ci) => {
-              const ent = spring({ frame: f - (28 + gi++ * 3), fps, config: { damping: 16 } });
-              return <span key={ci} style={{ opacity: ent, transform: `translateY(${interpolate(ent, [0, 1], [30, 0])}px)`, whiteSpace: 'pre' }}>{ch}</span>;
-            })}
-          </div>
-        ))}
+      <div style={{ position: 'absolute', top: 220, left: 84, right: 84 }}>
+        <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: 4, color: C.inkSoft, opacity: ease(f, 10, 26) }}>{kicker}</div>
+        <div style={{ marginTop: 26, fontFamily: serif, fontWeight: 900, fontSize: lang === 'zh' ? 116 : 80, lineHeight: 1.05, color: C.inkStrong }}>
+          {head.map((line, li) => (
+            <div key={li} style={{ opacity: ease(f, 18 + li * 9, 40 + li * 9), transform: `translateY(${interpolate(ease(f, 18 + li * 9, 40 + li * 9), [0, 1], [28, 0])}px)` }}>
+              {line.map((seg, si) => <span key={si} style={{ color: seg.a ? C.accent : C.inkStrong, fontStyle: seg.a ? 'italic' : 'normal' }}>{seg.t}</span>)}
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 34, fontFamily: serif, fontSize: 32, lineHeight: 1.42, color: C.inkMute, maxWidth: 840, opacity: ease(f, 42, 60) }}>{sub}</div>
+        <div style={{ marginTop: 40, display: 'inline-block', background: C.inkStrong, color: C.paper, fontFamily: serif, fontWeight: 600, fontSize: 30, padding: '17px 36px', borderRadius: 999, opacity: ease(f, 56, 74), transform: `scale(${interpolate(ease(f, 56, 74), [0, 1], [0.94, 1])})` }}>{pill}</div>
       </div>
-      {/* scan / measure sweep over the phrase */}
-      <div style={{ position: 'absolute', top: 620, left: 84 + bandX - 60, width: 120, height: 270, background: `linear-gradient(90deg, transparent, ${C.accentGlow}55, ${C.accent}, ${C.accentGlow}55, transparent)`, mixBlendMode: 'multiply', opacity: bandOp }} />
-      {/* baseline + cursor with a held "?" (number suspense → answered in scene 4) */}
-      <div style={{ position: 'absolute', top: 1004, left: 84, width: bandX, height: 3, background: `${C.accent}40` }} />
-      <div style={{ position: 'absolute', top: 1004, left: 84 + bandX, right: 96, height: 2, background: C.rule, transform: `scaleX(${ease(f, 50, 66)})`, transformOrigin: 'left' }} />
-      <div style={{ position: 'absolute', top: 996, left: 84 + bandX - 9, width: 18, height: 18, borderRadius: 999, background: C.accent, boxShadow: `0 0 0 6px ${C.accent}22`, opacity: ease(f, 58, 70) }} />
-      <div style={{ position: 'absolute', top: 1028, left: 84 + bandX - 8, fontFamily: serif, fontWeight: 900, fontSize: 34, color: C.accent, opacity: (0.7 + 0.3 * Math.sin(f / 9)) * ease(f, 64, 80) }}>?</div>
+      {/* floating archetype showcase card (mirrors the hero's rotating preview) */}
+      <div style={{ position: 'absolute', top: 1060 + bob, left: '50%', width: 372, transform: `translateX(-50%) rotate(-2.5deg) scale(${interpolate(float, [0, 1], [0.9, 1])})`, opacity: float, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 24, boxShadow: '0 22px 56px rgba(31,24,20,0.18)', padding: 22 }}>
+        <Img src={charSrc('ESRH')} style={{ width: '100%', height: 360, objectFit: 'cover', borderRadius: 16, border: `1px solid ${C.rule}` }} />
+        <div style={{ marginTop: 16, textAlign: 'center' }}>
+          <div style={{ fontFamily: MONO, fontSize: 15, letterSpacing: 5, color: C.inkSoft }}>ESRH</div>
+          <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 32, color: C.inkStrong, marginTop: 2 }}>{lang === 'zh' ? '神谕者' : 'The Oracle'}</div>
+        </div>
+      </div>
     </AbsoluteFill>
   );
 };
@@ -277,7 +283,7 @@ const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const why = lang === 'zh' ? '错不起的关键时刻，还得是人来拍板。' : 'When you can’t afford to be wrong, it still takes a human.';
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
-      <div style={{ position: 'absolute', top: 138, left: 130, width: 820, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 28, boxShadow: '0 18px 50px rgba(31,24,20,0.14)', clipPath: `inset(0 0 ${100 * (1 - rev)}% 0)`, padding: '46px 44px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
+      <div style={{ position: 'absolute', top: 96, left: 120, width: 840, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 28, boxShadow: '0 18px 50px rgba(31,24,20,0.14)', clipPath: `inset(0 0 ${100 * (1 - rev)}% 0)`, padding: '48px 46px 42px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
         <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, borderRadius: '28px 28px 0 0', background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow})` }} />
         <div style={{ display: 'flex', gap: 26 }}>
           {code.map(([ch, resist], i) => {
@@ -315,6 +321,19 @@ const Example: React.FC<SP> = ({ lang, dur, caption }) => {
           <span style={{ fontFamily: MONO, fontSize: 17, color: C.inkSoft }}>● {lang === 'zh' ? '29% 被 AI 接手' : '29% to AI'}</span>
         </div>
         <div style={{ marginTop: 8, padding: '11px 26px', borderRadius: 999, background: `${C.accent}14`, border: `1px solid ${C.accent}`, fontFamily: MONO, fontSize: 21, letterSpacing: 2, color: C.accent, opacity: ease(f, 200, 218), transform: `scale(${interpolate(ease(f, 200, 218), [0, 1], [0.94, 1])})` }}>● {lang === 'zh' ? '低风险 · LOW RISK' : 'LOW RISK'}</div>
+        <div style={{ width: '90%', height: 1, background: C.rule, marginTop: 14, opacity: ease(f, 214, 230) }} />
+        <div style={{ display: 'flex', gap: 64, opacity: ease(f, 220, 238) }}>
+          {[
+            { k: lang === 'zh' ? '预计被接手' : 'EST. TAKEOVER', v: '~2044' },
+            { k: lang === 'zh' ? '置信区间' : 'CONFIDENCE', v: '2039–2049' },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: MONO, fontSize: 14, letterSpacing: 2, color: C.inkSoft }}>{s.k}</div>
+              <div style={{ fontFamily: serif, fontWeight: 600, fontSize: 48, color: C.inkStrong, marginTop: 2 }}>{s.v}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontFamily: MONO, fontSize: 17, letterSpacing: 1, color: C.inkSoft, opacity: ease(f, 230, 248), textAlign: 'center' }}>{lang === 'zh' ? '常见于 · 工程师 / 建筑师 / 科研 / 投资' : 'COMMON IN · Engineers / Architects / Scientists'}</div>
       </div>
       <TimedSub text={caption} f={f} dur={dur} size={38} />
     </AbsoluteFill>
