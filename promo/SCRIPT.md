@@ -1,6 +1,6 @@
-# AIR 宣传片 · 脚本与分镜 — 终版（6 幕 · 配音==字幕 · 流畅口语版）
+# AIR 宣传片 · 脚本与分镜 — 竖屏终版（9:16 · 6 幕 · 配音==字幕）
 
-> 整段当一个人一口气讲完写，句子自然承接。配音/BGM 走 ai-video-studio 管线（edge-tts 女声 + Carefree）。改文案后跑 `node scripts/prepare.mjs`。
+> 竖屏 1080×1920。配音/BGM 走 ai-video-studio 管线（edge-tts 女声 + Carefree）。改文案后跑 `node scripts/prepare.mjs`。
 
 **Logline:** AI 正在重新划定哪些工作还需要人——像 MBTI 一样把职业分成 16 种原型，四个问题判定，第一人称带出 ESRP 高压炼金师，邀你测出自己的那一种。
 
@@ -27,5 +27,5 @@
 - **EN (VO = caption):** So what about you? Of the 16, which one are you?
 
 ## ⑥ CTA — `cta`
-- **中文（配音=字幕）:** 花一分钟就知道——想快 16 题，想准 60 题，都免费。说不定，你比自己以为的，更难被取代。来 air democra ai 试试。
-- **EN (VO = caption):** A minute is all it takes — 16 questions for speed, 60 for precision, both free. You might be harder to replace than you think. Come try it at air dot democra dot ai.
+- **中文（配音=字幕）:** 最快 3 分钟就知道结果——想快，16 题；想准，60 题，都免费。说不定，你比自己以为的，更难被取代。来 air democra ai 试试。
+- **EN (VO = caption):** Your result in as little as three minutes — 16 questions for speed, 60 for precision, both free. You might be harder to replace than you think. Come try it at air dot democra dot ai.

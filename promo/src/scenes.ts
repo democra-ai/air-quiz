@@ -8,8 +8,8 @@ export { SCENES };
 export type { SceneDef };
 
 export const FPS = 30;
-export const WIDTH = 1920;
-export const HEIGHT = 1080;
+export const WIDTH = 1080;
+export const HEIGHT = 1920;
 /** VO starts this many frames into each scene (must match LEAD in prepare.mjs). */
 export const LEAD = 10;
 
