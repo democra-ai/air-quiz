@@ -3,8 +3,14 @@
   "width": 1920,
   "height": 1080,
   "audio": {
-    "en": { "voice": "en-US-AvaMultilingualNeural", "rate": "+8%" },
-    "zh": { "voice": "zh-CN-XiaoxiaoNeural", "rate": "+12%" }
+    "en": {
+      "voice": "en-US-AvaMultilingualNeural",
+      "rate": "+8%"
+    },
+    "zh": {
+      "voice": "zh-CN-XiaoxiaoNeural",
+      "rate": "+12%"
+    }
   },
   "title": "AIR · AI 职业人格测试 — 宣传片（终版 6 幕，配音==字幕）",
   "logline": "AI 正在重新划定哪些工作还需要人——像 MBTI 一样把职业分成 16 种原型，四个问题判定，第一人称带出 ESRP 高压炼金师，邀你测出自己的那一种。",
@@ -37,8 +43,8 @@
       "id": "s4",
       "beat": "我的结果 / My Result (ESRP)",
       "visualType": "result-real",
-      "textZh": "我自己测了一下，是 ESRP，高压炼金师——在高压、不可逆、错了代价极高的时刻做创造性决策。这种活 AI 学得会，可好坏太主观、错了赔不起，所以越关键越得交给人。低风险，大概只有三成会被接手，剩下七成是我的。",
-      "textEn": "I took it myself — I'm an ESRP, the Pressure Alchemist: making creative calls when the stakes are high, the move is irreversible, and a mistake costs everything. AI can learn the craft, but good is too subjective and one wrong call costs too much, so the higher the stakes, the more it stays human. Low risk — only about thirty percent gets taken, the rest stays mine.",
+      "textZh": "我自己测了一下，是 ESRP，高压炼金师——在错了就赔不起的时刻，做不可逆的创造决策。AI 学得会，可好坏太主观，关键时刻还得交给人。低风险，大约只有三成会被接手，剩下都是我的。",
+      "textEn": "I took it — I'm an ESRP, the Pressure Alchemist: high-stakes, irreversible creative calls where a mistake costs everything. AI can learn the craft, but the judgment is too subjective to hand off. Low risk — only about thirty percent gets taken, the rest stays mine.",
       "visualNote": "真实结果页：原型名+水彩像 → 切到 29% / 2044 / 2039-2049 数据区；第一人称、可信、不吹。"
     },
     {

@@ -271,7 +271,7 @@ const Quiz: React.FC<SP> = ({ lang, dur, caption }) => {
 /* ── example · real result page — a researcher → ESRP "The Pressure Alchemist" ── */
 const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
-  const t1 = Math.round(dur * 0.62);
+  const t1 = Math.round(dur * 0.56);
   // dip through the paper background: result fully fades out BEFORE result-mid fades in,
   // so the two page states are never superimposed (no overlap/ghosting).
   const oResult = interpolate(f, [t1, t1 + 6], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
