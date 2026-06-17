@@ -14,6 +14,14 @@ const Plate: React.FC<{ src: string; opacity?: number }> = ({ src, opacity = 1 }
   <Img src={src} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080, objectFit: 'cover', objectPosition: 'top', opacity }} />
 );
 
+/* soft left/right fade to paper so a scrolling/floating wall dissolves at the edges (no hard cut) */
+const EdgeFade: React.FC = () => (
+  <>
+    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 220, background: `linear-gradient(90deg, ${C.paper}, ${C.paper}00)`, pointerEvents: 'none', zIndex: 6 }} />
+    <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 220, background: `linear-gradient(270deg, ${C.paper}, ${C.paper}00)`, pointerEvents: 'none', zIndex: 6 }} />
+  </>
+);
+
 const Cursor: React.FC<{ x: number; y: number; clicks?: number[] }> = ({ x, y, clicks = [] }) => {
   const f = useCurrentFrame();
   let press = 1;
@@ -85,10 +93,13 @@ const ART = 150;
 const WHICH_EMPTY = 2; // empty slot index within ROW_B
 
 const Card: React.FC<{ code: string; name: string; dimmed?: boolean; empty?: boolean; pulse?: number }> = ({ code, name, dimmed, empty, pulse = 1 }) => (
-  <div style={{ width: TILE - 22, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, filter: dimmed ? 'grayscale(0.9)' : 'none', opacity: dimmed ? 0.34 : 1 }}>
+  <div style={{ width: TILE - 22, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, filter: dimmed ? 'grayscale(0.55)' : 'none', opacity: dimmed ? 0.42 : 1 }}>
     {empty ? (
-      <div style={{ width: ART, height: ART, borderRadius: 16, border: `2px dashed ${C.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${C.accent}12`, opacity: pulse }}>
-        <span style={{ fontFamily: serif, fontWeight: 900, fontSize: 78, color: C.accent }}>?</span>
+      <div style={{ position: 'relative', width: ART, height: ART, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', inset: '-22%', borderRadius: '50%', background: `radial-gradient(circle, ${C.accent}40, ${C.accent}00 68%)`, filter: 'blur(10px)', opacity: pulse }} />
+        <div style={{ position: 'relative', width: ART, height: ART, borderRadius: 16, border: `2px dashed ${C.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${C.accent}14` }}>
+          <span style={{ fontFamily: serif, fontWeight: 900, fontSize: 78, color: C.accent }}>?</span>
+        </div>
       </div>
     ) : (
       <Img src={charSrc(code)} style={{ width: ART, height: ART, borderRadius: 16, objectFit: 'cover', border: `1px solid ${C.rule}`, boxShadow: '0 7px 20px rgba(31,24,20,0.12)' }} />
@@ -160,7 +171,9 @@ const Hook: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
-      <Plate src={shot(lang, 'hero')} />
+      <AbsoluteFill style={{ transform: `scale(${interpolate(f, [0, dur], [1.0, 1.045], { extrapolateRight: 'clamp' })})`, transformOrigin: '50% 40%' }}>
+        <Plate src={shot(lang, 'hero')} />
+      </AbsoluteFill>
       <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)` }} />
       <TimedSub text={caption} f={f} dur={dur} size={42} />
     </AbsoluteFill>
@@ -173,6 +186,7 @@ const Grid: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
       <TwoRowWall lang={lang} mode="float" />
+      <EdgeFade />
       <TimedSub text={caption} f={f} dur={dur} />
     </AbsoluteFill>
   );
@@ -180,10 +194,10 @@ const Grid: React.FC<SP> = ({ lang, dur, caption }) => {
 
 /* ── axes · 4 dimensions — exposed pole (AI takes, left) vs resistant pole (you hold, right); example lands 2-2 ── */
 const AXES: { label: { en: string; zh: string }; q: { en: string; zh: string }; exposed: string; resist: string; pick: 'exposed' | 'resist'; letter: string }[] = [
-  { label: { en: 'Learnability', zh: '可学习性' }, q: { en: 'Can AI learn it?', zh: 'AI 能不能学会？' }, exposed: 'Explicit', resist: 'Tacit', pick: 'exposed', letter: 'E' },
-  { label: { en: 'Evaluation', zh: '评判标准' }, q: { en: 'Is there a clear standard?', zh: '有没有判断标准？' }, exposed: 'Objective', resist: 'Subjective', pick: 'resist', letter: 'S' },
-  { label: { en: 'Accountability', zh: '容错 · 担责' }, q: { en: 'Who takes the blame?', zh: '能不能担责？' }, exposed: 'Flexible', resist: 'Rigid', pick: 'resist', letter: 'R' },
-  { label: { en: 'Human', zh: '人的在场' }, q: { en: 'Does it have to be you?', zh: '是否必须人来做？' }, exposed: 'Product', resist: 'Human', pick: 'exposed', letter: 'P' },
+  { label: { en: 'Learnability', zh: '可学习性' }, q: { en: 'Can AI learn it?', zh: 'AI 学不学得会？' }, exposed: 'Explicit', resist: 'Tacit', pick: 'exposed', letter: 'E' },
+  { label: { en: 'Evaluation', zh: '评判标准' }, q: { en: 'Is there a clear standard?', zh: '好坏有没有准？' }, exposed: 'Objective', resist: 'Subjective', pick: 'resist', letter: 'S' },
+  { label: { en: 'Accountability', zh: '担责' }, q: { en: "Who's accountable?", zh: '出错担不担得起？' }, exposed: 'Flexible', resist: 'Rigid', pick: 'resist', letter: 'R' },
+  { label: { en: 'Human', zh: '人的在场' }, q: { en: 'Does it have to be you?', zh: '是不是非你不可？' }, exposed: 'Product', resist: 'Human', pick: 'exposed', letter: 'P' },
 ];
 const TAG = { takes: { en: 'AI takes it', zh: 'AI 拿走' }, hold: { en: 'you hold', zh: '你守住' } };
 const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
@@ -278,8 +292,10 @@ const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const oMid = interpolate(f, [t1 + 6, t1 + 13], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <Plate src={shot(lang, 'result')} opacity={oResult} />
-      <Plate src={shot(lang, 'result-mid')} opacity={oMid} />
+      <AbsoluteFill style={{ transform: `scale(${interpolate(f, [0, dur], [1.0, 1.025], { extrapolateRight: 'clamp' })})`, transformOrigin: '50% 36%' }}>
+        <Plate src={shot(lang, 'result')} opacity={oResult} />
+        <Plate src={shot(lang, 'result-mid')} opacity={oMid} />
+      </AbsoluteFill>
       <TimedSub text={caption} f={f} dur={dur} size={36} />
     </AbsoluteFill>
   );
@@ -291,6 +307,7 @@ const Which: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
       <TwoRowWall lang={lang} mode="which" />
+      <EdgeFade />
       <TimedSub text={caption} f={f} dur={dur} size={46} />
     </AbsoluteFill>
   );

@@ -19,48 +19,48 @@
       "id": "s1",
       "beat": "钩子 / Hook",
       "visualType": "hero-real",
-      "textZh": "AI 正在重新决定，哪些工作还需要人——你的，算哪一种？",
-      "textEn": "AI is redrawing which jobs still need a human. Which kind is yours?",
+      "textZh": "AI 越来越能干，你有没有想过——你这份工作，它到底能替掉多少？",
+      "textEn": "AI keeps getting better. Ever wonder how much of your job it could actually take?",
       "visualNote": "实拍冷静开场，缓推；只压这一句字幕，大量留白。"
     },
     {
       "id": "s2",
       "beat": "16 原型 / Archetypes",
       "visualType": "grid-float",
-      "textZh": "像 MBTI 一样，我们把职业也分成了 16 种原型。",
-      "textEn": "Like MBTI, we sort careers into 16 archetypes.",
+      "textZh": "与其瞎猜，不如测一测。我们照着 MBTI 的思路，把所有职业分成了 16 种「AI 职业人格」。",
+      "textEn": "Instead of guessing, find out. We borrowed MBTI's idea and sorted every career into 16 AI personality types.",
       "visualNote": "两行水彩原型卡缓缓浮动，看得清头像+代号+名字；有秩序感、不喊口号。"
     },
     {
       "id": "s3",
       "beat": "四维度 / Four Axes",
       "visualType": "axes-anim",
-      "textZh": "靠四个问题来分：AI 能不能学会？有没有判断标准？能不能担责？是否必须人来做？",
-      "textEn": "Sorted by four questions: Can AI learn it? Is there a clear standard? Who takes the blame? Does it have to be you?",
+      "textZh": "怎么分？其实就看四件事：你的活儿 AI 学不学得会，做得好不好有没有个准，真出了错担不担得起责，还有——是不是非你不可。",
+      "textEn": "How? It comes down to four things: can AI learn your work, is there a clear standard for doing it well, who's accountable when it goes wrong, and does it really have to be you?",
       "visualNote": "四条轴依次画出，每问对应一根轴；屏上问句逐字等于配音，正向极=你守得住。"
     },
     {
       "id": "s4",
       "beat": "我的结果 / My Result (ESRP)",
       "visualType": "result-real",
-      "textZh": "我自己测了一下，是 ESRP，高压炼金师——在错了就赔不起的时刻，做不可逆的创造决策。AI 学得会，可好坏太主观，关键时刻还得交给人。低风险，大约只有三成会被接手，剩下都是我的。",
-      "textEn": "I took it — I'm an ESRP, the Pressure Alchemist: high-stakes, irreversible creative calls where a mistake costs everything. AI can learn the craft, but the judgment is too subjective to hand off. Low risk — only about thirty percent gets taken, the rest stays mine.",
+      "textZh": "就拿我来说，测出来是 ESRP，高压炼金师——专挑那种错不起的关键时刻拍板。这种判断 AI 学得会，可好坏说不准、错了又赔不起，真要定，还得是人。所以我风险很低，最多三成会被接手，剩下的，都还是我的。",
+      "textEn": "Take me — I came out ESRP, the Pressure Alchemist: I make the calls in the moments you can't afford to get wrong. AI can learn the craft, but when good is fuzzy and a mistake costs everything, the decision still has to be human. So my risk is low — at most thirty percent gets taken, the rest is still mine.",
       "visualNote": "真实结果页：原型名+水彩像 → 切到 29% / 2044 / 2039-2049 数据区；第一人称、可信、不吹。"
     },
     {
       "id": "s5",
       "beat": "你是哪一种 / Which One",
       "visualType": "which-pivot",
-      "textZh": "16 种里，你是哪一种？现在就能测出来。",
-      "textEn": "Which of the 16 are you? You can find out right now.",
+      "textZh": "那你呢？这 16 种里，你是哪一种？",
+      "textEn": "So what about you? Of the 16, which one are you?",
       "visualNote": "16 原型墙压暗，一格变成跳动的赤陶问号=你；直给的邀请。"
     },
     {
       "id": "s6",
       "beat": "CTA",
       "visualType": "cta",
-      "textZh": "免费，不用留邮箱——16 题 3 分钟更快，60 题 12 分钟更准。测完，发给那个也该看看自己坐标的人。air democra ai。",
-      "textEn": "Free, no signup — 16 questions in three minutes for a quick read, 60 in twelve for a precise one. When you're done, send it to someone who should see their own map too. air dot democra dot ai.",
+      "textZh": "花一分钟就知道——想快 16 题，想准 60 题，都免费。说不定，你比自己以为的，更难被取代。来 air democra ai 试试。",
+      "textEn": "A minute is all it takes — 16 questions for speed, 60 for precision, both free. You might be harder to replace than you think. Come try it at air dot democra dot ai.",
       "visualNote": "两版本并排（16 题 / 60 题）+ ESRP 像 + 网址下划线；轻松笃定，无挑衅。"
     }
   ]

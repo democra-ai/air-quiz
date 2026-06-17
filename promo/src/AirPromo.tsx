@@ -32,6 +32,16 @@ export const AirPromo: React.FC<{ lang: Lang }> = ({ lang }) => {
           </Sequence>
         );
       })}
+      {/* global atmosphere — paper grain + vignette for depth (over all scenes) */}
+      <AbsoluteFill style={{ pointerEvents: 'none' }}>
+        <svg width="100%" height="100%" style={{ position: 'absolute', inset: 0, opacity: 0.05, mixBlendMode: 'multiply' }}>
+          <filter id="paperGrain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves={2} stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#paperGrain)" />
+        </svg>
+        <AbsoluteFill style={{ boxShadow: 'inset 0 0 360px rgba(31,24,20,0.14)' }} />
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
