@@ -153,13 +153,43 @@ const Wall: React.FC<{ lang: Lang; mode: 'float' | 'which' | 'bg' }> = ({ lang, 
 };
 
 /* ── hook · real Hero (portrait) ── */
-const Hook: React.FC<SP> = ({ lang, dur, caption }) => {
+const Hook: React.FC<SP> = ({ lang, dur }) => {
   const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const kicker = lang === 'zh' ? 'AIR · 第 01 节 · 关于你的可替代性' : 'AIR · SECTION 01 · ON REPLACEABILITY';
+  const setup = lang === 'zh' ? 'AI 越来越能干，' : 'AI keeps getting better,';
+  const lines = lang === 'zh' ? ['你这份工作，', '它到底能——'] : ['Your job —', 'how much can AI take?'];
+  const railW = ease(f, 6, 24);
+  const adv = f < 102 ? interpolate(ease(f, 64, 102), [0, 1], [0, 0.33]) : interpolate(ease(f, 102, 122), [0, 1], [0.33, 0.28], { extrapolateRight: 'clamp' });
+  const phraseW = W - 168;
+  const bandX = adv * phraseW;
+  const bandOp = Math.min(ease(f, 60, 72), 1 - ease(f, dur - 28, dur - 14));
+  let gi = 0;
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur, 1, 16) }}>
-      <ScrollPlate src={shot(lang, 'hero')} f={f} dur={dur} imgH={2800} to={-820} />
-      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, zIndex: 7 }} />
-      <TimedSub text={caption} f={f} dur={dur} size={42} />
+      <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 7, background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow} 55%, transparent)`, transform: `scaleX(${railW})`, transformOrigin: 'center', zIndex: 7 }} />
+      <div style={{ position: 'absolute', top: 290, left: 84, right: 84, opacity: ease(f, 10, 26) }}>
+        <div style={{ fontFamily: MONO, fontSize: 22, letterSpacing: 5, color: C.inkSoft, textAlign: 'center' }}>{kicker}</div>
+        <div style={{ height: 1, background: C.rule, marginTop: 16, transform: `scaleX(${railW})`, transformOrigin: 'center' }} />
+      </div>
+      <div style={{ position: 'absolute', top: 470, right: 96, textAlign: 'right', fontFamily: serif, fontStyle: 'italic', fontSize: 48, color: C.inkMute, opacity: ease(f, 14, 32), transform: `translateX(${interpolate(ease(f, 14, 32), [0, 1], [40, 0])}px)` }}>{setup}</div>
+      <div style={{ position: 'absolute', top: 640, left: 84, width: phraseW }}>
+        {lines.map((line, li) => (
+          <div key={li} style={{ display: 'flex', flexWrap: 'wrap', fontFamily: serif, fontWeight: 900, fontSize: lang === 'zh' ? 104 : 72, lineHeight: 1.1, color: C.inkStrong }}>
+            {[...line].map((ch, ci) => {
+              const ent = spring({ frame: f - (28 + gi++ * 3), fps, config: { damping: 16 } });
+              return <span key={ci} style={{ opacity: ent, transform: `translateY(${interpolate(ent, [0, 1], [30, 0])}px)`, whiteSpace: 'pre' }}>{ch}</span>;
+            })}
+          </div>
+        ))}
+      </div>
+      {/* scan / measure sweep over the phrase */}
+      <div style={{ position: 'absolute', top: 620, left: 84 + bandX - 60, width: 120, height: 270, background: `linear-gradient(90deg, transparent, ${C.accentGlow}55, ${C.accent}, ${C.accentGlow}55, transparent)`, mixBlendMode: 'multiply', opacity: bandOp }} />
+      {/* baseline + cursor with a held "?" (number suspense → answered in scene 4) */}
+      <div style={{ position: 'absolute', top: 1004, left: 84, width: bandX, height: 3, background: `${C.accent}40` }} />
+      <div style={{ position: 'absolute', top: 1004, left: 84 + bandX, right: 96, height: 2, background: C.rule, transform: `scaleX(${ease(f, 50, 66)})`, transformOrigin: 'left' }} />
+      <div style={{ position: 'absolute', top: 996, left: 84 + bandX - 9, width: 18, height: 18, borderRadius: 999, background: C.accent, boxShadow: `0 0 0 6px ${C.accent}22`, opacity: ease(f, 58, 70) }} />
+      <div style={{ position: 'absolute', top: 1028, left: 84 + bandX - 8, fontFamily: serif, fontWeight: 900, fontSize: 34, color: C.accent, opacity: (0.7 + 0.3 * Math.sin(f / 9)) * ease(f, 64, 80) }}>?</div>
     </AbsoluteFill>
   );
 };
@@ -236,9 +266,56 @@ const Axes: React.FC<SP> = ({ lang, dur, caption }) => {
 /* ── result · real result page (portrait shows archetype + 29% stats + axes in one frame) ── */
 const Example: React.FC<SP> = ({ lang, dur, caption }) => {
   const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const code = [['E', false], ['S', true], ['R', true], ['P', false]] as const; // true = resist (accent)
+  const rev = ease(f, 4, 24);
+  const Cc = 2 * Math.PI * 135;
+  const pMine = ease(f, 120, 196);
+  const pAI = ease(f, 176, 220);
+  const nMine = Math.round(interpolate(pMine, [0, 1], [0, 71]));
+  const name = lang === 'zh' ? '高压炼金师' : 'The Pressure Alchemist';
+  const why = lang === 'zh' ? '错不起的关键时刻，还得是人来拍板。' : 'When you can’t afford to be wrong, it still takes a human.';
   return (
-    <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), overflow: 'hidden' }}>
-      <ScrollPlate src={shot(lang, 'result')} f={f} dur={dur} imgH={3000} to={-1080} />
+    <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur) }}>
+      <div style={{ position: 'absolute', top: 138, left: 130, width: 820, background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 28, boxShadow: '0 18px 50px rgba(31,24,20,0.14)', clipPath: `inset(0 0 ${100 * (1 - rev)}% 0)`, padding: '46px 44px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
+        <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, borderRadius: '28px 28px 0 0', background: `linear-gradient(90deg, ${C.accent}, ${C.accentGlow})` }} />
+        <div style={{ display: 'flex', gap: 26 }}>
+          {code.map(([ch, resist], i) => {
+            const s = spring({ frame: f - (22 + i * 7), fps, config: { damping: 16 } });
+            return <span key={i} style={{ fontFamily: serif, fontWeight: 900, fontSize: 84, color: resist ? C.accent : C.inkSoft, opacity: s, transform: `translateY(${interpolate(s, [0, 1], [34, 0])}px)` }}>{ch}</span>;
+          })}
+        </div>
+        <div style={{ fontFamily: MONO, fontSize: 15, letterSpacing: 4, color: C.inkSoft, marginTop: -8, opacity: ease(f, 30, 44) }}>{lang === 'zh' ? '代号 · CODE' : 'YOUR CODE'}</div>
+        <div style={{ position: 'relative', width: 240, height: 240, opacity: ease(f, 40, 60), transform: `scale(${interpolate(ease(f, 40, 60), [0, 1], [0.9, 1])})` }}>
+          <div style={{ position: 'absolute', inset: '-16%', borderRadius: '50%', background: `radial-gradient(circle, ${C.accent}33, ${C.accent}00 66%)`, filter: 'blur(10px)' }} />
+          <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 240, height: 240, borderRadius: 20, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
+        </div>
+        <div style={{ textAlign: 'center', opacity: ease(f, 56, 76) }}>
+          <div style={{ fontFamily: MONO, fontSize: 14, letterSpacing: 3, color: C.inkSoft }}>{lang === 'zh' ? '第一人称 · 我测出来是' : 'I CAME OUT'}</div>
+          <div style={{ fontFamily: serif, fontStyle: 'italic', fontWeight: 600, fontSize: 52, color: C.inkStrong, lineHeight: 1.1, marginTop: 4 }}>{name}</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, maxWidth: 660, opacity: ease(f, 74, 94) }}>
+          <div style={{ width: 4, alignSelf: 'stretch', background: C.accent, borderRadius: 2 }} />
+          <div style={{ fontFamily: serif, fontSize: 25, color: C.inkMute, lineHeight: 1.35 }}>{why}</div>
+        </div>
+        {/* donut gauge — 71% yours (terracotta) vs 29% AI (gray) */}
+        <div style={{ position: 'relative', width: 300, height: 300, marginTop: 4, opacity: ease(f, 110, 126) }}>
+          <svg width="300" height="300" viewBox="0 0 300 300">
+            <circle cx="150" cy="150" r="135" fill="none" stroke={C.rule} strokeWidth="30" />
+            <circle cx="150" cy="150" r="135" fill="none" stroke={C.accent} strokeWidth="30" strokeLinecap="butt" strokeDasharray={Cc} strokeDashoffset={Cc * (1 - 0.70 * pMine)} transform="rotate(-90 150 150)" />
+            <circle cx="150" cy="150" r="135" fill="none" stroke={C.inkSoft} strokeWidth="30" strokeLinecap="butt" strokeDasharray={Cc} strokeDashoffset={Cc * (1 - 0.28 * pAI)} transform="rotate(96 150 150)" />
+          </svg>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontFamily: serif, fontWeight: 900, fontSize: 96, color: C.accent, lineHeight: 1 }}>{nMine}%</div>
+            <div style={{ fontFamily: MONO, fontSize: 16, letterSpacing: 2, color: C.inkMute, marginTop: 4 }}>{lang === 'zh' ? '还是我的' : 'STILL MINE'}</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 34, opacity: ease(f, 150, 168) }}>
+          <span style={{ fontFamily: MONO, fontSize: 17, color: C.inkMute }}><span style={{ color: C.accent }}>●</span> {lang === 'zh' ? '71% 还是我的' : '71% still mine'}</span>
+          <span style={{ fontFamily: MONO, fontSize: 17, color: C.inkSoft }}>● {lang === 'zh' ? '29% 被 AI 接手' : '29% to AI'}</span>
+        </div>
+        <div style={{ marginTop: 8, padding: '11px 26px', borderRadius: 999, background: `${C.accent}14`, border: `1px solid ${C.accent}`, fontFamily: MONO, fontSize: 21, letterSpacing: 2, color: C.accent, opacity: ease(f, 200, 218), transform: `scale(${interpolate(ease(f, 200, 218), [0, 1], [0.94, 1])})` }}>● {lang === 'zh' ? '低风险 · LOW RISK' : 'LOW RISK'}</div>
+      </div>
       <TimedSub text={caption} f={f} dur={dur} size={38} />
     </AbsoluteFill>
   );
@@ -264,16 +341,23 @@ const Cta: React.FC<SP> = ({ lang, dur, caption }) => {
   return (
     <AbsoluteFill style={{ background: C.paper, opacity: fadeIO(f, dur), alignItems: 'center', justifyContent: 'center' }}>
       <Wall lang={lang} mode="bg" />
-      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40, marginTop: -160 }}>
-        <div style={{ position: 'relative', width: 200, height: 200, opacity: ease(f, 4, 24), transform: `scale(${interpolate(ease(f, 4, 24), [0, 1], [1.06, 1])})` }}>
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 34, marginTop: -130 }}>
+        <div style={{ position: 'relative', width: 132, height: 132, opacity: ease(f, 4, 22), transform: `scale(${interpolate(ease(f, 4, 22), [0, 1], [1.06, 1])})` }}>
           <div style={{ position: 'absolute', inset: '-16%', borderRadius: '50%', background: `radial-gradient(circle at 50% 45%, ${C.accent}33, ${C.accent}00 65%)`, filter: 'blur(8px)' }} />
-          <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 200, height: 200, borderRadius: 18, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
+          <Img src={charSrc('ESRP')} style={{ position: 'relative', width: 132, height: 132, borderRadius: 16, objectFit: 'cover', border: `1px solid ${C.rule}` }} />
         </div>
-        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 999, padding: '13px 32px', opacity: ease(f, 14, 34), fontFamily: MONO, fontSize: 24, letterSpacing: 2, color: C.accent, boxShadow: '0 6px 18px rgba(31,24,20,0.10)' }}>{badge}</div>
-        <div style={{ position: 'relative', opacity: ease(f, 28, 48), marginTop: 6 }}>
-          <div style={{ fontFamily: MONO, fontSize: 58, letterSpacing: 3, color: C.accent }}>air.democra.ai</div>
+        <div style={{ position: 'relative', opacity: ease(f, 14, 34) }}>
+          <div style={{ fontFamily: MONO, fontSize: 60, letterSpacing: 3, color: C.accent }}>air.democra.ai</div>
           <div style={{ position: 'absolute', left: 0, bottom: -12, height: 4, width: `${uw}%`, background: C.accent }} />
         </div>
+        {/* scan-to-take QR */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, opacity: ease(f, 30, 52), transform: `scale(${interpolate(ease(f, 30, 52), [0, 1], [0.92, 1])})` }}>
+          <div style={{ padding: 16, background: '#fff', border: `1px solid ${C.rule}`, borderRadius: 22, boxShadow: '0 10px 30px rgba(31,24,20,0.14)' }}>
+            <Img src={staticFile('qr.png')} style={{ width: 248, height: 248, display: 'block', borderRadius: 8 }} />
+          </div>
+          <div style={{ fontFamily: MONO, fontSize: 22, letterSpacing: 3, color: C.inkMute }}>{lang === 'zh' ? '扫码 · 马上开测' : 'SCAN TO TAKE IT'}</div>
+        </div>
+        <div style={{ background: C.paperCard, border: `1px solid ${C.rule}`, borderRadius: 999, padding: '11px 30px', opacity: ease(f, 44, 64), fontFamily: MONO, fontSize: 22, letterSpacing: 2, color: C.accent, boxShadow: '0 6px 18px rgba(31,24,20,0.10)' }}>{badge}</div>
       </div>
       <TimedSub text={caption} f={f} dur={dur} size={36} />
     </AbsoluteFill>
